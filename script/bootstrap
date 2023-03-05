@@ -29,7 +29,8 @@ cd ./server
 pwd
 echo "${GREEN}=====> Installing Python dependencies"
 python3 -m venv venv
-. venv/Scripts/activate
+ls venv
+. ./venv/Scripts/activate
 pip install -r requirements.txt
 cd $DIR
 
@@ -43,8 +44,8 @@ if [! -f /usr/bin/mongod ]; then
     sudo apt-get install -y mongodb-org
     sudo apt autoremove && apt clean
     mkdir /data /data/db
-    sudo ufw allow proto tcp from any to any port 27017
-    sudo ufw enable
+    # sudo ufw allow proto tcp from any to any port 27017
+    # sudo ufw enable
     sudo systemctl enable mongod
     sudo service mongod start
 
