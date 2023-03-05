@@ -59,7 +59,7 @@ jobs:
         run: yarn install
 
       - name: Build iOS app
-        run: cd ios && pod install && xcodebuild clean build -workspace MyApp.xcworkspace -scheme MyApp -configuration Release -sdk iphoneos -quiet
+        run: cd ios && pod install && xcodebuild clean build -workspace client.xcworkspace -scheme client -configuration Release -sdk iphoneos -quiet
 
       - name: Run tests
         run: npm run test
@@ -68,4 +68,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ios-artifacts
-          path: ios/build/Release-iphoneos/MyApp.ipa
+          path: ios/build/Release-iphoneos/client.ipa
