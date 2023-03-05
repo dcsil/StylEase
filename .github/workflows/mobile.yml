@@ -6,6 +6,8 @@ on: push
 jobs:
   build-android:
     runs-on: ubuntu-latest
+    env:
+      DSN: ${{ vars.DSN }}
 
     defaults:
       run:
@@ -23,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Run tests
+        run: npm run test
+
       - name: Build Android APK
         run: cd android && chmod +x gradlew && ./gradlew assembleRelease
 
@@ -31,15 +36,6 @@ jobs:
         with:
           name: Apk
           path: android/app/build/outputs/apk/release/app-release.apk
-
-      - name: Run tests
-        run: npm run test
-        
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: Aab
-          path: android/app/build/outputs/bundle/release/app-release.aab
 
 
 
