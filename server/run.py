@@ -3,4 +3,4 @@ import os
 
 if __name__ == "__main__":
     # print(os.environ.get("MONGODB_URL"))
-    app.run(debug=True, port=int(os.getenv('PORT', 7000)))
+    app.run(debug=True, port=int(os.environ.get('PORT', 7000)))
