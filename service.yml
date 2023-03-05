@@ -8,6 +8,7 @@ tools:
 services:
   production:
     frontend: ''
+    backend: 'https://stylease.herokuapp.com/'
 
 docs:
   getting_started: https://github.com/dcsil/StylEase/blob/5d3676a01012e24a275347338ec6c81587929b21/README.md
