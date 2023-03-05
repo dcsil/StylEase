@@ -1,0 +1,79 @@
+name: Mobile
+
+# Triggered when code is pushed to any branch in a repository
+on: 
+  push: 
+    branches:
+      - main
+
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    # env:
+    #   DSN: ${{ vars.DSN }}
+
+    defaults:
+      run:
+        working-directory: ./client
+
+    steps: 
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Build Android APK
+        run: cd android && chmod +x gradlew && ./gradlew assembleRelease
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: StyleEase Android Release
+          path: android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: 'warn'
+
+
+
+  build-ios:
+    runs-on: macos-latest
+    # env:
+    #   DSN: ${{ vars.DSN }}
+
+    defaults:
+      run:
+        working-directory: ./client
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build iOS app
+        run: cd ios && pod install && xcodebuild clean archive -workspace client.xcworkspace -scheme client -archivePath client.xcarchive CODE_SIGNING_ALLOWED=NO | xcpretty
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: StyleEase iOS Release
+          path: ios/build/Release-iphoneos/client.ipa
+          if-no-files-found: 'warn'
