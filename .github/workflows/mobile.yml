@@ -15,7 +15,7 @@ jobs:
 
     steps: 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -32,15 +32,18 @@ jobs:
         run: cd android && chmod +x gradlew && ./gradlew assembleRelease
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
-          name: Apk
+          name: StyleEase Android Release
           path: android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: 'warn'
 
 
 
   build-ios:
     runs-on: macos-latest
+    env:
+      DSN: ${{ vars.DSN }}
 
     defaults:
       run:
@@ -48,7 +51,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -59,13 +62,14 @@ jobs:
         run: yarn install
 
       - name: Build iOS app
-        run: cd ios && pod install && xcodebuild clean build -workspace client.xcworkspace -scheme client -configuration Release -sdk iphoneos -quiet
+        run: cd ios && pod install && xcodebuild clean archive -workspace client.xcworkspace -scheme client -archivePath client.xcarchive CODE_SIGNING_ALLOWED=NO | xcpretty
 
       - name: Run tests
         run: npm run test
 
       - name: Archive artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: ios-artifacts
+          name: StyleEase iOS Release
           path: ios/build/Release-iphoneos/client.ipa
+          if-no-files-found: 'warn'
