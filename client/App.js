@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import * as Sentry from '@sentry/react-native';
 
 Sentry.init({
-  dsn: process.env.DSN,
+  dsn: "https://71ed77cdaeff44e7b814cd90fce00f97@o358880.ingest.sentry.io/4504487922565120",
 });
 
 export default function App() {

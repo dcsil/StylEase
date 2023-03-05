@@ -1,13 +1,17 @@
 name: Mobile
 
 # Triggered when code is pushed to any branch in a repository
-on: push
+on: 
+  push: 
+    branches:
+      - main
+
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
-    env:
-      DSN: ${{ vars.DSN }}
+    # env:
+    #   DSN: ${{ vars.DSN }}
 
     defaults:
       run:
@@ -42,8 +46,8 @@ jobs:
 
   build-ios:
     runs-on: macos-latest
-    env:
-      DSN: ${{ vars.DSN }}
+    # env:
+    #   DSN: ${{ vars.DSN }}
 
     defaults:
       run:
