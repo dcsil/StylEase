@@ -65,3 +65,4 @@ if [! -f /usr/bin/mongod ]; then
     # sudo echo '  authorization: enabled' >> /etc/mongod.conf  
     
     # sudo service mongod restart
+fi
