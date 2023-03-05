@@ -1,13 +1,13 @@
 tools:
   exceptions: https://dcsil.sentry.io/issues/?project=4504487922565120
-  logging: 
+  logging: ''
   ci:
     frontend: .github/mobile.yml
     backend: .github/flask.yml
 
 services:
   production:
-    frontend: 
+    frontend: ''
 
 docs:
   getting_started: https://github.com/dcsil/StylEase/blob/5d3676a01012e24a275347338ec6c81587929b21/README.md
