@@ -16,4 +16,6 @@ commands:
   bootstrap: script/bootstrap
   database: sudo service mongod start
   server: cd ./server; python run.py
-  test: cd ./server; python -m pytest
+  test: 
+    bakcend: cd ./server; python -m pytest
+    frontend: cd ./client; npm run test
