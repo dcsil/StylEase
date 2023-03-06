@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Button } from 'react-native-paper';
+
+import { getName } from "../api/test";
 
 const styles = StyleSheet.create({
   container: {
@@ -13,6 +15,13 @@ const styles = StyleSheet.create({
 });
 
 export const Home = ({ navigation }) => {
+  const [content, setContent] = useState('')
+  useEffect(() => {
+    getName("Taylor Scott").then((result) => {
+      setContent(result);
+    });
+  }, [])
+
   alertButtonAction = () => { 
     Alert.alert("Hello", "test", [
       {
@@ -27,6 +36,7 @@ export const Home = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text>StylEase by No Brainer Team!!!</Text>
+      <Text>{`Content from server: ${content}`}</Text>
       <Button icon="cursor-pointer" mode="contained" onPress={alertButtonAction}>
         Press me
       </Button>
