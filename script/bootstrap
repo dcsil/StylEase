@@ -15,7 +15,7 @@ CLEAR_LINE='\r\033[K'
 cd ./client
 pwd
 echo "${GREEN}=====> Installing expo-cli"
-npm install -g expo-cli
+sudo npm install -g expo-cli
 echo "${GREEN}=====> Installing Node dependencies"
 npm install
 echo "${GREEN}=====> Initializing environment file"
@@ -42,7 +42,7 @@ cd $DIR
 
 # Local MongoDB
 echo "${GREEN}=====> Installing MongoDB locally"
-if [! -f /usr/bin/mongod ]; then
+if [ ! -f /usr/bin/mongod ]; then
     sudo apt-get install gnupg
     wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
     sudo echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
