@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: StyleEase Android Release
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: ./client/android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: 'warn'
 
 
