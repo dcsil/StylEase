@@ -20,12 +20,6 @@ jobs:
     #     working-directory: client
 
     steps: 
-      - name: Test
-        run: |
-          pwd
-          ls
-          echo ${{ secrets.ANDROID_SIGNING_ALIAS }}
-
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -43,9 +37,12 @@ jobs:
         run: |
           cd client
           echo ${{ secrets.CLIENT_ENV_FILE }} > .env
+          cat .env
 
       - name: Run tests
-        run: npm run test
+        run: |
+          cd client
+          npm run test
 
       - name: Build Android APK
         run: |
