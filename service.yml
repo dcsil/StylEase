@@ -11,11 +11,11 @@ services:
     backend: https://stylease.herokuapp.com/
 
 docs:
-  getting_started: https://github.com/dcsil/StylEase/blob/5d3676a01012e24a275347338ec6c81587929b21/README.md
+  getting_started: https://github.com/dcsil/StylEase/blob/main/README.md
 
 commands:
   bootstrap: script/bootstrap
-  database: sudo service mongod start
+  database: https://cloud.mongodb.com/v2/6405064158eadf1142b29027#/clusters
   server: cd ./server; python run.py
   test: 
     bakcend: cd ./server; python -m pytest

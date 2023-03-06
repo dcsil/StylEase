@@ -11,23 +11,31 @@ YELLOW='\033[0;33m'
 NO_COLOR='\033[0m'
 CLEAR_LINE='\r\033[K'
 
+# Install Node
+echo "${GREEN}=====> Installing Node"
+sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+sudo nvm install node 
+sudo node -version
+sudo npm -version
+
+
 # React Native
 cd ./client
 pwd
 echo "${GREEN}=====> Installing expo-cli"
-npm install -g expo-cli
+sudo npm install -g expo-cli
 echo "${GREEN}=====> Installing Node dependencies"
 npm install
 echo "${GREEN}=====> Initializing environment file"
-cat $DIR/scripts/client-env-template > .env
+cat $DIR/script/client-env-template > .env
 cd $DIR
 
 # Flask
-# echo "${GREEN}=====> Installing Python 3.10"
-# sudo apt update && sudo apt upgrade -y
-# sudo apt install software-properties-common -y
-# sudo add-apt-repository ppa:deadsnakes/ppa
-# sudo apt install python3.10
+echo "${GREEN}=====> Installing Python 3.10"
+sudo apt update && sudo apt upgrade -y
+sudo apt install software-properties-common -y
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt install python3.10
 
 cd ./server
 pwd
@@ -37,12 +45,12 @@ ls venv
 . ./venv/bin/activate
 pip install -r requirements.txt
 echo "${GREEN}=====> Initializing environment file"
-cat $DIR/scripts/server-env-template > .env
+cat $DIR/script/server-env-template > .env
 cd $DIR
 
 # Local MongoDB
 echo "${GREEN}=====> Installing MongoDB locally"
-if [! -f /usr/bin/mongod ]; then
+if [ ! -f /usr/bin/mongod ]; then
     sudo apt-get install gnupg
     wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
     sudo echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
@@ -50,25 +58,25 @@ if [! -f /usr/bin/mongod ]; then
     sudo apt-get install -y mongodb-org
     sudo apt autoremove && apt clean
     mkdir /data /data/db
-    # sudo ufw allow proto tcp from any to any port 27017
-    # sudo ufw enable
+    sudo ufw allow proto tcp from any to any port 27017
+    sudo ufw enable
     sudo systemctl enable mongod
     sudo service mongod start
 
 
-    # echo "Username for your Mongo DB admin account (DONOT use ampersands -> @)?"
-    # read mongo_admin_user
+    echo "Username for your Mongo DB admin account (DONOT use ampersands -> @)?"
+    read mongo_admin_user
 
-    # echo "What is the password you want to set for $mongo_admin_user (DONOT use ampersands -> @)?"
-    # read mongo_admin_pwd
+    echo "What is the password you want to set for $mongo_admin_user (DONOT use ampersands -> @)?"
+    read mongo_admin_pwd
 
-    # echo "User name will be set to $mongo_admin_user and password to $mongo_admin_pwd."
+    echo "User name will be set to $mongo_admin_user and password to $mongo_admin_pwd."
 
-    # sudo mongo "admin" --eval "db.createUser({'user':'$mongo_admin_user','pwd':'$mongo_admin_pwd','roles': ['userAdminAnyDatabase','readWriteAnyDatabase']})"
+    sudo mongo "admin" --eval "db.createUser({'user':'$mongo_admin_user','pwd':'$mongo_admin_pwd','roles': ['userAdminAnyDatabase','readWriteAnyDatabase']})"
 
-    # sudo echo ' ' >> /etc/mongod.conf
-    # sudo echo 'security:' >> /etc/mongod.conf
-    # sudo echo '  authorization: enabled' >> /etc/mongod.conf
+    sudo echo ' ' >> /etc/mongod.conf
+    sudo echo 'security:' >> /etc/mongod.conf
+    sudo echo '  authorization: enabled' >> /etc/mongod.conf
 
-    # sudo service mongod restart
+    sudo service mongod restart
 fi
