@@ -1,9 +1,13 @@
+import flask_pymongo
 from flask import *
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+from dotenv import load_dotenv
 
+import os
+load_dotenv()
 sentry_sdk.init(
     dsn="https://71ed77cdaeff44e7b814cd90fce00f97@o358880.ingest.sentry.io/4504487922565120",
     integrations=[
@@ -23,3 +27,15 @@ sentry_sdk.init(
 )
 
 app = Flask(__name__)
+
+cors = CORS(app)
+# configuration
+app.config['MONGO_URI'] = os.environ.get("MONGODB_URL")
+# Connect to MongoDB, where client is the MongoClient object
+client = flask_pymongo.MongoClient(os.environ.get("MONGODB_URL"))
+# mongo = PyMongo(app)
+
+@app.route('/api/test/<name>', methods=['POST'])
+def test(name):
+    target = client.sample_mflix.comments.find_one({'name': name})
+    return target['text']
