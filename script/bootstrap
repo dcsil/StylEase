@@ -19,7 +19,7 @@ npm install -g expo-cli
 echo "${GREEN}=====> Installing Node dependencies"
 npm install
 echo "${GREEN}=====> Initializing environment file"
-cat $DIR/scripts/client-env-template > .env
+cat $DIR/script/client-env-template > .env
 cd $DIR
 
 # Flask
@@ -37,7 +37,7 @@ ls venv
 . ./venv/bin/activate
 pip install -r requirements.txt
 echo "${GREEN}=====> Initializing environment file"
-cat $DIR/scripts/server-env-template > .env
+cat $DIR/script/server-env-template > .env
 cd $DIR
 
 # Local MongoDB
