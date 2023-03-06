@@ -17,11 +17,14 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./client
+        working-directory: client
 
     steps: 
       - name: Test
-        run: echo ${{ secrets.ANDROID_SIGNING_ALIAS }}
+        run: |
+          pwd
+          ls
+          echo ${{ secrets.ANDROID_SIGNING_ALIAS }}
 
       - name: Checkout code
         uses: actions/checkout@v3
