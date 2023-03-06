@@ -20,6 +20,14 @@ jobs:
         working-directory: ./client
 
     steps: 
+      - name: Test
+        env:
+          CLIENT_ENV_FILE: ${{ secrets.CLIENT_ENV_FILE }}
+        run: |
+        echo $CLIENT_ENV_FILE
+        echo "$CLIENT_ENV_FILE"
+        echo ${{ secrets.ANDROID_SIGNING_ALIAS }}
+
       - name: Checkout code
         uses: actions/checkout@v3
 
