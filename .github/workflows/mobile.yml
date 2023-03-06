@@ -15,9 +15,9 @@ jobs:
     # env:
     #   DSN: ${{ vars.DSN }}
 
-    defaults:
-      run:
-        working-directory: client
+    # defaults:
+    #   run:
+    #     working-directory: client
 
     steps: 
       - name: Test
