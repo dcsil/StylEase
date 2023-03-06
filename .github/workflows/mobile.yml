@@ -5,6 +5,7 @@ on:
   push: 
     branches:
       - main
+      - dev
 
 
 jobs:
@@ -30,11 +31,24 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Create .env file
+        run: echo "${{ secrets.CLIENT_ENV_FILE }}" > .env
+
       - name: Run tests
         run: npm run test
 
       - name: Build Android APK
         run: cd android && chmod +x gradlew && ./gradlew assembleRelease
+
+      - name: Sign App Bundle
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: ./client/android/app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+          alias: ${{ secrets.ANDROID_SIGNING_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_SIGNING_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
