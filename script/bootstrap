@@ -14,8 +14,12 @@ CLEAR_LINE='\r\033[K'
 # React Native
 cd ./client
 pwd
+echo "${GREEN}=====> Installing expo-cli"
+npm install -g expo-cli
 echo "${GREEN}=====> Installing Node dependencies"
 npm install
+echo "${GREEN}=====> Initializing environment file"
+cat $DIR/scripts/client-env-template > .env
 cd $DIR
 
 # Flask
@@ -32,6 +36,8 @@ python3 -m venv venv
 ls venv
 . ./venv/bin/activate
 pip install -r requirements.txt
+echo "${GREEN}=====> Initializing environment file"
+cat $DIR/scripts/server-env-template > .env
 cd $DIR
 
 # Local MongoDB
@@ -49,20 +55,20 @@ if [! -f /usr/bin/mongod ]; then
     sudo systemctl enable mongod
     sudo service mongod start
 
-    
+
     # echo "Username for your Mongo DB admin account (DONOT use ampersands -> @)?"
     # read mongo_admin_user
-    
+
     # echo "What is the password you want to set for $mongo_admin_user (DONOT use ampersands -> @)?"
-    # read mongo_admin_pwd 
-    
+    # read mongo_admin_pwd
+
     # echo "User name will be set to $mongo_admin_user and password to $mongo_admin_pwd."
-    
-    # sudo mongo "admin" --eval "db.createUser({'user':'$mongo_admin_user','pwd':'$mongo_admin_pwd','roles': ['userAdminAnyDatabase','readWriteAnyDatabase']})"  
-    
+
+    # sudo mongo "admin" --eval "db.createUser({'user':'$mongo_admin_user','pwd':'$mongo_admin_pwd','roles': ['userAdminAnyDatabase','readWriteAnyDatabase']})"
+
     # sudo echo ' ' >> /etc/mongod.conf
     # sudo echo 'security:' >> /etc/mongod.conf
-    # sudo echo '  authorization: enabled' >> /etc/mongod.conf  
-    
+    # sudo echo '  authorization: enabled' >> /etc/mongod.conf
+
     # sudo service mongod restart
 fi
