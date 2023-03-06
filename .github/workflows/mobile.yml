@@ -17,16 +17,11 @@ jobs:
 
     defaults:
       run:
-        working-directory: client
+        working-directory: ./client
 
     steps: 
       - name: Test
-        env:
-          CLIENT_ENV_FILE: ${{ secrets.CLIENT_ENV_FILE }}
-        run: |
-          echo $CLIENT_ENV_FILE
-          echo "$CLIENT_ENV_FILE"
-          echo ${{ secrets.ANDROID_SIGNING_ALIAS }}
+        run: echo ${{ secrets.ANDROID_SIGNING_ALIAS }}
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -54,7 +49,7 @@ jobs:
         uses: r0adkll/sign-android-release@v1
         id: sign_app
         with:
-          releaseDirectory: android/app/build/outputs/bundle/release
+          releaseDirectory: ./client/android/app/build/outputs/bundle/release
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_SIGNING_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_SIGNING_STORE_PASSWORD }}
@@ -64,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: StyleEase Android Release
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: ./client/android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: 'warn'
 
 
