@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Button } from 'react-native-paper';
 
-import { getName } from "../api/test";
+import { getName } from "../api/temp";
 
 const styles = StyleSheet.create({
   container: {
