@@ -32,7 +32,9 @@ jobs:
         run: npm install
 
       - name: Create .env file
-        run: echo ${{ secrets.CLIENT_ENV_FILE }} > .env
+        env:
+          CLIENT_ENV_FILE: ${{ secrets.CLIENT_ENV_FILE }}
+        run: echo $CLIENT_ENV_FILE > .env
 
       - name: Run tests
         run: npm run test
