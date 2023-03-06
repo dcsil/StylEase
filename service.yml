@@ -1,14 +1,14 @@
 tools:
   exceptions: https://dcsil.sentry.io/issues/?project=4504487922565120
-  logging: ''
+  logging: https://service.us2.sumologic.com/ui/?appName=stylease&addonId=sumologic#/search/fe65cfe6_b220_dcd0_211a_b409395468ad
   ci:
     frontend: .github/mobile.yml
     backend: .github/flask.yml
 
 services:
   production:
-    frontend: ''
-    backend: 'https://stylease.herokuapp.com/'
+    frontend: https://github.com/dcsil/StylEase/releases/tag/v1.0.0
+    backend: https://stylease.herokuapp.com/
 
 docs:
   getting_started: https://github.com/dcsil/StylEase/blob/5d3676a01012e24a275347338ec6c81587929b21/README.md
