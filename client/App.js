@@ -1,5 +1,5 @@
 import React from 'react';
-import * as Sentry from '@sentry/react-native';
+import * as Sentry from 'sentry-expo';
 import { Navigation } from './Navigation';
 import { Provider as PaperProvider } from 'react-native-paper';
 
@@ -9,10 +9,10 @@ Sentry.init({
 
 export default function App() {
   return (
-    <Sentry.ErrorBoundary showDialog>
+    <Sentry.Native.ErrorBoundary showDialog>
       <PaperProvider>
         <Navigation />
       </PaperProvider>
-    </Sentry.ErrorBoundary>
+    </Sentry.Native.ErrorBoundary>
   );
 }

@@ -1,15 +1,17 @@
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import {Home} from './views/Home';
+import { LoginPage } from './views/LoginPage';
+import { MainPage } from './views/MainPage';
 
 const Stack = createNativeStackNavigator();
 
-export const Navigation = () => { 
+export const Navigation = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={Home} options={{title: 'Welcome!'}}/>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={LoginPage} options={{ title: 'Welcome!' }} />
+        <Stack.Screen name="Main" component={MainPage} options={{ headerShown: false, }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
