@@ -43,36 +43,51 @@ def test(name):
     target = client.sample_mflix.comments.find_one({'name': name})
     return target['text']
 
-
+# GET carries request parameter appended in URL string while POST carries request parameter in message body
 # Update Calendar
-@app.route('/api/updateCalendar/<userid>', methods=['POST'])
-def createOccasion(userid, date, occasion):
-    target = client.db.Calendar.find_one({'user': userid})
-    if target:
-        days = target['days']
-        # Find the days that have the same date
-        for day in days:
-            if day['date'] == date:
-                new_occasion = {
-                    'user': ObjectId(userid),
-                    'name': occasion,
-                    'date': date
-                }
-                day['occasions'].append(new_occasion)
-        client.db.Calendar.update_one(target, {'$set': {'days': days}})
+# @app.route('/api/updateCalendar/<userid>', methods=['POST'])
+# def createOccasion(userid, date, occasion):
+#     target = client.db.Calendar.find_one({'user': userid})
+#     if target:
+#         days = target['days']
+#         # Find the days that have the same date
+#         for day in days:
+#             if day['date'] == date:
+#                 new_occasion = {
+#                     'user': ObjectId(userid),
+#                     'name': occasion,
+#                     'date': date
+#                 }
+#                 day['occasions'].append(new_occasion)
+#         client.db.Calendar.update_one(target, {'$set': {'days': days}})
 
-@app.route('/api/getOccationByDate/<userid>', methods=['Get'])
-def getOccasionByDate(userid, date):
-    target = client.db.Outfit.find_one({'user': userid})
+@app.route('/api/getOccationByDate', methods=['Get'])
+def getOccasionByDate():
+    body = request.get_json()
+    userid = body['userid']
+    date = body['date']
+    target = client.db.calendar.find_one({'user': userid})
     if target:
         days = target['days']
         # Find the days that have the same date
         for day in days:
-            if day['date'] == date:
+            print(day)
+            date_db = client.db.days.find_one({'_id': ObjectId(day)})
+            if date_db:
+                if date_db['date'] == date:
+                    occ_lst = []
+                    for occasion in date_db['occasions']:
+                        occasion_example = client.db.occasions.find_one({'_id': ObjectId(occasion)})
+                        occ_lst.append(occasion_example['name'])
+
+                    return {
+                        'status': 'success',
+                        'response': occ_lst
+                           }, 200
                 return {
-                    'status': 'success',
-                    'response': days
-                       }, 200
+                           'status': 'occasions are not found',
+                       }, 404
+
         return {
                 'status': 'date is not found',
                }, 404
@@ -81,92 +96,92 @@ def getOccasionByDate(userid, date):
            }, 500
 
 
-@app.route('/api/updateOutfit/<userid>', methods=['POST'])
-def createOutfit(userid):
-    target = client.db.Outfit.find_one({'owner': userid})
-    if target:
-        outfits = target['outfits']
-        # Find the days that have the same date
-        new_outfit = {
-            'creator': ObjectId(userid),
-            'created_time': datetime.now(),
-        }
-        outfits.append(new_outfit)
-        client.db.Outfit.update_one(target, {'$set': {'outfits': outfits}})
+# @app.route('/api/updateOutfit/<userid>', methods=['POST'])
+# def createOutfit(userid):
+#     target = client.db.Outfit.find_one({'owner': userid})
+#     if target:
+#         outfits = target['outfits']
+#         # Find the days that have the same date
+#         new_outfit = {
+#             'creator': ObjectId(userid),
+#             'created_time': datetime.now(),
+#         }
+#         outfits.append(new_outfit)
+#         client.db.Outfit.update_one(target, {'$set': {'outfits': outfits}})
 
-@app.route('/api/getOutfitsByOccation/<userid>', methods=['Get'])
-def getOccasionByDate(userid, occation):
-    target = client.db.OutfitCollection.find_one({'user': userid})
-    if target:
-        outfits = target['outfits']
-        # Find the days that have the same date
-        result = []
-        for outfit in outfits:
-            if outfit['occation'] == occation:
-                result.append(outfit)
-        return {
-                'status': 'success',
-                'response': result
-               }, 200
-    return {
-               'status': 'user not found',
-           }, 500
+# @app.route('/api/getOutfitsByOccation/<userid>', methods=['Get'])
+# def getOccasionByDate(userid, occation):
+#     target = client.db.OutfitCollection.find_one({'user': userid})
+#     if target:
+#         outfits = target['outfits']
+#         # Find the days that have the same date
+#         result = []
+#         for outfit in outfits:
+#             if outfit['occation'] == occation:
+#                 result.append(outfit)
+#         return {
+#                 'status': 'success',
+#                 'response': result
+#                }, 200
+#     return {
+#                'status': 'user not found',
+#            }, 500
 
-@app.route('/api/signUp', methods=['POST'])
-def signUp(email, password, name):
-    target = client.db.User.find_one({'email': email})
-    if target:
-        return {
-                   'status': 'email already exists',
-               }, 400
-    newUser = {'email': email, 'password': password, 'name': name}
-    client.db.User.insert_one(newUser)
+# @app.route('/api/signUp', methods=['POST'])
+# def signUp(email, password, name):
+#     target = client.db.User.find_one({'email': email})
+#     if target:
+#         return {
+#                    'status': 'email already exists',
+#                }, 400
+#     newUser = {'email': email, 'password': password, 'name': name}
+#     client.db.User.insert_one(newUser)
 
-@app.route('/api/login', methods=['GET'])
-def logIn(email, password):
-    target = client.db.User.find_one({'email': email})
-    if not target:
-        return {
-                   'status': 'user with provided email does not exist',
-               }, 400
-    if target['password'] == password:
-        return {
-                'response': target,
-                'status': 'success',
-               }, 200
-    else:
-        return {
-                   'status': 'password is incorrect',
-               }, 400
+# @app.route('/api/login', methods=['GET'])
+# def logIn(email, password):
+#     target = client.db.User.find_one({'email': email})
+#     if not target:
+#         return {
+#                    'status': 'user with provided email does not exist',
+#                }, 400
+#     if target['password'] == password:
+#         return {
+#                 'response': target,
+#                 'status': 'success',
+#                }, 200
+#     else:
+#         return {
+#                    'status': 'password is incorrect',
+#                }, 400
 
-@app.route('/api/updateWardrobe/<userid>', methods=['POST'])
-def createItem(userid):
-    target = client.db.Wardrobe.find_one({'user': userid})
-    if target:
-        items = target['items']
-        newItem = {
-            'creator': ObjectId(userid),
-            'created_time': datetime.now(),
-        }
-        items.append(newItem)
-        client.db.Outfit.update_one(target, {'$set': {'items': newItem}})
+# @app.route('/api/updateWardrobe/<userid>', methods=['POST'])
+# def createItem(userid):
+#     target = client.db.Wardrobe.find_one({'user': userid})
+#     if target:
+#         items = target['items']
+#         newItem = {
+#             'creator': ObjectId(userid),
+#             'created_time': datetime.now(),
+#         }
+#         items.append(newItem)
+#         client.db.Outfit.update_one(target, {'$set': {'items': newItem}})
 
-@app.route('/api/getItemByType/<userid>', methods=['GET'])
-def getItemByType(userid, type):
-    target = client.db.Wardrobe.find_one({'user': userid})
-    if target:
-        items = target['items']
-        result = []
-        for item in items:
-            if item['type'] == type:
-                result.append(item)
-        return {
-                   'status': 'success',
-                   'response': result
-               }, 200
-    return {
-               'status': 'user not found',
-           }, 500
+# @app.route('/api/getItemByType/<userid>', methods=['GET'])
+# def getItemByType(userid, type):
+#     target = client.db.Wardrobe.find_one({'user': userid})
+#     if target:
+#         items = target['items']
+#         result = []
+#         for item in items:
+#             if item['type'] == type:
+#                 result.append(item)
+#         return {
+#                    'status': 'success',
+#                    'response': result
+#                }, 200
+#     return {
+#                'status': 'user not found',
+#            }, 500
 
 
 
