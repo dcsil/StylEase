@@ -71,20 +71,22 @@ def getOccasionByDate():
         days = target['days']
         # Find the days that have the same date
         for day in days:
+            print(day)
             date_db = client.db.days.find_one({'_id': ObjectId(day)})
-            if date_db['date'] == date:
-                occ_lst = []
-                for occasion in date_db['occasions']:
-                    occasion_example = client.db.occasions.find_one({'_id': ObjectId(occasion)})
-                    occ_lst.append(occasion_example['name'])
+            if date_db:
+                if date_db['date'] == date:
+                    occ_lst = []
+                    for occasion in date_db['occasions']:
+                        occasion_example = client.db.occasions.find_one({'_id': ObjectId(occasion)})
+                        occ_lst.append(occasion_example['name'])
 
+                    return {
+                        'status': 'success',
+                        'response': occ_lst
+                           }, 200
                 return {
-                    'status': 'success',
-                    'response': occ_lst
-                       }, 200
-            return {
-                       'status': 'occasions are not found',
-                   }, 404
+                           'status': 'occasions are not found',
+                       }, 404
 
         return {
                 'status': 'date is not found',
