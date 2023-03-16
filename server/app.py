@@ -8,6 +8,7 @@ from flask_pymongo import PyMongo
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from dotenv import load_dotenv
+from server.AI.detection import detect
 
 import os
 load_dotenv()
@@ -94,6 +95,25 @@ def getOccasionByDate():
     return {
                'status': 'user not found',
            }, 500
+
+@app.route('/api/ScanNewItem', methods=['Get'])
+def detect_item():
+    body = request.get_data()
+    # userid = body['userid']
+    # img = body['img']
+    img = body
+    # img = bytes(img, 'utf-8')
+    # Detect Item
+    item_name = detect(img)
+    if item_name == "Nothing detected":
+        return {
+            'status': 'No Item Found',
+        }, 500
+    else:
+        return {
+            'status': 'success',
+            'item': item_name
+        }, 200
 
 
 # @app.route('/api/updateOutfit/<userid>', methods=['POST'])
