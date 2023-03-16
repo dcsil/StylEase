@@ -22,10 +22,13 @@ const UserSchema = new mongoose.Schema({
     outfits: {
         type: [mongoose.Schema.Types.ObjectId],
     },
+    outfits_collections: {
+        type: [mongoose.Schema.Types.ObjectId],
+    },
     friends: {
         type: [mongoose.Schema.Types.ObjectId],
     },
-    subscription: {
+    following: {
         type: [mongoose.Schema.Types.ObjectId],
     },
     preference_tags: {

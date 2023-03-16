@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const Home = ({ navigation }) => {
+export const LoginPage = ({ navigation }) => {
   const [content, setContent] = useState('')
   useEffect(() => {
     getName("Taylor Scott").then((result) => {
@@ -22,23 +22,23 @@ export const Home = ({ navigation }) => {
     });
   }, [])
 
-  alertButtonAction = () => { 
-    Alert.alert("Hello", "test", [
+  const alertButtonAction = () => { 
+    Alert.alert("Hello", "test login", [
       {
         text: "Cancel",
         onPress: () => console.log("Cancel Pressed"),
         style: "cancel"
       },
-      { text: "OK", onPress: () => console.log("OK Pressed") }
+      { text: "Log Me In", onPress: () => navigation.navigate('Main') }
     ]);
   }
 
   return (
     <View style={styles.container}>
       <Text>StylEase by No Brainer Team!!!</Text>
-      <Text>{`Content from server: ${content}`}</Text>
+      {/* <Text>{`Content from server: ${content}`}</Text> */}
       <Button icon="cursor-pointer" mode="contained" onPress={alertButtonAction}>
-        Press me
+        Login
       </Button>
       <StatusBar style="auto" />
     </View>

@@ -51,8 +51,12 @@ const ItemSchema = new mongoose.Schema({
     size: {
         type: String,
     },
-
-
+    owned: {
+        type: Boolean,
+    },
+    market_link: {
+        type: String,
+    }
 });
 
 module.exports = {
