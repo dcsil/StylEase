@@ -176,6 +176,36 @@ def getItemimg(itemid):
     return send_file(img, mimetype='image/jpeg')
 
 
+@app.route('/api/GetWardrobeItems/<userid>', methods=['GET'])
+def getWardrobeItems(userid):
+    target = find_by_id(client, 'users', userid)
+    if isinstance(target, tuple):
+        return target
+    if target['wardrobe']:
+        wardrobe_id = target['wardrobe']
+        wardrobe = find_by_id(client, 'wardrobes', wardrobe_id)
+        if isinstance(wardrobe, tuple):
+            return wardrobe
+        items = wardrobe['items']
+        items_lst = []
+        for item in items:
+            item = find_by_id(client, 'items', item)
+            if isinstance(item, tuple):
+                return item
+            item.pop('image')
+            item['_id'] = str(item['_id'])
+            items_lst.append(item)
+        wardrobe['items'] = items_lst
+        return {
+            'status': 'success',
+            'wardrobe': wardrobe
+        }, 200
+    else:
+        return {
+            'status': 'user has no wardrobe',
+        }, 404
+
+
 # Present formated outfits to the user
 @app.route('/api/GetOutfit', methods=['POST'])
 def getOutfit(userid):
