@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 from server.AI.detection import detect
 from server.tool_box.finder import *
 import os
+import base64
+import io
 load_dotenv()
 sentry_sdk.init(
     dsn="https://71ed77cdaeff44e7b814cd90fce00f97@o358880.ingest.sentry.io/4504487922565120",
@@ -60,6 +62,9 @@ def createOccasion():
     # Find the day of the user
     target = client.db.calendar.find_one({'user': userid})
     date_db = find_day_by_date(client, target, date)
+    # Check if is tuple
+    if isinstance(date_db, tuple):
+        return date_db
     data_db_id = date_db['_id']
     # Add the occasion to the day
     current_occasions = date_db['occasions']
@@ -103,6 +108,7 @@ def getOccasionByDate():
         }, 404
 
 
+# Clothing methods
 @app.route('/api/ScanNewItem', methods=['POST'])
 def detect_item():
     body = request.get_data()
@@ -123,9 +129,60 @@ def detect_item():
         }, 200
 
 
-@app.route('/api/GetOutfit/<userid>', methods=['GET'])
+@app.route('/api/AddNewItem', methods=['POST'])
+def addNewItem():
+    body = request.get_json()
+    userid = body['userid']
+    item = body['item']
+    # Add new item to db.items
+    item_id = client.db.items.insert_one(item).inserted_id
+    # Add the item to the user's WARDROBE
+    target = find_by_id(client, 'users', userid)
+    if isinstance(target, tuple):
+        return target
+    if target['wardrobe']:
+        wardrobe_id = target['wardrobe']
+        wardrobe = find_by_id(client, 'wardrobes', wardrobe_id)
+        if isinstance(wardrobe, tuple):
+            return wardrobe
+        current_items = wardrobe['items']
+        current_items.append(item_id)
+        try:
+            client.db.wardrobes.update_one({'_id': ObjectId(wardrobe_id)}, {'$set': {'items': current_items}})
+        except Exception as e:
+            return {
+                'status': 'fail to update',
+                'error': str(e)
+            }, 400
+        return {
+            'status': 'success'
+        }, 200
+    else:
+        return {
+            'status': 'user has no wardrobe',
+        }, 404
+
+
+@app.route('/api/GetItemImage/<itemid>', methods=['GET'])
+def getItemimg(itemid):
+    item = find_by_id(client, 'items', itemid)
+    if isinstance(item, tuple):
+        return item
+    # Image is in base64 format
+    img = item['img']
+    # Use io.BytesIO to convert the base64 string to bytes
+    img = io.BytesIO(base64.b64decode(img))
+    # Send the image to the user
+    return send_file(img, mimetype='image/jpeg')
+
+
+# Present formated outfits to the user
+@app.route('/api/GetOutfit', methods=['POST'])
 def getOutfit(userid):
-    target = client.db.user.find_one({'user': ObjectId(userid)})
+    body = request.get_json()
+    userid = body['userid']
+    outfit_id = body['outfit_id']
+    target = client.db.users.find_one({'user': ObjectId(userid)})
     if target:
         if target['outfits']:
             outfits = target['outfits']
@@ -141,98 +198,6 @@ def getOutfit(userid):
         return {
             'status': 'user not found',
         }, 404
-
-
-
-
-
-
-# @app.route('/api/updateOutfit/<userid>', methods=['POST'])
-# def createOutfit(userid):
-#     target = client.db.Outfit.find_one({'owner': userid})
-#     if target:
-#         outfits = target['outfits']
-#         # Find the days that have the same date
-#         new_outfit = {
-#             'creator': ObjectId(userid),
-#             'created_time': datetime.now(),
-#         }
-#         outfits.append(new_outfit)
-#         client.db.Outfit.update_one(target, {'$set': {'outfits': outfits}})
-
-# @app.route('/api/getOutfitsByOccation/<userid>', methods=['Get'])
-# def getOccasionByDate(userid, occation):
-#     target = client.db.OutfitCollection.find_one({'user': userid})
-#     if target:
-#         outfits = target['outfits']
-#         # Find the days that have the same date
-#         result = []
-#         for outfit in outfits:
-#             if outfit['occation'] == occation:
-#                 result.append(outfit)
-#         return {
-#                 'status': 'success',
-#                 'response': result
-#                }, 200
-#     return {
-#                'status': 'user not found',
-#            }, 500
-
-# @app.route('/api/signUp', methods=['POST'])
-# def signUp(email, password, name):
-#     target = client.db.User.find_one({'email': email})
-#     if target:
-#         return {
-#                    'status': 'email already exists',
-#                }, 400
-#     newUser = {'email': email, 'password': password, 'name': name}
-#     client.db.User.insert_one(newUser)
-
-# @app.route('/api/login', methods=['GET'])
-# def logIn(email, password):
-#     target = client.db.User.find_one({'email': email})
-#     if not target:
-#         return {
-#                    'status': 'user with provided email does not exist',
-#                }, 400
-#     if target['password'] == password:
-#         return {
-#                 'response': target,
-#                 'status': 'success',
-#                }, 200
-#     else:
-#         return {
-#                    'status': 'password is incorrect',
-#                }, 400
-
-# @app.route('/api/updateWardrobe/<userid>', methods=['POST'])
-# def createItem(userid):
-#     target = client.db.Wardrobe.find_one({'user': userid})
-#     if target:
-#         items = target['items']
-#         newItem = {
-#             'creator': ObjectId(userid),
-#             'created_time': datetime.now(),
-#         }
-#         items.append(newItem)
-#         client.db.Outfit.update_one(target, {'$set': {'items': newItem}})
-
-# @app.route('/api/getItemByType/<userid>', methods=['GET'])
-# def getItemByType(userid, type):
-#     target = client.db.Wardrobe.find_one({'user': userid})
-#     if target:
-#         items = target['items']
-#         result = []
-#         for item in items:
-#             if item['type'] == type:
-#                 result.append(item)
-#         return {
-#                    'status': 'success',
-#                    'response': result
-#                }, 200
-#     return {
-#                'status': 'user not found',
-#            }, 500
 
 
 
