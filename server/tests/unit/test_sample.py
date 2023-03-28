@@ -15,7 +15,7 @@ def test_test_endpoint():
     with app.test_client() as client:
         response = client.get('/api/test/Ellaria Sand')
         assert response.status_code == 200
-        assert response.data.decode('utf-8') == 'Voluptatum harum nobis recusandae exercitationem modi deserunt voluptates. Deleniti velit perferendis vitae quas excepturi quos esse deserunt.'
+        assert response.data.decode('utf-8') == 'Quidem nesciunt quam atque officia vel laboriosam. Ipsam vel placeat dignissimos. Quo pariatur dolore deleniti impedit.'
 
 # Test Calendar methods
 # Test the /api/createOccasion endpoint
