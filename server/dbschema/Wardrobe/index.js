@@ -24,6 +24,9 @@ const ItemSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
+    image:{
+        type: String,
+    },
     created_time: {
         type: Date,
     },
