@@ -9,7 +9,7 @@ import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from dotenv import load_dotenv
 from server.AI.detection import detect
-
+from server.tool_box.finder import *
 import os
 load_dotenv()
 sentry_sdk.init(
@@ -39,64 +39,67 @@ app.config['MONGO_URI'] = os.environ.get("MONGODB_URL")
 client = flask_pymongo.MongoClient(os.environ.get("MONGODB_URL"))
 # mongo = PyMongo(app)
 
-@app.route('/api/test/<name>', methods=['POST'])
+@app.route('/api/test/<name>', methods=['GET'])
 def test(name):
     target = client.sample_mflix.comments.find_one({'name': name})
     return target['text']
 
 # GET carries request parameter appended in URL string while POST carries request parameter in message body
-# Update Calendar
-# @app.route('/api/updateCalendar/<userid>', methods=['POST'])
-# def createOccasion(userid, date, occasion):
-#     target = client.db.Calendar.find_one({'user': userid})
-#     if target:
-#         days = target['days']
-#         # Find the days that have the same date
-#         for day in days:
-#             if day['date'] == date:
-#                 new_occasion = {
-#                     'user': ObjectId(userid),
-#                     'name': occasion,
-#                     'date': date
-#                 }
-#                 day['occasions'].append(new_occasion)
-#         client.db.Calendar.update_one(target, {'$set': {'days': days}})
 
-@app.route('/api/getOccationByDate', methods=['Get'])
+# Calendar Methods
+# Updating methods
+@app.route('/api/createOccasion', methods=['POST'])
+def createOccasion():
+    body = request.get_json()
+    userid = body['userid']
+    date = body['date']
+    # occasion in the format if {'name': 'Birthday Party', 'date': '2021-03-15', 'planned_outfits': [], 'place': 'Home'}
+    occasion = body['occasion']
+    # Insert the occasion to db.occasions
+    occasion_id = client.db.occasions.insert_one(occasion).inserted_id
+    # Find the day of the user
+    target = client.db.calendar.find_one({'user': userid})
+    date_db = find_day_by_date(client, target, date)
+    # Add the occasion to the day
+    current_occasions = date_db['occasions']
+    current_occasions.append(occasion_id)
+    # Update the day
+    try:
+        client.db.days.update_one(date_db, {'$set': {'occasions': current_occasions}})
+    except Exception as e:
+        return {
+            'status': 'fail to update',
+            'error': str(e)
+        }, 400
+    return {
+        'status': 'success',
+        'occasion_name': occasion['name']
+    }, 200
+
+
+@app.route('/api/getOccationByDate', methods=['POST'])
 def getOccasionByDate():
     body = request.get_json()
     userid = body['userid']
     date = body['date']
     target = client.db.calendar.find_one({'user': userid})
-    if target:
-        days = target['days']
-        # Find the days that have the same date
-        for day in days:
-            print(day)
-            date_db = client.db.days.find_one({'_id': ObjectId(day)})
-            if date_db:
-                if date_db['date'] == date:
-                    occ_lst = []
-                    for occasion in date_db['occasions']:
-                        occasion_example = client.db.occasions.find_one({'_id': ObjectId(occasion)})
-                        occ_lst.append(occasion_example['name'])
-
-                    return {
-                        'status': 'success',
-                        'response': occ_lst
-                           }, 200
-                return {
-                           'status': 'occasions are not found',
-                       }, 404
-
+    date_db = find_day_by_date(client, target, date)
+    occ_lst = []
+    for occasion in date_db['occasions']:
+        occasion_example = client.db.occasions.find_one({'_id': ObjectId(occasion)})
+        occ_lst.append(occasion_example['name'])
+    if occ_lst:
         return {
-                'status': 'date is not found',
-               }, 404
-    return {
-               'status': 'user not found',
-           }, 500
+            'status': 'success',
+            'response': occ_lst
+               }, 200
+    else:
+        return {
+            'status': 'occasions are not found',
+        }, 404
 
-@app.route('/api/ScanNewItem', methods=['Get'])
+
+@app.route('/api/ScanNewItem', methods=['POST'])
 def detect_item():
     body = request.get_data()
     # userid = body['userid']
@@ -108,7 +111,7 @@ def detect_item():
     if item_name == "Nothing detected":
         return {
             'status': 'No Item Found',
-        }, 500
+        }, 400
     else:
         return {
             'status': 'success',
