@@ -24,7 +24,7 @@ def test_create_occasion_endpoint():
         response = client.post('/api/createOccasion', json={
             'userid': '61ed3b23749b5426fbbdd6ad',
             'date': '2023-03-15',
-            'occasion': {'name': 'Test Occasion', 'date': '2023-03-15', 'planned_outfits': [], 'place': 'Home'}
+            'occasion': {'user': '61ed3b23749b5426fbbdd6ad', 'name': 'Test Occasion', 'date': '2023-03-15', 'planned_outfits': [], 'place': 'Home'}
         })
         assert response.status_code == 200
         assert response.data.decode('utf-8') == '{"occasion_name":"Test Occasion","status":"success"}\n'
@@ -33,7 +33,7 @@ def test_create_occasion_endpoint():
 def test_get_occation_by_date_endpoint():
     with app.test_client() as client:
         response = client.post('/api/getOccationByDate', json={
-            'userid': '61ed3b23749b5426fbbdd6ad',
+            'userid': '64231fcc038602a02a81cd64',
             'date': '2023-03-15'
         })
         assert response.status_code == 200

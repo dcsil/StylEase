@@ -60,12 +60,16 @@ def createOccasion():
     # Find the day of the user
     target = client.db.calendar.find_one({'user': userid})
     date_db = find_day_by_date(client, target, date)
+    data_db_id = date_db['_id']
     # Add the occasion to the day
     current_occasions = date_db['occasions']
+    # Convert the occasion_id to string
+    occasion_id = str(occasion_id)
     current_occasions.append(occasion_id)
     # Update the day
     try:
-        client.db.days.update_one(date_db, {'$set': {'occasions': current_occasions}})
+        # client.db.days.update_one(date_db, {'$set': {'occasions': current_occasions}})
+        client.db.days.update_one({'_id': ObjectId(data_db_id)}, {'$set': {'occasions': current_occasions}})
     except Exception as e:
         return {
             'status': 'fail to update',
@@ -117,6 +121,30 @@ def detect_item():
             'status': 'success',
             'item': item_name
         }, 200
+
+
+@app.route('/api/GetOutfit/<userid>', methods=['GET'])
+def getOutfit(userid):
+    target = client.db.user.find_one({'user': ObjectId(userid)})
+    if target:
+        if target['outfits']:
+            outfits = target['outfits']
+            return {
+                'status': 'success',
+                'outfits': outfits
+            }, 200
+        else:
+            return {
+                'status': 'no outfits found',
+            }, 404
+    else:
+        return {
+            'status': 'user not found',
+        }, 404
+
+
+
+
 
 
 # @app.route('/api/updateOutfit/<userid>', methods=['POST'])
