@@ -181,8 +181,8 @@ def getItemimg(itemid):
     if isinstance(item, tuple):
         return item
     # Image is in base64 format
-    img = item['img']
-    # Use io.BytesIO to convert the base64 string to bytes
+    img = item['image']
+    # Decode the base64 string to binary and Use io.BytesIO to convert the binary to bytes
     img = io.BytesIO(base64.b64decode(img))
     # Send the image to the user
     return send_file(img, mimetype='image/jpeg')
