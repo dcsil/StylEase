@@ -43,9 +43,14 @@ def test_get_occation_by_date_endpoint():
 def test_scan_new_item_endpoint():
     print(os.path)
     with open("tests/unit/test.png", "rb") as img_file:
-        my_string = base64.b64encode(img_file.read())
-        # my_string = str(my_string)
+        my_string = base64.b64encode(img_file.read()).decode('utf-8')
+        my_string = 'data:image/png;base64,{}'.format(my_string)
+
+    image = {
+        'image': my_string
+    }
     with app.test_client() as client:
-        response = client.post('/api/ScanNewItem', data=my_string)
+        response = client.post('/api/ScanNewItem', json=image)
+        print(response.data.decode('utf-8'))
         assert response.status_code == 200
         assert response.data.decode('utf-8') == '{"item":"Shirt","status":"success"}\n'

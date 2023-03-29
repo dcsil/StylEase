@@ -123,10 +123,10 @@ def getOccasionByDate():
 # Clothing methods
 @app.route('/api/ScanNewItem', methods=['POST'])
 def detect_item():
-    body = request.get_data()
+    body = request.get_json()
     # userid = body['userid']
     # img = body['img']
-    img = body
+    img = body['image']
     # img = bytes(img, 'utf-8')
     # Detect Item
     item_name = detect(img)
@@ -182,10 +182,18 @@ def getItemimg(itemid):
         return item
     # Image is in base64 format
     img = item['image']
+    img_string = img.split(',')[1]
+
     # Decode the base64 string to binary and Use io.BytesIO to convert the binary to bytes
-    img = io.BytesIO(base64.b64decode(img))
+    img = io.BytesIO(base64.b64decode(img_string))
     # Send the image to the user
-    return send_file(img, mimetype='image/jpeg')
+    response = make_response(img)
+    response.headers.set('Content-Type', 'image/jpeg')
+    # response.headers.set('Content-Length', len(img_string))
+
+    return response, 200
+
+    # return send_file(img, mimetype='image/jpeg')
 
 
 @app.route('/api/GetWardrobeItems/<userid>', methods=['GET'])
