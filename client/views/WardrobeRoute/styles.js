@@ -15,8 +15,8 @@ export default StyleSheet.create({
     // borderStyle: 'solid',
     // borderWidth: 2,
     // borderColor: 'red',
-    marginHorizontal: 15,
-    marginTop: 5,
+    marginHorizontal: 8,
+    marginTop: 0,
   },
   searchBar: {
     marginVertical: 0,

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import { View, FlatList, TouchableOpacity, Image, Dimensions, StatusBar, Text } from 'react-native';
 import { Searchbar, FAB, List, Appbar, ActivityIndicator, MD2Colors } from 'react-native-paper';

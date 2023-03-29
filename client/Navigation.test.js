@@ -5,6 +5,6 @@ describe('Navigation', () => {
   it('renders correctly', () => {
     const { debug, getByText } = render(<Navigation />);
     debug();
-    expect(getByText("StylEase by No Brainer Team!!!")).toBeDefined();
+    expect(getByText("StylEase")).toBeDefined();
   });
 });
