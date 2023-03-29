@@ -160,6 +160,7 @@ def addNewItem():
         if isinstance(wardrobe, tuple):
             return wardrobe
         current_items = wardrobe['items']
+        item_id = str(item_id)
         current_items.append(item_id)
         try:
             client.db.wardrobes.update_one({'_id': ObjectId(wardrobe_id)}, {'$set': {'items': current_items}})
