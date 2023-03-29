@@ -47,6 +47,18 @@ def test(name):
     return target['text']
 
 # GET carries request parameter appended in URL string while POST carries request parameter in message body
+@app.route('/api/GetUser/<userid>', methods=['GET'])
+def get_user(userid):
+    target = find_by_id(client, 'users', userid)
+    if isinstance(target, tuple):
+        return target
+    target['_id'] = str(target['_id'])
+    return {
+               'status': 'success',
+               'user': target
+           }, 200
+
+
 
 # Calendar Methods
 # Updating methods
