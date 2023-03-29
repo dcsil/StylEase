@@ -146,6 +146,8 @@ def addNewItem():
     body = request.get_json()
     userid = body['userid']
     item = body['item']
+    # Add type of the item
+    item['type'] = detect(item['image'])
     # Add new item to db.items
     item_id = client.db.items.insert_one(item).inserted_id
     # Add the item to the user's WARDROBE
