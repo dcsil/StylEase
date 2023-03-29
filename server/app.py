@@ -147,7 +147,9 @@ def addNewItem():
     userid = body['userid']
     item = body['item']
     # Add type of the item
-    item['type'] = detect(item['image'])
+    # item['type'] = detect(item['image'])
+    item['type'] = "Shirts"
+
     # Add new item to db.items
     item_id = client.db.items.insert_one(item).inserted_id
     # Add the item to the user's WARDROBE
