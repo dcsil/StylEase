@@ -196,6 +196,8 @@ def getWardrobeItems(userid):
             item['_id'] = str(item['_id'])
             items_lst.append(item)
         wardrobe['items'] = items_lst
+        wardrobe['_id'] = str(wardrobe['_id'])
+
         return {
             'status': 'success',
             'wardrobe': wardrobe
@@ -204,6 +206,27 @@ def getWardrobeItems(userid):
         return {
             'status': 'user has no wardrobe',
         }, 404
+
+    # {
+    #     'user': '64237961038602a02a81cd92',
+    #      '_id': '6423797a038602a02a81cd94',
+    #     'created_time': '2023-03-15',
+    #     'items': [{'_id': '64237aef7bd7fa3c355dda94',
+    #                'brand': 'Alyx',
+    #                'color': 'White',
+    #                'created_time': '2023-03-15',
+    #                'name': 'White Trouser',
+    #                'type': 'Trouser',
+    #                'user': '64237961038602a02a81cd92'},
+    #               {'_id': '64237df5ad0c1edddca0f8dc',
+    #                'brand': 'Amiri',
+    #                'color': 'Blue',
+    #                'created_time':
+    #                    '2023-03-15',
+    #                'name': 'Blue Coat',
+    #                'type': 'Coat',
+    #                'user': '64237961038602a02a81cd92'}]
+    # }
 
 
 # Present formated outfits to the user
