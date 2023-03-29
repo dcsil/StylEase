@@ -8,8 +8,8 @@ from flask_pymongo import PyMongo
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from dotenv import load_dotenv
-from server.AI.detection import detect
-from server.tool_box.finder import *
+from AI.detection import detect
+from tool_box.finder import *
 import os
 import base64
 import io
