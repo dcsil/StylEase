@@ -4,29 +4,31 @@ import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const HomeRoute = () => (
-  <View>
-    <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{paddingBottom: 0}}>
-      <Appbar.Content title="Home"/>
-    </Appbar.Header>
-    <Text>Home</Text>
-  </View>
-);
-const WardrobeRoute = () => (
-  <View>
-    <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{paddingBottom: 0}}>
-      <Appbar.Content title="Wardrobe"/>
-    </Appbar.Header>
-    <Text>Wardrobe</Text>
-  </View>
-);
+import { useSelector } from 'react-redux';
+
+import { WardrobeRoute } from './WardrobeRoute';
+
+const HomeRoute = ({ }) => {
+  // const userData = useSelector(state => state.user.userInfo.data);
+  // const userId = useSelector(state => state.user.userInfo._id);
+  return (
+    <View>
+      <StatusBar style="auto" />
+      <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
+        <Appbar.Content title="Home" />
+      </Appbar.Header>
+      <Text>Home</Text>
+      {/* <Text>{JSON.stringify(userData)}</Text> */}
+    </View>
+  )
+}
+
+
 const OutfitRoute = () => (
   <View>
     <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{paddingBottom: 0}}>
-      <Appbar.Content title="Outfit"/>
+    <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
+      <Appbar.Content title="Outfit" />
     </Appbar.Header>
     <Text>Outfit</Text>
   </View>
@@ -34,8 +36,8 @@ const OutfitRoute = () => (
 const CalendarRoute = () => (
   <View>
     <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{paddingBottom: 0}}>
-      <Appbar.Content title="Calendar"/>
+    <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
+      <Appbar.Content title="Calendar" />
     </Appbar.Header>
     <Text>Calendar</Text>
   </View>
@@ -43,8 +45,8 @@ const CalendarRoute = () => (
 const ProfileRoute = ({ navigation }) => (
   <View>
     <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{paddingBottom: 0}}>
-      <Appbar.Content title="Profile"/>
+    <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
+      <Appbar.Content title="Profile" />
     </Appbar.Header>
     <Text>Profile</Text>
     <Button icon="cursor-pointer" mode="contained" onPress={() => navigation.navigate('Calendar')}>
@@ -59,6 +61,7 @@ const ProfileRoute = ({ navigation }) => (
 const Tab = createBottomTabNavigator();
 
 export const MainPage = ({ navigation }) => {
+
   return (
     <Tab.Navigator
       initialRouteName="Home"

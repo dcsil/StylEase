@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { LoginPage } from './views/LoginPage';
 import { MainPage } from './views/MainPage';
+import { WardrobeItemPage } from './views/WardrobeRoute/WardrobeItemPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -12,6 +13,9 @@ export const Navigation = () => {
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginPage} options={{ title: 'Welcome!' }} />
         <Stack.Screen name="Main" component={MainPage} options={{ headerShown: false, }} />
+        
+        <Stack.Screen name="Wardrobe-item" component={WardrobeItemPage} options={{ headerShown: false, }} />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
