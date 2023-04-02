@@ -5,12 +5,14 @@ from PIL import Image
 
 
 def detect(img):
+    # Hugging face model https://huggingface.co/abhishek/autotrain_fashion_mnist_vit_base
     object_detect = pipeline(task="image-classification", model="abhishek/autotrain_fashion_mnist_vit_base")
-    # # Split by comma
+    # # Remove the heading Split by comma
     img = img.split(',')[1]
-    # # Images are in base64 format, so we need to decode them into normal form
+    # # Images are in raw base64 format, so we need to decode them into normal form (bytes)
     img = base64.b64decode(img)
-    # # PIL's Image.open can accept a string (representing a filename) or a file-like object, and
+    # https://stackoverflow.com/questions/32908639/open-pil-image-from-byte-file
+    # # PIL's Image.open can only accept a string (representing a filename) or a file-like object, and
     # # an io.BytesIO can act as a file-like object:
     buf = io.BytesIO(img)
     # # Use PIL to open bytes as an image
