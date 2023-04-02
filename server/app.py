@@ -125,9 +125,8 @@ def getOccasionByDate():
 def detect_item():
     body = request.get_json()
     # userid = body['userid']
-    # img = body['img']
+    # In the format of "data:image/png;base64,iVBORw...."
     img = body['image']
-    # img = bytes(img, 'utf-8')
     # Detect Item
     item_name = detect(img)
     if item_name == "Nothing detected":
@@ -147,8 +146,8 @@ def addNewItem():
     userid = body['userid']
     item = body['item']
     # Add type of the item
-    # item['type'] = detect(item['image'])
-    item['type'] = "Shirts"
+    item['type'] = detect(item['image'])
+    # item['type'] = "Suit"
 
     # Add new item to db.items
     item_id = client.db.items.insert_one(item).inserted_id
@@ -212,14 +211,15 @@ def getWardrobeItems(userid):
         if isinstance(wardrobe, tuple):
             return wardrobe
         items = wardrobe['items']
-        items_lst = []
-        for item in items:
-            item = find_by_id(client, 'items', item)
-            if isinstance(item, tuple):
-                return item
-            item.pop('image')
-            item['_id'] = str(item['_id'])
-            items_lst.append(item)
+        # items_lst = []
+        # for item in items:
+        #     item = find_by_id(client, 'items', item)
+        #     if isinstance(item, tuple):
+        #         return item
+        #     item.pop('image')
+        #     item['_id'] = str(item['_id'])
+        #     items_lst.append(item)
+        items_lst = get_items(client, items)
         wardrobe['items'] = items_lst
         wardrobe['_id'] = str(wardrobe['_id'])
 
@@ -253,30 +253,69 @@ def getWardrobeItems(userid):
     #                'user': '64237961038602a02a81cd92'}]
     # }
 
+@app.route('/api/Getoutfitcollection/<userid>', methods=['GET'])
+def getOutfitCollection(userid):
+    target = find_by_id(client, 'users', userid)
+    if isinstance(target, tuple):
+        return target
+    if target['outfits_collections']:
+        outfits_collections_id_lst = target['outfits_collections']
+        outfits_collections_lst = []
+        for outfits_collection_id in outfits_collections_id_lst:
+            outfits_collection = find_by_id(client, 'outfitcollections', outfits_collection_id)
+            if isinstance(outfits_collection, tuple):
+                return outfits_collection
+            outfits_lst = []
+            for outfit in outfits_collection['outfits']:
+                outfit = find_by_id(client, 'outfits', outfit)
+                if isinstance(outfit, tuple):
+                    return outfit
+                outfit['_id'] = str(outfit['_id'])
+                items = outfit['items']
+                items_lst = get_items(client, items)
+                outfit['items'] = items_lst
+                outfits_lst.append(outfit)
+            outfits_collection['outfits'] = outfits_lst
+            outfits_collection['_id'] = str(target['_id'])
+            outfits_collections_lst.append(outfits_collection)
 
-# Present formated outfits to the user
-@app.route('/api/GetOutfit', methods=['POST'])
-def getOutfit(userid):
-    body = request.get_json()
-    userid = body['userid']
-    outfit_id = body['outfit_id']
-    target = client.db.users.find_one({'user': ObjectId(userid)})
-    if target:
-        if target['outfits']:
-            outfits = target['outfits']
-            return {
-                'status': 'success',
-                'outfits': outfits
-            }, 200
-        else:
-            return {
-                'status': 'no outfits found',
-            }, 404
+        return {
+            'status': 'success',
+            'outfits_collections': outfits_collections_lst
+        }, 200
     else:
         return {
-            'status': 'user not found',
+            'status': 'user has no outfit collection',
         }, 404
 
 
+# Present formated outfits to the user
+@app.route('/api/GetOutfit/<userid>/<outfitid>', methods=['GET'])
+def getOutfit(userid, outfitid):
+    target = find_by_id(client, 'users', userid)
+    if isinstance(target, tuple):
+        return target
+    if target['outfits']:
+        outfits_id_lst = target['outfits']
+        if outfitid in outfits_id_lst:
+            outfit = find_by_id(client, 'outfits', outfitid)
+            if isinstance(outfit, tuple):
+                return outfit
+            outfit['_id'] = str(outfit['_id'])
+            items = outfit['items']
+            items_lst = get_items(client, items)
+            outfit['items'] = items_lst
+            return {
+                'status': 'success',
+                'outfit': outfit
+            }, 200
+        else:
+            return {
+                'status': 'outfit not found',
+            }, 404
+    else:
+        return {
+            'status': 'user has no outfit',
+        }, 404
 
 
