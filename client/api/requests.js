@@ -4,6 +4,10 @@ export const getUserData = (uuid) => {
   return get(`/GetUser/${uuid}`);
 }
 
+export const getOutfitsData = (uuid) => {
+  return get(`/Getoutfitcollection/${uuid}`);
+}
+
 export const getWardrobeItems = (uuid) => { 
   return get(`/GetWardrobeItems/${uuid}`);
 };

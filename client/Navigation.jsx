@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoginPage } from './views/LoginPage';
 import { MainPage } from './views/MainPage';
 import { WardrobeItemPage } from './views/WardrobeRoute/WardrobeItemPage';
+import { OutfitEditPage } from './views/OutfitRoute/OutfitEditPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +17,7 @@ export const Navigation = () => {
         
         <Stack.Screen name="Wardrobe-item" component={WardrobeItemPage} options={{ headerShown: false, }} />
         
+        <Stack.Screen name="Outfit-new" component={OutfitEditPage} options={{ headerShown: false, }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

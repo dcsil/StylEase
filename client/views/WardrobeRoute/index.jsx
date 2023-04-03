@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchWardrobeItems } from '../../stores/UserStore';
 import { uploadWardrobeItem } from "../../api/requests";
 
-import { BASE_URL } from '@env';
+import { imageUriParser } from '../../utils/urlParser';
 
 
 export const WardrobeRoute = ({ navigation }) => {
@@ -75,7 +75,7 @@ export const WardrobeRoute = ({ navigation }) => {
       >
         <Image
           source={{
-            uri: `${BASE_URL}/api/GetItemImage/${item._id}`,
+            uri: imageUriParser(item._id),
           }}
           style={styles.image} />
       </TouchableOpacity>
@@ -103,7 +103,6 @@ export const WardrobeRoute = ({ navigation }) => {
           key={numColumns}
           style={styles.flatList}
           numColumns={numColumns}
-          contentContainerStyle={styles.flatListContainer}
           data={wardrobeItems}
           renderItem={renderItem}
           keyExtractor={(item) => item._id}
