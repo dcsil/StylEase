@@ -179,6 +179,30 @@ def addNewItem():
         }, 404
 
 
+@app.route('/api/AddNewOutfit', methods=['POST'])
+def addNewOutfit():
+    outfit = request.get_json()
+    # Add new outfit to db.outfits
+    outfit_id = client.db.outfits.insert_one(outfit).inserted_id
+    # Add the outfit to the user's WARDROBE
+    target = find_by_id(client, 'users', outfit['creator'])
+    if isinstance(target, tuple):
+        return target
+    outfits_lst = target['outfits']
+    outfit_id = str(outfit_id)
+    outfits_lst.append(outfit_id)
+    try:
+        client.db.users.update_one({'_id': ObjectId(outfit['creator'])}, {'$set': {'outfits': outfits_lst}})
+    except Exception as e:
+        return {
+            'status': 'fail to update',
+            'error': str(e)
+        }, 400
+    return {
+        'status': 'success'
+    }, 200
+
+
 @app.route('/api/GetItemImage/<itemid>', methods=['GET'])
 def getItemimg(itemid):
     item = find_by_id(client, 'items', itemid)
