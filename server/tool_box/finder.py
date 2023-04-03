@@ -30,3 +30,15 @@ def find_day_by_date(client, target, date):
     # return {
     #            'status': 'user not found',
     #        }, 500
+
+
+def get_items(client, items):
+    items_lst = []
+    for item in items:
+        item = find_by_id(client, 'items', item)
+        if isinstance(item, tuple):
+            return item
+        item.pop('image')
+        item['_id'] = str(item['_id'])
+        items_lst.append(item)
+    return items_lst
