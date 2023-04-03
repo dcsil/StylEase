@@ -11,10 +11,21 @@ import outfit3 from './outfit3.jpg';
 export const CalendarRoute = ({ navigation }) => {
     const renderItem = (item) => {
       console.log('render item', item);
+      
       return(
         <TouchableOpacity
         style={[styles.item]}
-        onPress={() => Alert.alert(item.name)}
+        onPress={() =>  Alert.alert(item.name, 'Temperature: 20-30 \nTime: 8:00 pm', [
+          {
+            text: 'Edit',
+            onPress: () => console.log('Ask me later pressed'),
+          },
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+        ])}
       >
         <Text style={styles.name}>{item.name}</Text>
         <Image style = {styles.stretch} source={item.path} />
