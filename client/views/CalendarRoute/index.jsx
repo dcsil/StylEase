@@ -1,29 +1,23 @@
 import React, {useState} from 'react';
 import {Agenda} from 'react-native-calendars';
-import { View, StatusBar, TouchableOpacity, StyleSheet, Text, Alert } from 'react-native';
+import { View, StatusBar, TouchableOpacity, StyleSheet, Text, Alert, Image } from 'react-native';
 import { Appbar } from 'react-native-paper';
+import outfit1 from './outfit1.jpg';
+import outfit2 from './outfit2.jpg';
+import outfit3 from './outfit3.jpg';
 
 
 
 export const CalendarRoute = ({ navigation }) => {
-    state = {
-      items: {
-        '2023-04-22': [{name: 'item 1 - any js object'}],
-        '2023-04-23': [{name: 'item 2 - any js object', height: 80}],
-        '2023-04-24': [],
-        '2023-04-25': [{name: 'item 3 - any js object'}, {name: 'any js object'}]
-      }
-    };
-    const [selected, setSelected] = useState('');
     const renderItem = (item) => {
       console.log('render item', item);
-
       return(
         <TouchableOpacity
-        style={[styles.item, { height: 80 }]}
+        style={[styles.item]}
         onPress={() => Alert.alert(item.name)}
       >
         <Text style={styles.name}>{item.name}</Text>
+        <Image style = {styles.stretch} source={item.path} />
       </TouchableOpacity>);
     }
 
@@ -42,25 +36,11 @@ export const CalendarRoute = ({ navigation }) => {
         <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
         <Appbar.Content title="Calendar" />
         </Appbar.Header>
-        {/* <Calendar
-          onDayPress={day => {
-            setSelected(day.dateString);
-            console.log(day);
-          }}
-          markedDates={{
-            [selected]: {selected: true, disableTouchEvent: true, selectedDotColor: 'orange'}
-          }}
-        /> */}
         <View style={{height: 600}}>
         <Agenda
-          // The list of items that have to be displayed in agenda. If you want to render item as empty date
-          // the value of date key has to be an empty array []. If there exists no value for date key it is
-          // considered that the date in question is not yet loaded
           items={{
-            '2023-03-22': [{name: 'item 1 - any js object'}],
-            '2023-04-02': [{name: 'item 2 - any js object', height: 80}],
-            '2023-04-03': [],
-            '2023-04-04': [{name: 'item 3 - any js object'}, {name: 'any js object'}]
+            '2023-04-03': [{name: 'Date outfit', path: outfit1}],
+            '2023-04-05': [{name: 'Ball Night', path: outfit2}, {name: 'Y2K', path: outfit3}]
           }}
           loadItemsForMonth={month => {
             console.log('trigger items loading');
@@ -68,7 +48,6 @@ export const CalendarRoute = ({ navigation }) => {
           onCalendarToggled={calendarOpened => {
             console.log(calendarOpened);
           }}
-          // Initially selected day
           selected={new Date().toJSON().slice(0, 10)}
           onDayPress={(day) => {
             console.log('day pressed');
@@ -77,18 +56,11 @@ export const CalendarRoute = ({ navigation }) => {
             console.log('day changed');
             
           }}
-          // Max amount of months allowed to scroll to the past. Default = 50
           pastScrollRange={50}
-          // Max amount of months allowed to scroll to the future. Default = 50
           futureScrollRange={50}
-          // Specify how each item should be rendered in agenda
           renderItem={(item, firstItemInDay) => {
             return renderItem(item);
           }}
-          // // Specify how each date should be rendered. day can be undefined if the item is not first in that day
-          // renderDay={(day, item) => {
-          //   return <View><Text>{day ? day.day: 'item'}</Text></View>;
-          // }}
           renderEmptyDate={() => {
             return renderEmptyDate();
           }}
@@ -106,19 +78,14 @@ export const CalendarRoute = ({ navigation }) => {
               </View>
             );
           }}
-          // Specify what should be rendered instead of ActivityIndicator
           renderEmptyData={() => {
             return <View />;
           }}
-          // Specify your item comparison function for increased performance
           rowHasChanged={(r1, r2) => {
             return r1.text !== r2.text;
           }}
-          // // Hide knob button. Default = false
           hideKnob={false}
-          // When `true` and `hideKnob` prop is `false`, the knob will always be visible and the user will be able to drag the knob up and close the calendar. Default = false
           showClosingKnob={true}
-          style={{}}
       />
       </View>
     </View>
@@ -133,11 +100,16 @@ const styles = StyleSheet.create({
     padding: 10,
     marginRight: 10,
     marginTop: 17,
-    height: 100
+    height: 300
   },
   emptyDate: {
     height: 15,
     flex: 1,
     paddingTop: 30
-  }
+  },
+  stretch: {
+    width: '100%',
+    height: '90%',
+    resizeMode: 'cover',
+  },
 });
