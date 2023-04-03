@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import {Agenda, calendarTheme} from 'react-native-calendars';
-import { View, StatusBar, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import {Agenda} from 'react-native-calendars';
+import { View, StatusBar, TouchableOpacity, StyleSheet, Text, Alert } from 'react-native';
 import { Appbar } from 'react-native-paper';
 
 
