@@ -1,5 +1,6 @@
 from datetime import datetime
-
+import pymongo
+import certifi
 from bson import ObjectId
 import flask_pymongo
 from flask import *
@@ -39,7 +40,8 @@ cors = CORS(app)
 # configuration
 app.config['MONGO_URI'] = os.environ.get("MONGODB_URL")
 # Connect to MongoDB, where client is the MongoClient object
-client = flask_pymongo.MongoClient(os.environ.get("MONGODB_URL"))
+# client = flask_pymongo.MongoClient(os.environ.get("MONGODB_URL"))
+client = pymongo.MongoClient(os.environ.get("MONGODB_URL"), tlsCAFile=certifi.where())
 # mongo = PyMongo(app)
 
 @app.route('/api/test/<name>', methods=['GET'])
