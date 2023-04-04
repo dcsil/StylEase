@@ -455,3 +455,21 @@ def getOutfit(userid, outfitid):
         }, 404
 
 # Create AI outfit
+@app.route('/api/CreateAIOutfit', methods=['POST'])
+def createAIOutfit():
+    data = request.get_json()
+    # Hard Code
+    # get item 64237ecfa77fdcf57203ff96
+    # Suggest items 642c9b687032063a2f2f1e78, 642c9a701f8bd8fef92cbf18,
+    # 642c9a27756f6d8ab3562456, 642c99a94146ee0f23e68bf6
+    ai_outfit = {'items': [
+        {'itemid': '64237ecfa77fdcf57203ff96', 'market': False},
+        {'itemid': '642c9b687032063a2f2f1e78', 'market': True},
+        {'itemid': '642c9a701f8bd8fef92cbf18', 'market': True},
+        {'itemid': '642c9a27756f6d8ab3562456', 'market': True},
+        {'itemid': '642c99a94146ee0f23e68bf6', 'market': True}
+    ]}
+    return {
+        'status': 'success',
+        'ai_outfit': ai_outfit
+    }, 200
