@@ -111,6 +111,7 @@ def get_user(userid):
     if isinstance(target, tuple):
         return target
     target['_id'] = str(target['_id'])
+    target.pop('password')
     return {
                'status': 'success',
                'user': target
@@ -208,37 +209,44 @@ def addNewItem():
 
     # Add new item to db.items
     item_id = client.db.items.insert_one(item).inserted_id
-    # Add the item to the user's WARDROBE
-    target = find_by_id(client, 'users', userid)
-    if isinstance(target, tuple):
-        return target
-    if target['wardrobe']:
-        wardrobe_id = target['wardrobe']
-        wardrobe = find_by_id(client, 'wardrobes', wardrobe_id)
-        if isinstance(wardrobe, tuple):
-            return wardrobe
-        current_items = wardrobe['items']
-        item_id = str(item_id)
-        current_items.append(item_id)
-        try:
-            client.db.wardrobes.update_one({'_id': ObjectId(wardrobe_id)}, {'$set': {'items': current_items}})
-        except Exception as e:
+    # Add the item to the user's WARDROBE if userid is given
+    if userid != '' and not item['market']:
+        target = find_by_id(client, 'users', userid)
+        if isinstance(target, tuple):
+            return target
+        if target['wardrobe']:
+            wardrobe_id = target['wardrobe']
+            wardrobe = find_by_id(client, 'wardrobes', wardrobe_id)
+            if isinstance(wardrobe, tuple):
+                return wardrobe
+            current_items = wardrobe['items']
+            item_id = str(item_id)
+            current_items.append(item_id)
+            try:
+                client.db.wardrobes.update_one({'_id': ObjectId(wardrobe_id)}, {'$set': {'items': current_items}})
+            except Exception as e:
+                return {
+                    'status': 'fail to update',
+                    'error': str(e)
+                }, 400
             return {
-                'status': 'fail to update',
-                'error': str(e)
-            }, 400
+                'status': 'success'
+            }, 200
+        else:
+            return {
+                'status': 'user has no wardrobe',
+            }, 404
+    else:
         return {
             'status': 'success'
         }, 200
-    else:
-        return {
-            'status': 'user has no wardrobe',
-        }, 404
 
 
 @app.route('/api/AddNewOutfit', methods=['POST'])
 def addNewOutfit():
-    outfit = request.get_json()
+    body = request.get_json()
+    outfit = body['outfit']
+    outfit_collection = body['outfit_collection']
     # Add new outfit to db.outfits
     outfit_id = client.db.outfits.insert_one(outfit).inserted_id
     # Add the outfit to the user's WARDROBE
@@ -255,6 +263,28 @@ def addNewOutfit():
             'status': 'fail to update',
             'error': str(e)
         }, 400
+    # Add the outfit to the user's outfit collection
+    if outfit_collection != '':
+        added = False
+        for collection in target["outfit_collections"]:
+            collection_target = find_by_id(client, 'outfitcollections', collection)
+            if isinstance(collection_target, tuple):
+                return collection_target
+            if collection_target['name'] == outfit_collection:
+                collection_target['outfits'].append(outfit_id)
+                try:
+                    client.db.outfitcollections.update_one({'_id': ObjectId(collection)}, {'$set': {'outfits': collection_target['outfits']}})
+                except Exception as e:
+                    return {
+                        'status': 'fail to update',
+                        'error': str(e)
+                    }, 400
+                added = True
+                break
+        if not added:
+            return {
+                'status': 'outfit collection not found',
+            }, 404
     return {
         'status': 'success'
     }, 200
@@ -400,3 +430,5 @@ def getOutfit(userid, outfitid):
         }, 404
 
 
+# Create collection
+# Create AI outfit
