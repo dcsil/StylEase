@@ -13,6 +13,7 @@ from tool_box.finder import *
 import os
 import base64
 import io
+from passlib.hash import sha256_crypt
 load_dotenv()
 sentry_sdk.init(
     dsn="https://71ed77cdaeff44e7b814cd90fce00f97@o358880.ingest.sentry.io/4504487922565120",
@@ -46,6 +47,61 @@ def test(name):
     target = client.sample_mflix.comments.find_one({'name': name})
     return target['text']
 
+# Login
+@app.route('/api/Login', methods=['POST'])
+def login():
+    body = request.get_json()
+    email = body['email']
+    password = body['password']
+    # Compare to the password that encrypted in the database
+    target = client.db.users.find_one({'email': email})
+    if isinstance(target, tuple):
+        return target
+    if sha256_crypt.verify(password, target['password']):
+        return {
+            'status': 'success',
+            'userid': str(target['_id'])
+        }, 200
+    else:
+        return {
+            'status': 'fail',
+            'error': 'Wrong password'
+        }, 400
+
+
+# Register
+@app.route('/api/Register', methods=['POST'])
+def register():
+    body = request.get_json()
+    name = body['name']
+    email = body['email']
+    password = body['password']
+    # Check if the user already exists
+    target = client.db.users.find_one({'email': email})
+    if target:
+        return {
+            'status': 'fail',
+            'error': 'Email already exists'
+        }, 400
+
+    # Encrypt the password
+    password = sha256_crypt.encrypt(password)
+    # Insert the user to db.users
+    userid = client.db.users.insert_one({
+        'name': name,
+        'email': email,
+        'password': password,
+        'calendar': '',
+        'wardrobe': '',
+        'outfits': [],
+        'outfits_collections': []
+    }).inserted_id
+
+    return {
+        'status': 'success',
+        'userid': str(userid)
+    }, 200
+
 # GET carries request parameter appended in URL string while POST carries request parameter in message body
 @app.route('/api/GetUser/<userid>', methods=['GET'])
 def get_user(userid):
@@ -57,7 +113,6 @@ def get_user(userid):
                'status': 'success',
                'user': target
            }, 200
-
 
 
 # Calendar Methods
