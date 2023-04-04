@@ -96,7 +96,7 @@ def register():
         'calendar': '',
         'wardrobe': '',
         'outfits': [],
-        'outfits_collections': []
+        'outfit_collections': []
     }).inserted_id
 
     return {
@@ -290,6 +290,31 @@ def addNewOutfit():
     }, 200
 
 
+@app.route('/api/AddNewCollection', methods=['POST'])
+def addNewCollection():
+    body = request.get_json()
+    userid = body['userid']
+    collection = body['outfit_collection']
+    # Add new collection to db.outfitcollections
+    collection_id = client.db.outfitcollections.insert_one(collection).inserted_id
+    # Add the collection to the user's WARDROBE
+    target = find_by_id(client, 'users', userid)
+    if isinstance(target, tuple):
+        return target
+    collections_lst = target['outfit_collections']
+    collection_id = str(collection_id)
+    collections_lst.append(collection_id)
+    try:
+        client.db.users.update_one({'_id': ObjectId(userid)}, {'$set': {'outfit_collections': collections_lst}})
+    except Exception as e:
+        return {
+            'status': 'fail to update',
+            'error': str(e)
+        }, 400
+    return {
+        'status': 'success'
+    }, 200
+
 @app.route('/api/GetItemImage/<itemid>', methods=['GET'])
 def getItemimg(itemid):
     item = find_by_id(client, 'items', itemid)
@@ -369,10 +394,10 @@ def getOutfitCollection(userid):
     target = find_by_id(client, 'users', userid)
     if isinstance(target, tuple):
         return target
-    if target['outfits_collections']:
-        outfits_collections_id_lst = target['outfits_collections']
-        outfits_collections_lst = []
-        for outfits_collection_id in outfits_collections_id_lst:
+    if target['outfit_collections']:
+        outfit_collections_id_lst = target['outfit_collections']
+        outfit_collections_lst = []
+        for outfits_collection_id in outfit_collections_id_lst:
             outfits_collection = find_by_id(client, 'outfitcollections', outfits_collection_id)
             if isinstance(outfits_collection, tuple):
                 return outfits_collection
@@ -388,11 +413,11 @@ def getOutfitCollection(userid):
                 outfits_lst.append(outfit)
             outfits_collection['outfits'] = outfits_lst
             outfits_collection['_id'] = str(target['_id'])
-            outfits_collections_lst.append(outfits_collection)
+            outfit_collections_lst.append(outfits_collection)
 
         return {
             'status': 'success',
-            'outfits_collections': outfits_collections_lst
+            'outfit_collections': outfit_collections_lst
         }, 200
     else:
         return {
@@ -429,6 +454,4 @@ def getOutfit(userid, outfitid):
             'status': 'user has no outfit',
         }, 404
 
-
-# Create collection
 # Create AI outfit
