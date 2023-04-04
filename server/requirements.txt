@@ -34,6 +34,7 @@ MarkupSafe==2.1.2
 multidict==6.0.4
 multiprocess==0.70.14
 packaging==21.3
+passlib==1.7.4
 Pillow==9.4.0
 pluggy==1.0.0
 pyarrow==11.0.0
@@ -55,10 +56,10 @@ threadpoolctl==3.1.0
 tokenizers==0.13.2
 toml==0.10.2
 tomli==2.0.1
---find-links https://download.pytorch.org/whl/torch_stable.html
-torch==1.13.1+cpu
-transformers==4.26.1
+torch==1.13.1
+transformers==4.27.4
 typing_extensions==4.3.0
+tzdata==2023.3
 urllib3==1.26.11
 wcwidth==0.2.5
 Werkzeug==2.2.3
