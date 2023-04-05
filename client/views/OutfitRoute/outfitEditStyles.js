@@ -9,7 +9,7 @@ export default StyleSheet.create({
   },
   listSection: {
     flex: 1,
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   flatList: {
     flex: 1,

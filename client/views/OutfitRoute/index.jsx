@@ -1,20 +1,25 @@
-import { Appbar, Button, Card, FAB } from 'react-native-paper';
+import { Appbar, Button, Card, FAB, List, Modal, Portal } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useTheme } from 'react-native-paper';
 
 import styles from './styles';
-import { StatusBar, View } from 'react-native';
+import { FlatList, StatusBar, View, Text, TouchableOpacity, Image, Dimensions } from 'react-native';
 import React from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOutfitsData } from '../../stores/UserStore';
 import { imageUriParser } from '../../utils/urlParser';
 
+const IMAGE_WIDTH = 80;
+
 export const OutfitRoute = ({ navigation }) => {
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
   const outfits = React.useMemo(() =>
-    user.userInfo.data && user.userInfo.data.outfits_collections ? user.userInfo.data.outfits_collections : [], [user.userInfo.data]
+    user.userInfo.data?.outfits_collections ? user.userInfo.data.outfits_collections : [], [user.userInfo.data?.outfits_collections]
   );
+  const [numColumns, setNumColumns] = React.useState(5);
+  const [visible, setVisible] = React.useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -25,45 +30,88 @@ export const OutfitRoute = ({ navigation }) => {
   );
 
   const handleAddItem = React.useCallback(() => {
-    navigation.navigate('Outfit-new', {
-      outfit: {
-        _id: '1',
-        items: [],
-      },
-    })
+    setVisible(true);
+  }, [])
+
+  const handleModelButtonPress = React.useCallback((index) => {
+    setVisible(false);
+    switch (index) {
+      case 0:
+        navigation.navigate('Outfit-new-from_wardrobe_edit');
+        break;
+      case 1:
+        navigation.navigate('Outfit-new-ai_config');
+      default:
+        break;
+    }
+  }, [])
+
+  const onLayout = React.useCallback(() => {
+    const { width } = Dimensions.get('window');
+    const itemWidth = IMAGE_WIDTH
+    const numColumns = Math.floor(width / itemWidth)
+    setNumColumns(numColumns)
   }, [])
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={onLayout}>
       <StatusBar barStyle="auto" />
       <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
         <Appbar.Content title="Outfit" />
       </Appbar.Header>
 
-      <View>
+      <View style={{ flex: 1 }}>
         <List.Section
-        // style={styles.listSection}
+          style={{ flex: 1 }}
         >
           <FlatList
             // key={`${displayedItems.length}items`}
             // style={styles.flatList}
             numColumns={1}
             directionalLockEnabled={true}
-            data={outfits[0].outfits}
-            renderItem={({ outfit }) => (
+            data={(outfits && outfits.length === 0) ? [] : outfits[0].outfits}
+            renderItem={({ item }) => (
               <Card
-                style={styles.card}
+                contentStyle={{ marginTop: 5 }}
+                style={{ marginBottom: 10 }}
+                mode='outlined'
               >
-                <Card.Cover
-                  source={outfit.items.length === 0 ? { uri: 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Color-blue.JPG?20100811194351' } : outfit.items.map(item => ({ uri: imageUriParser(item._id) })).slice(0, 3)}
+                <View style={{ marginHorizontal: 5 }}>
+                  <FlatList
+                    key={`OutfitRoute-${numColumns}`}
+                    style={{ flex: 1 }}
+                    numColumns={numColumns}
+                    directionalLockEnabled={true}
+                    data={item.items}
+                    renderItem={({ item }) => (
+                      <View>
+                        <Image
+                          source={{
+                            uri: imageUriParser(item._id),
+                          }}
+                          style={{
+                            width: IMAGE_WIDTH,
+                            height: IMAGE_WIDTH,
+                            resizeMode: 'stretch',
+                            margin: 1,
+                          }} />
+                      </View>
+                    )}
+                    keyExtractor={(item) => item._id}
+                  />
+                </View>
+                <Card.Title
+                  title={item.name ? item.name : `Outfit(${item._id})`}
+                  subtitle={`created at ${item.created_time ? item.created_time : ''}`}
                 />
-                <Card.Title title={outfit.name ? outfit.name : `Outfit(${outfit._id})`} />
               </Card>
             )}
             keyExtractor={(item) => item._id}
           />
         </List.Section>
       </View>
+
+      <AddOutfitModal visible={visible} setVisible={setVisible} handlePress={handleModelButtonPress} />
 
       <FAB
         style={styles.fab}
@@ -72,5 +120,75 @@ export const OutfitRoute = ({ navigation }) => {
       />
 
     </View>
+  )
+}
+
+const AddOutfitModal = ({ visible, setVisible, handlePress }) => {
+  const { colors } = useTheme();
+
+  return (
+    <Portal>
+      <Modal
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        contentContainerStyle={{
+          display: 'flex',
+          width: Dimensions.get('window').width * 0.8, height: Dimensions.get('window').height * 0.3,
+          alignSelf: 'center',
+        }}
+      >
+        <View style={{
+          display: 'flex', flexDirection: 'column',
+          backgroundColor: 'white',
+          width: '100%', height: '100%',
+          borderRadius: 10,
+          padding: 10,
+        }}>
+          <Text
+            style={{
+              fontSize: 15,
+              fontWeight: 'bold',
+              width: '50%',
+            }}>
+            How do you want to create your outfit?
+          </Text>
+          <View style={{
+            display: 'flex', alignItems: "center", justifyContent: "space-around",
+            width: '100%', height: '80%',
+            flexDirection: 'column',
+          }}>
+            <TouchableOpacity onPress={() => handlePress(0)}>
+              <View style={{
+                flex: 0, flexDirection: "column", alignItems: "center", justifyContent: "center",
+                backgroundColor: colors.secondaryContainer,
+                paddingHorizontal: '10%',
+                paddingVertical: '5%',
+                // borderColor: 'red', borderWidth: 2,
+                borderRadius: 5,
+              }}>
+                {/* <Image source={{
+                uri: 
+              }}/> */}
+                <Text>From My Wardrobe</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => handlePress(1)}>
+              <View style={{
+                flex: 0, flexDirection: "column", alignItems: "center", justifyContent: "center",
+                backgroundColor: colors.secondaryContainer,
+                paddingHorizontal: '10%',
+                paddingVertical: '5%',
+                // borderColor: 'red', borderWidth: 2,
+                borderRadius: 5,
+              }}>
+                <Text>Outfit Suggestions</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+      </Modal>
+    </Portal>
   )
 }

@@ -21,3 +21,10 @@ export const uploadWardrobeItem = (uuid, base64) => {
     }
   });
 }
+
+export const outfitRecommend = (outfitData, regen=false) => { 
+  return post(`/CreateAIOutfit`, {
+    outfit: outfitData,
+    regenerate: regen,
+  });
+}

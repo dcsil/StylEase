@@ -14,26 +14,46 @@ import { imageUriParser } from '../../utils/urlParser';
 import { useFocusEffect } from '@react-navigation/native';
 import { fetchWardrobeItems } from '../../stores/UserStore';
 
-export const OutfitEditPage = ({ route, navigation }) => {
-  const dispatch = useDispatch();
-
+export const OutfitEditPage_ai = ({ route, navigation }) => {
   const { outfit } = route.params;
+  const dispatch = useDispatch();
   const user = useSelector(state => state.user);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (navigation.isFocused()) {
-        dispatch(fetchWardrobeItems(user.userInfo._id));
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     if (navigation.isFocused()) {
+  //       dispatch(fetchWardrobeItems(user.userInfo._id));
+  //     }
+  //   }, [navigation.isFocused()])
+  // );
+  
+  const combineItems = React.useCallback((ogWardrobeItems, ogOutfitItems) => { 
+    // merge items
+    const items = [...ogWardrobeItems, ...ogOutfitItems].map(item => { return { ...item, checked: false } });
+    // remove duplicate items
+    const uniqueItems = items.filter((item, index) => {
+      return items.findIndex(i => i._id === item._id) === index;
+    });
+    // set field "check" to true only for items in ogOutfitItems
+    const result = uniqueItems.map(item => {
+      if (ogOutfitItems.find(i => i._id === item._id)) {
+        return { ...item, checked: true };
       }
-    }, [navigation.isFocused()])
-  );
+      return item;
+    });
+
+    return result;
+
+  }, []);
 
   // #region Bottom Sheet Modal
   // ref
   const bottomSheetModalRef = React.useRef(null);
   // variables
-  const ogWardrobeItems = React.useMemo(() => user.userInfo.data && user.userInfo.data.wardrobe.items ? user.userInfo.data.wardrobe.items : [], [user.userInfo.data]);
-  const [wardrobeItems, setWardrobeItems] = React.useState(ogWardrobeItems.map(item => { return { ...item, checked: false } }));
+  const ogWardrobeItems = React.useMemo(() => user.userInfo.data?.wardrobe?.items ? user.userInfo.data.wardrobe.items : [], [user.userInfo.data?.wardrobe?.items]);
+  const ogOutfitItems = React.useMemo(() => outfit.items ? outfit.items : [], [outfit.items]);
+  const [wardrobeItems, setWardrobeItems] = React.useState(combineItems(ogWardrobeItems, ogOutfitItems));
+  
   const snapPoints = React.useMemo(() => ['25%', '50%', '75%'], []);
   const [tempOutfit, setTempOutfit] = React.useState({ name: '', items: [] });
 
@@ -51,11 +71,11 @@ export const OutfitEditPage = ({ route, navigation }) => {
   }, [])
 
   React.useEffect(() => {
-    setWardrobeItems(ogWardrobeItems.map(item => { return { ...item, checked: false } }))
-  }, [ogWardrobeItems])
+    setWardrobeItems(combineItems(ogWardrobeItems, ogOutfitItems));
+  }, [ogWardrobeItems, ogOutfitItems])
 
   // callbacks
-  const handleConfirm = React.useCallback(async () => { 
+  const handleConfirm = React.useCallback(async () => {
     bottomSheetModalRef.current.dismiss();
     // TODO: Upload new outfit to server
     navigation.navigate('Outfit');
@@ -85,7 +105,7 @@ export const OutfitEditPage = ({ route, navigation }) => {
               style={styles.flatList}
               numColumns={numColumns}
               directionalLockEnabled={true}
-              data={wardrobeItems}
+              data={wardrobeItems.filter(item => item.user === user.userInfo._id)}
               renderItem={({ item }) => <RenderItem item={item} setWardrobeItems={setWardrobeItems} />}
               keyExtractor={(item) => item._id}
             />
@@ -98,7 +118,7 @@ export const OutfitEditPage = ({ route, navigation }) => {
   // Recommend Tab
   const RecommendTab = ({ wardrobeItems, setWardrobeItems }) => {
     const [numColumns, setNumColumns] = React.useState(5);
-    const [rmdItems, setRmdItems] = React.useState([]);
+    const items = React.useMemo(() => wardrobeItems.filter(item => item.user !== user.userInfo._id), [wardrobeItems]);
     const onLayout = React.useCallback(() => {
       const { width } = Dimensions.get('window')
       const itemWidth = styles.image.width
@@ -108,15 +128,15 @@ export const OutfitEditPage = ({ route, navigation }) => {
     return (
       <View style={{ flex: 1 }}>
         <List.Section style={styles.listSection} onLayout={onLayout}>
-          {rmdItems.length === 0 ? (
+          {items.length === 0 ? (
             <Text style={{ marginTop: 50 }}>No item found.</Text>
           ) : (
             <FlatList
-              key={numColumns}
+              key={`RecommendTab-${numColumns}`}
               style={styles.flatList}
               numColumns={numColumns}
               directionalLockEnabled={true}
-              data={rmdItems}
+              data={items}
               renderItem={({ item }) => <RenderItem item={item} setWardrobeItems={setWardrobeItems} />}
               keyExtractor={(item) => item._id}
             />
@@ -140,12 +160,12 @@ export const OutfitEditPage = ({ route, navigation }) => {
 
         <View style={{ flex: 0.75 }}>
           {/* <Text>{ JSON.stringify(tempOutfit) }</Text> */}
-          <View style={{ flex: 0, flexDirection: 'row', marginVertical: 5, justifyContent: 'center', alignItems: 'center'}}>
-            <View style={{ flex: 0.8, marginLeft: 10}}>
+          <View style={{ flex: 0, flexDirection: 'row', marginVertical: 5, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ flex: 0.8, marginLeft: 10 }}>
               <TextInput mode="outlined" label="Outfit Name" value={tempOutfit.name} onChangeText={text => setTempOutfit({ ...tempOutfit, name: text })} />
             </View>
-            <View style={{ flex: 0.2, width: '50%', justifyContent: 'center', alignItems: 'center'}}>
-              <IconButton icon={() => <Icon name='check' color='green' size={30}/>} onPress={handleConfirm} />
+            <View style={{ flex: 0.2, width: '50%', justifyContent: 'center', alignItems: 'center' }}>
+              <IconButton icon={() => <Icon name='check' color='green' size={30} />} onPress={handleConfirm} />
             </View>
           </View>
           <List.Section style={styles.listSection}>
