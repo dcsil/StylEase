@@ -18,6 +18,7 @@ export const uploadWardrobeItem = (uuid, base64) => {
     item: {
       user: uuid,
       image: base64,
+      market: false,
     }
   });
 }
