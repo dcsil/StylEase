@@ -1,5 +1,6 @@
 from datetime import datetime
-
+import pymongo
+import certifi
 from bson import ObjectId
 import flask_pymongo
 from flask import *
@@ -13,6 +14,7 @@ from tool_box.finder import *
 import os
 import base64
 import io
+from passlib.hash import sha256_crypt
 load_dotenv()
 sentry_sdk.init(
     dsn="https://71ed77cdaeff44e7b814cd90fce00f97@o358880.ingest.sentry.io/4504487922565120",
@@ -38,13 +40,69 @@ cors = CORS(app)
 # configuration
 app.config['MONGO_URI'] = os.environ.get("MONGODB_URL")
 # Connect to MongoDB, where client is the MongoClient object
-client = flask_pymongo.MongoClient(os.environ.get("MONGODB_URL"))
+# client = flask_pymongo.MongoClient(os.environ.get("MONGODB_URL"))
+client = pymongo.MongoClient(os.environ.get("MONGODB_URL"), tlsCAFile=certifi.where())
 # mongo = PyMongo(app)
 
 @app.route('/api/test/<name>', methods=['GET'])
 def test(name):
     target = client.sample_mflix.comments.find_one({'name': name})
     return target['text']
+
+# Login
+@app.route('/api/Login', methods=['POST'])
+def login():
+    body = request.get_json()
+    email = body['email']
+    password = body['password']
+    # Compare to the password that encrypted in the database
+    target = client.db.users.find_one({'email': email})
+    if isinstance(target, tuple):
+        return target
+    if sha256_crypt.verify(password, target['password']):
+        return {
+            'status': 'success',
+            'userid': str(target['_id'])
+        }, 200
+    else:
+        return {
+            'status': 'fail',
+            'error': 'Wrong password'
+        }, 400
+
+
+# Register
+@app.route('/api/Register', methods=['POST'])
+def register():
+    body = request.get_json()
+    name = body['name']
+    email = body['email']
+    password = body['password']
+    # Check if the user already exists
+    target = client.db.users.find_one({'email': email})
+    if target:
+        return {
+            'status': 'fail',
+            'error': 'Email already exists'
+        }, 400
+
+    # Encrypt the password
+    password = sha256_crypt.encrypt(password)
+    # Insert the user to db.users
+    userid = client.db.users.insert_one({
+        'name': name,
+        'email': email,
+        'password': password,
+        'calendar': '',
+        'wardrobe': '',
+        'outfits': [],
+        'outfit_collections': []
+    }).inserted_id
+
+    return {
+        'status': 'success',
+        'userid': str(userid)
+    }, 200
 
 # GET carries request parameter appended in URL string while POST carries request parameter in message body
 @app.route('/api/GetUser/<userid>', methods=['GET'])
@@ -53,11 +111,11 @@ def get_user(userid):
     if isinstance(target, tuple):
         return target
     target['_id'] = str(target['_id'])
+    target.pop('password')
     return {
                'status': 'success',
                'user': target
            }, 200
-
 
 
 # Calendar Methods
@@ -151,37 +209,44 @@ def addNewItem():
 
     # Add new item to db.items
     item_id = client.db.items.insert_one(item).inserted_id
-    # Add the item to the user's WARDROBE
-    target = find_by_id(client, 'users', userid)
-    if isinstance(target, tuple):
-        return target
-    if target['wardrobe']:
-        wardrobe_id = target['wardrobe']
-        wardrobe = find_by_id(client, 'wardrobes', wardrobe_id)
-        if isinstance(wardrobe, tuple):
-            return wardrobe
-        current_items = wardrobe['items']
-        item_id = str(item_id)
-        current_items.append(item_id)
-        try:
-            client.db.wardrobes.update_one({'_id': ObjectId(wardrobe_id)}, {'$set': {'items': current_items}})
-        except Exception as e:
+    # Add the item to the user's WARDROBE if userid is given
+    if userid != '' and not item['market']:
+        target = find_by_id(client, 'users', userid)
+        if isinstance(target, tuple):
+            return target
+        if target['wardrobe']:
+            wardrobe_id = target['wardrobe']
+            wardrobe = find_by_id(client, 'wardrobes', wardrobe_id)
+            if isinstance(wardrobe, tuple):
+                return wardrobe
+            current_items = wardrobe['items']
+            item_id = str(item_id)
+            current_items.append(item_id)
+            try:
+                client.db.wardrobes.update_one({'_id': ObjectId(wardrobe_id)}, {'$set': {'items': current_items}})
+            except Exception as e:
+                return {
+                    'status': 'fail to update',
+                    'error': str(e)
+                }, 400
             return {
-                'status': 'fail to update',
-                'error': str(e)
-            }, 400
+                'status': 'success'
+            }, 200
+        else:
+            return {
+                'status': 'user has no wardrobe',
+            }, 404
+    else:
         return {
             'status': 'success'
         }, 200
-    else:
-        return {
-            'status': 'user has no wardrobe',
-        }, 404
 
 
 @app.route('/api/AddNewOutfit', methods=['POST'])
 def addNewOutfit():
-    outfit = request.get_json()
+    body = request.get_json()
+    outfit = body['outfit']
+    outfit_collection = body['outfit_collection']
     # Add new outfit to db.outfits
     outfit_id = client.db.outfits.insert_one(outfit).inserted_id
     # Add the outfit to the user's WARDROBE
@@ -198,10 +263,57 @@ def addNewOutfit():
             'status': 'fail to update',
             'error': str(e)
         }, 400
+    # Add the outfit to the user's outfit collection
+    if outfit_collection != '':
+        added = False
+        for collection in target["outfit_collections"]:
+            collection_target = find_by_id(client, 'outfitcollections', collection)
+            if isinstance(collection_target, tuple):
+                return collection_target
+            if collection_target['name'] == outfit_collection:
+                collection_target['outfits'].append(outfit_id)
+                try:
+                    client.db.outfitcollections.update_one({'_id': ObjectId(collection)}, {'$set': {'outfits': collection_target['outfits']}})
+                except Exception as e:
+                    return {
+                        'status': 'fail to update',
+                        'error': str(e)
+                    }, 400
+                added = True
+                break
+        if not added:
+            return {
+                'status': 'outfit collection not found',
+            }, 404
     return {
         'status': 'success'
     }, 200
 
+
+@app.route('/api/AddNewCollection', methods=['POST'])
+def addNewCollection():
+    body = request.get_json()
+    userid = body['userid']
+    collection = body['outfit_collection']
+    # Add new collection to db.outfitcollections
+    collection_id = client.db.outfitcollections.insert_one(collection).inserted_id
+    # Add the collection to the user's WARDROBE
+    target = find_by_id(client, 'users', userid)
+    if isinstance(target, tuple):
+        return target
+    collections_lst = target['outfit_collections']
+    collection_id = str(collection_id)
+    collections_lst.append(collection_id)
+    try:
+        client.db.users.update_one({'_id': ObjectId(userid)}, {'$set': {'outfit_collections': collections_lst}})
+    except Exception as e:
+        return {
+            'status': 'fail to update',
+            'error': str(e)
+        }, 400
+    return {
+        'status': 'success'
+    }, 200
 
 @app.route('/api/GetItemImage/<itemid>', methods=['GET'])
 def getItemimg(itemid):
@@ -282,10 +394,10 @@ def getOutfitCollection(userid):
     target = find_by_id(client, 'users', userid)
     if isinstance(target, tuple):
         return target
-    if target['outfits_collections']:
-        outfits_collections_id_lst = target['outfits_collections']
-        outfits_collections_lst = []
-        for outfits_collection_id in outfits_collections_id_lst:
+    if target['outfit_collections']:
+        outfit_collections_id_lst = target['outfit_collections']
+        outfit_collections_lst = []
+        for outfits_collection_id in outfit_collections_id_lst:
             outfits_collection = find_by_id(client, 'outfitcollections', outfits_collection_id)
             if isinstance(outfits_collection, tuple):
                 return outfits_collection
@@ -301,11 +413,11 @@ def getOutfitCollection(userid):
                 outfits_lst.append(outfit)
             outfits_collection['outfits'] = outfits_lst
             outfits_collection['_id'] = str(target['_id'])
-            outfits_collections_lst.append(outfits_collection)
+            outfit_collections_lst.append(outfits_collection)
 
         return {
             'status': 'success',
-            'outfits_collections': outfits_collections_lst
+            'outfit_collections': outfit_collections_lst
         }, 200
     else:
         return {
@@ -342,4 +454,49 @@ def getOutfit(userid, outfitid):
             'status': 'user has no outfit',
         }, 404
 
+# Create AI outfit
+@app.route('/api/CreateAIOutfit', methods=['POST'])
+def createAIOutfit():
+    data = request.get_json()
+    outfit = data['outfit']
+    # Hard Code
+    # get item 64237ecfa77fdcf57203ff96
+    if data['regenerate']:
+        # Suggest items 642c9b687032063a2f2f1e78, 642c9a701f8bd8fef92cbf18,
+        # 642c9a27756f6d8ab3562456, 642c99a94146ee0f23e68bf6
+        # ai_outfit = {'items': [
+        #     {'_id': '64237ecfa77fdcf57203ff96', 'market': False},
+        #     {'_id': '642c9b687032063a2f2f1e78', 'market': True},
+        #     {'_id': '642c9a701f8bd8fef92cbf18', 'market': True},
+        #     {'_id': '642c9a27756f6d8ab3562456', 'market': True},
+        #     {'_id': '642c99a94146ee0f23e68bf6', 'market': True}
+        # ]}
+        items = [
+            {'_id': '64237ecfa77fdcf57203ff96', 'user': '64237961038602a02a81cd92'},
+            {'_id': '642c9b687032063a2f2f1e78', 'user': ''},
+            {'_id': '642c9a701f8bd8fef92cbf18', 'user': ''},
+            {'_id': '642c9a27756f6d8ab3562456', 'user': ''},
+            {'_id': '642c99a94146ee0f23e68bf6', 'user': ''}
+        ]
+    else:
+        # ai_outfit = {'items': [
+        #     {'_id': '64237ecfa77fdcf57203ff96', 'market': False},
+        #     {'_id': '64237df5ad0c1edddca0f8dc', 'market': False},
+        #     {'_id': '642c96dcbaac041ea8a98a01', 'market': True},
+        #     {'_id': '642c9a4d917524429c1bf982', 'market': True},
+        #     {'_id': '642c9b687032063a2f2f1e78', 'market': True}
+        # ]}
+        items = [
+            {'_id': '64237ecfa77fdcf57203ff96', 'user': '64237961038602a02a81cd92'},
+            {'_id': '64237df5ad0c1edddca0f8dc', 'user': '64237961038602a02a81cd92'},
+            {'_id': '642c96dcbaac041ea8a98a01', 'user': ''},
+            {'_id': '642c9a4d917524429c1bf982', 'user': ''},
+            {'_id': '642c9b687032063a2f2f1e78', 'user': ''}
+        ]
 
+    outfit['items'] = items
+
+    return {
+        'status': 'success',
+        'ai_outfit': outfit
+    }, 200
