@@ -3,6 +3,7 @@ import * as Sentry from 'sentry-expo';
 import { Navigation } from './Navigation';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { Provider as StoreProvider } from 'react-redux';
+// import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import stores from './stores';
 
 Sentry.init({
@@ -14,7 +15,9 @@ export default function App() {
     <Sentry.Native.ErrorBoundary showDialog>
       <StoreProvider store={stores}>
         <PaperProvider>
-          <Navigation />
+          {/* <GestureHandlerRootView style={{ flex: 1 }}> */}
+            <Navigation />
+          {/* </GestureHandlerRootView> */}
         </PaperProvider>
       </StoreProvider>
     </Sentry.Native.ErrorBoundary>

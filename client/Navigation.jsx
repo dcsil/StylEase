@@ -4,6 +4,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoginPage } from './views/LoginPage';
 import { MainPage } from './views/MainPage';
 import { WardrobeItemPage } from './views/WardrobeRoute/WardrobeItemPage';
+import { OutfitEditPage_wardrobe } from './views/OutfitRoute/OutfitEditPage-wardrobe';
+import { OutfitEditPage_ai } from './views/OutfitRoute/OutfitEditPage-ai';
+import { OutfitAIConfigPage } from './views/OutfitRoute/OutfitAIConfigPage';
+import { OutfitWardrobeConfigPage } from './views/OutfitRoute/OutfitWardrobeConfigPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +20,10 @@ export const Navigation = () => {
         
         <Stack.Screen name="Wardrobe-item" component={WardrobeItemPage} options={{ headerShown: false, }} />
         
+        <Stack.Screen name="Outfit-new-from_wardrobe_edit" component={OutfitEditPage_wardrobe} options={{ headerShown: false, }} />
+        <Stack.Screen name="Outfit-new-from_ai_edit" component={OutfitEditPage_ai} options={{ headerShown: false, }} />
+        <Stack.Screen name="Outfit-new-ai_config" component={OutfitAIConfigPage} options={{ headerShown: false, }} />
+        <Stack.Screen name="Outfit-new-wardrobe_config" component={OutfitWardrobeConfigPage} options={{ headerShown: false, }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
