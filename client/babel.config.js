@@ -8,8 +8,13 @@ module.exports = function (api) {
         "path": ".env",
         "safe": false,
         "allowUndefined": false,
-      }], 
-      "@babel/transform-react-jsx-source"
+      }],
+      "@babel/transform-react-jsx-source",
+      [
+        'react-native-reanimated/plugin', {
+          relativeSourceLocation: true,
+        },
+      ]
     ],
     env: {
       production: {

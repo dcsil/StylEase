@@ -1,5 +1,5 @@
 import { Appbar, BottomNavigation, Button } from 'react-native-paper';
-import { StatusBar, Text, View } from 'react-native';
+import { ScrollView, StatusBar, Text, View } from 'react-native';
 import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,41 +7,33 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
 
 import { WardrobeRoute } from './WardrobeRoute';
+import { OutfitRoute } from './OutfitRoute';
+import { CalendarRoute } from './CalendarRoute';
 
 const HomeRoute = ({ }) => {
-  // const userData = useSelector(state => state.user.userInfo.data);
+  const user = useSelector(state => state.user);
   // const userId = useSelector(state => state.user.userInfo._id);
   return (
-    <View>
+    <ScrollView>
       <StatusBar style="auto" />
       <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
         <Appbar.Content title="Home" />
       </Appbar.Header>
       <Text>Home</Text>
-      {/* <Text>{JSON.stringify(userData)}</Text> */}
-    </View>
+      <Text>{JSON.stringify(user.userInfo.data && user.userInfo.data.outfits_collections)}</Text>
+    </ScrollView>
   )
 }
 
-
-const OutfitRoute = () => (
-  <View>
-    <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
-      <Appbar.Content title="Outfit" />
-    </Appbar.Header>
-    <Text>Outfit</Text>
-  </View>
-);
-const CalendarRoute = () => (
-  <View>
-    <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
-      <Appbar.Content title="Calendar" />
-    </Appbar.Header>
-    <Text>Calendar</Text>
-  </View>
-);
+// const CalendarRoute = () => (
+//   <View>
+//     <StatusBar style="auto" />
+//     <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
+//       <Appbar.Content title="Calendar" />
+//     </Appbar.Header>
+//     <Text>Hello</Text>
+//   </View>
+// );
 const ProfileRoute = ({ navigation }) => (
   <View>
     <StatusBar style="auto" />
