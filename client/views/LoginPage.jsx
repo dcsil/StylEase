@@ -74,14 +74,15 @@ export const LoginPage = ({ navigation }) => {
   //     // Handle authentication failure here, such as displaying an error message to the user
   //     console.error(error);
   //   });
+    navigation.navigate('Main');
   };
 
   const handleSignup = () => {
-    navigation.navigate("SignUp");
+    navigation.navigate('SignUp');
   };
 
   const handleForgotPassword = () => {
-    // avigation.navigate("SignUp");
+    // avigation.navigate('SignUp');
     // navigate to forgot password page here
   };
 
