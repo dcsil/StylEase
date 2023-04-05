@@ -4,7 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useDispatch, useSelector } from "react-redux";
 import { TextInput, Button } from 'react-native-paper';
 
-import { fetchUserData } from "../stores/UserStore";
+import { fetchUserData, setUserId } from "../stores/UserStore";
+import { Login } from "../api/requests";
 
 const styles = StyleSheet.create({
   container: {
@@ -51,30 +52,16 @@ export const LoginPage = ({ navigation }) => {
       }
     ]);
   }
-  const handleSubmit = () => {
-    // handle login submission here
-  //   fetch('https://your-server.com/api/login', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({
-  //     email,
-  //     password,
-  //   }),
-  // })
-  //   .then(response => {
-  //     if (!response.ok) {
-  //       throw new Error('Authentication failed');
-  //     }
-  //     // Handle successful authentication here, such as navigating to the home screen
-  //     console.log('Successfully authenticated');
-  //   })
-  //   .catch(error => {
-  //     // Handle authentication failure here, such as displaying an error message to the user
-  //     console.error(error);
-  //   });
-    navigation.navigate('Main');
+  const handleSubmit = async () => {
+    const { userid } = await Login(email, password);
+    console.log(userid);
+    await new Promise((resolve) => resolve(dispatch(setUserId(userid))))
+      .then(() => {
+        dispatch(fetchUserData(userid));
+      })
+      .then(() => {
+        navigation.navigate('Main');
+      });
   };
 
   const handleSignup = () => {
@@ -101,8 +88,8 @@ export const LoginPage = ({ navigation }) => {
         secureTextEntry={true}
         style={styles.input}
       />
-      <Button mode="contained" onPress={handleSubmit} style={styles.button}>
-        Submit
+      <Button disabled={!email || !password} mode="contained" onPress={handleSubmit} style={styles.button}>
+        Login
       </Button>
       <Button onPress={handleSignup} style={styles.button}>
         Sign up

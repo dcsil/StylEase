@@ -2,23 +2,24 @@ import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
+import { SignUp } from '../api/requests';
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    input: {
-      width: '100%',
-      marginBottom: 10,
-    },
-    button: {
-      width: '100%',
-      marginBottom: 10,
-    },
-  });
+  container: {
+    flex: 1,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  input: {
+    width: '100%',
+    marginBottom: 10,
+  },
+  button: {
+    width: '100%',
+    marginBottom: 10,
+  },
+});
 
 export const SignupPage = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -26,8 +27,20 @@ export const SignupPage = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignup = () => {
+  const isValidInfo = () => {
+    if (!name || !email || !password || !confirmPassword) {
+      return false;
+    }
+    if (password !== confirmPassword) {
+      return false;
+    }
+    return true;
+  }
+
+  const handleSignup = async () => {
     // handle sign up submission here
+    await SignUp(name, email, password);
+    navigation.navigate('Login');
   };
 
   const handleLogin = () => {
@@ -62,7 +75,7 @@ export const SignupPage = ({ navigation }) => {
         secureTextEntry={true}
         style={styles.input}
       />
-      <Button mode="contained" onPress={handleSignup} style={styles.button}>
+      <Button disabled={!isValidInfo} mode="contained" onPress={handleSignup} style={styles.button}>
         Sign up
       </Button>
       <Button onPress={handleLogin} style={styles.button}>
