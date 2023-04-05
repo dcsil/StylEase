@@ -49,7 +49,7 @@ export const OutfitRoute = ({ navigation }) => {
   const onLayout = React.useCallback(() => {
     const { width } = Dimensions.get('window');
     const itemWidth = IMAGE_WIDTH
-    const numColumns = Math.floor(width / itemWidth)
+    const numColumns = Math.floor((width - 22) / itemWidth)
     setNumColumns(numColumns)
   }, [])
 
@@ -59,27 +59,29 @@ export const OutfitRoute = ({ navigation }) => {
       <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
         <Appbar.Content title="Outfit" />
       </Appbar.Header>
-
-      <View style={{ flex: 1 }}>
+      <View
+        style={{ flex: 1 }}
+      >
         <List.Section
           style={{ flex: 1 }}
         >
           <FlatList
             // key={`${displayedItems.length}items`}
-            // style={styles.flatList}
+            style={{ width: '100%' }}
+            // contentContainerStyle={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}
             numColumns={1}
             directionalLockEnabled={true}
             data={(outfits && outfits.length === 0) ? [] : outfits[0].outfits}
             renderItem={({ item }) => (
               <Card
                 contentStyle={{ marginTop: 5 }}
-                style={{ marginBottom: 10 }}
+                style={{ marginBottom: 10, alignSelf: 'center' }}
                 mode='outlined'
               >
                 <View style={{ marginHorizontal: 5 }}>
                   <FlatList
                     key={`OutfitRoute-${numColumns}`}
-                    style={{ flex: 1 }}
+                    // style={{ flex: 1 }}
                     numColumns={numColumns}
                     directionalLockEnabled={true}
                     data={item.items}
