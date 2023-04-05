@@ -458,27 +458,45 @@ def getOutfit(userid, outfitid):
 @app.route('/api/CreateAIOutfit', methods=['POST'])
 def createAIOutfit():
     data = request.get_json()
+    outfit = data['outfit']
     # Hard Code
     # get item 64237ecfa77fdcf57203ff96
     if data['regenerate']:
         # Suggest items 642c9b687032063a2f2f1e78, 642c9a701f8bd8fef92cbf18,
         # 642c9a27756f6d8ab3562456, 642c99a94146ee0f23e68bf6
-        ai_outfit = {'items': [
-            {'itemid': '64237ecfa77fdcf57203ff96', 'market': False},
-            {'itemid': '642c9b687032063a2f2f1e78', 'market': True},
-            {'itemid': '642c9a701f8bd8fef92cbf18', 'market': True},
-            {'itemid': '642c9a27756f6d8ab3562456', 'market': True},
-            {'itemid': '642c99a94146ee0f23e68bf6', 'market': True}
-        ]}
+        # ai_outfit = {'items': [
+        #     {'itemid': '64237ecfa77fdcf57203ff96', 'market': False},
+        #     {'itemid': '642c9b687032063a2f2f1e78', 'market': True},
+        #     {'itemid': '642c9a701f8bd8fef92cbf18', 'market': True},
+        #     {'itemid': '642c9a27756f6d8ab3562456', 'market': True},
+        #     {'itemid': '642c99a94146ee0f23e68bf6', 'market': True}
+        # ]}
+        items = [
+            {'itemid': '64237ecfa77fdcf57203ff96', 'user': '64237961038602a02a81cd92'},
+            {'itemid': '642c9b687032063a2f2f1e78', 'user': ''},
+            {'itemid': '642c9a701f8bd8fef92cbf18', 'user': ''},
+            {'itemid': '642c9a27756f6d8ab3562456', 'user': ''},
+            {'itemid': '642c99a94146ee0f23e68bf6', 'user': ''}
+        ]
     else:
-        ai_outfit = {'items': [
-            {'itemid': '64237ecfa77fdcf57203ff96', 'market': False},
-            {'itemid': '64237df5ad0c1edddca0f8dc', 'market': False},
-            {'itemid': '642c96dcbaac041ea8a98a01', 'market': True},
-            {'itemid': '642c9a4d917524429c1bf982', 'market': True},
-            {'itemid': '642c9b687032063a2f2f1e78', 'market': True}
-        ]}
+        # ai_outfit = {'items': [
+        #     {'itemid': '64237ecfa77fdcf57203ff96', 'market': False},
+        #     {'itemid': '64237df5ad0c1edddca0f8dc', 'market': False},
+        #     {'itemid': '642c96dcbaac041ea8a98a01', 'market': True},
+        #     {'itemid': '642c9a4d917524429c1bf982', 'market': True},
+        #     {'itemid': '642c9b687032063a2f2f1e78', 'market': True}
+        # ]}
+        items = [
+            {'itemid': '64237ecfa77fdcf57203ff96', 'user': '64237961038602a02a81cd92'},
+            {'itemid': '64237df5ad0c1edddca0f8dc', 'user': '64237961038602a02a81cd92'},
+            {'itemid': '642c96dcbaac041ea8a98a01', 'user': ''},
+            {'itemid': '642c9a4d917524429c1bf982', 'user': ''},
+            {'itemid': '642c9b687032063a2f2f1e78', 'user': ''}
+        ]
+
+    outfit['items'] = items
+
     return {
         'status': 'success',
-        'ai_outfit': ai_outfit
+        'ai_outfit': outfit
     }, 200
