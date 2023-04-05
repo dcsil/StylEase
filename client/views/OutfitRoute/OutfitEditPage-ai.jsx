@@ -12,22 +12,23 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { imageUriParser } from '../../utils/urlParser';
 import { useFocusEffect } from '@react-navigation/native';
-import { fetchWardrobeItems } from '../../stores/UserStore';
+import { fetchOutfitsData, fetchWardrobeItems } from '../../stores/UserStore';
+import { uploadOutfit } from '../../api/requests';
 
 export const OutfitEditPage_ai = ({ route, navigation }) => {
   const { outfit } = route.params;
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     if (navigation.isFocused()) {
-  //       dispatch(fetchWardrobeItems(user.userInfo._id));
-  //     }
-  //   }, [navigation.isFocused()])
-  // );
-  
-  const combineItems = React.useCallback((ogWardrobeItems, ogOutfitItems) => { 
+  useFocusEffect(
+    React.useCallback(() => {
+      if (navigation.isFocused()) {
+        dispatch(fetchOutfitsData(user.userInfo._id));
+      }
+    }, [navigation.isFocused()])
+  );
+
+  const combineItems = React.useCallback((ogWardrobeItems, ogOutfitItems) => {
     // merge items
     const items = [...ogWardrobeItems, ...ogOutfitItems].map(item => { return { ...item, checked: false } });
     // remove duplicate items
@@ -53,9 +54,9 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
   const ogWardrobeItems = React.useMemo(() => user.userInfo.data?.wardrobe?.items ? user.userInfo.data.wardrobe.items : [], [user.userInfo.data?.wardrobe?.items]);
   const ogOutfitItems = React.useMemo(() => outfit.items ? outfit.items : [], [outfit.items]);
   const [wardrobeItems, setWardrobeItems] = React.useState(combineItems(ogWardrobeItems, ogOutfitItems));
-  
+
   const snapPoints = React.useMemo(() => ['25%', '50%', '75%'], []);
-  const [tempOutfit, setTempOutfit] = React.useState({ name: '', items: [] });
+  // const [tempOutfit, setTempOutfit] = React.useState({ name: '', items: [] });
 
   // hooks
   React.useEffect(() => {
@@ -78,6 +79,14 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
   const handleConfirm = React.useCallback(async () => {
     bottomSheetModalRef.current.dismiss();
     // TODO: Upload new outfit to server
+    const outfitTBS = {
+      ...outfit,
+      creator: user.userInfo._id,
+      items: wardrobeItems.filter(item => item.checked).map(item => item._id),
+    }
+
+    await uploadOutfit(outfitTBS, user.userInfo.data.outfits_collections[0].name);
+    dispatch(fetchOutfitsData(user.userInfo._id));
     navigation.navigate('Outfit');
   }, []);
 
@@ -160,18 +169,28 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
 
         <View style={{ flex: 0.75 }}>
           {/* <Text>{ JSON.stringify(tempOutfit) }</Text> */}
-          <View style={{ flex: 0, flexDirection: 'row', marginVertical: 5, justifyContent: 'center', alignItems: 'center' }}>
-            <View style={{ flex: 0.8, marginLeft: 10 }}>
-              <TextInput mode="outlined" label="Outfit Name" value={tempOutfit.name} onChangeText={text => setTempOutfit({ ...tempOutfit, name: text })} />
-            </View>
-            <View style={{ flex: 0.2, width: '50%', justifyContent: 'center', alignItems: 'center' }}>
-              <IconButton icon={() => <Icon name='check' color='green' size={30} />} onPress={handleConfirm} />
-            </View>
+          <View style={{
+            display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
+            marginVertical: 5,
+            // borderColor: 'black', borderWidth: 2,
+          }}>
+            <Text style={{
+              fontSize: 20,
+              // letterSpacing: 2,
+              marginRight: 10,
+            }}>{`Save as:`}</Text>
+            <Text style={{
+              fontSize: 20,
+              fontWeight: 'bold',
+              marginRight: 10,
+            }}>{`${outfit.name}`}</Text>
+            <IconButton icon={() => <Icon name='check' color='green' size={30} />} onPress={handleConfirm} />
           </View>
-          <List.Section style={styles.listSection}>
+          <List.Section style={{ flex: 1}}>
             <FlatList
               // key={`${displayedItems.length}items`}
-              style={styles.flatList}
+              style={{ flex: 1 }}
+              contentContainerStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}
               numColumns={1}
               directionalLockEnabled={true}
               data={wardrobeItems.filter(item => item.checked)}

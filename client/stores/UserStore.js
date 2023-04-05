@@ -16,53 +16,54 @@ export const fetchWardrobeItems = createAsyncThunk("user/fetchWardrobeItems",
 export const fetchOutfitsData = createAsyncThunk("user/fetchOutfitsData",
   async (userId) => {
     if (!userId) return;
-    // const data = await getOutfitsData(userId);
-    const data = {
-      outfit_collections: [
-        {
-          _id: "5f9b5b0b0b9b0b0b0b0b0b0b",
-          name: "Outfit 1",
-          created_time: "2020-10-29T09:00:00.000Z",
-          outfits: [
-            {
-              _id: "000000001",
-              name: "Outfit 1",
-              created_time: "2020-10-29",
-              items: [
-                {
-                  _id: "64237aef7bd7fa3c355dda94",
-                },
-                {
-                  _id: "64237df5ad0c1edddca0f8dc",
-                },
-                {
-                  _id: "64237f08a1204d530d6a5ac3",
-                },
-                {
-                  _id: "6423ceeccceaaf521dfe74b6",
-                }
-              ]
-            },
-            {
-              _id: "000000002",
-              name: "Outfit 2",
-              created_time: "2020-10-30",
-              items: [
-                {
-                  _id: "6423ceeccceaaf521dfe74b6",
-                },
-                {
-                  _id: "64237df5ad0c1edddca0f8dc",
-                }
-              ]
-            },
-          ]
-        }
-      ]
-    };
-    return new Promise((resolve, reject) => {
-      resolve(data);
-    });
+    const data = await getOutfitsData(userId);
+    // const data = {
+    //   outfit_collections: [
+    //     {
+    //       _id: "5f9b5b0b0b9b0b0b0b0b0b0b",
+    //       name: "Outfit 1",
+    //       created_time: "2020-10-29T09:00:00.000Z",
+    //       outfits: [
+    //         {
+    //           _id: "000000001",
+    //           name: "Outfit 1",
+    //           created_time: "2020-10-29",
+    //           items: [
+    //             {
+    //               _id: "64237aef7bd7fa3c355dda94",
+    //             },
+    //             {
+    //               _id: "64237df5ad0c1edddca0f8dc",
+    //             },
+    //             {
+    //               _id: "64237f08a1204d530d6a5ac3",
+    //             },
+    //             {
+    //               _id: "6423ceeccceaaf521dfe74b6",
+    //             }
+    //           ]
+    //         },
+    //         {
+    //           _id: "000000002",
+    //           name: "Outfit 2",
+    //           created_time: "2020-10-30",
+    //           items: [
+    //             {
+    //               _id: "6423ceeccceaaf521dfe74b6",
+    //             },
+    //             {
+    //               _id: "64237df5ad0c1edddca0f8dc",
+    //             }
+    //           ]
+    //         },
+    //       ]
+    //     }
+    //   ]
+    // };
+    // return new Promise((resolve, reject) => {
+    //   resolve(data);
+    // });
+    return data;
   }
 );
 

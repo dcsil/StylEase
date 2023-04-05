@@ -28,3 +28,11 @@ export const outfitRecommend = (outfitData, regen=false) => {
     regenerate: regen,
   });
 }
+
+export const uploadOutfit = (outfitData, collectionName) => { 
+  // console.log(collectionName);
+  return post(`/AddNewOutfit`, {
+    outfit: outfitData,
+    outfit_collection: collectionName,
+  });
+}

@@ -12,9 +12,11 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { imageUriParser } from '../../utils/urlParser';
 import { useFocusEffect } from '@react-navigation/native';
-import { fetchWardrobeItems } from '../../stores/UserStore';
+import { fetchOutfitsData, fetchWardrobeItems } from '../../stores/UserStore';
+import { uploadOutfit } from '../../api/requests';
 
-export const OutfitEditPage_wardrobe = ({ navigation }) => {
+export const OutfitEditPage_wardrobe = ({ route, navigation }) => {
+  const { outfit } = route.params;
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
 
@@ -33,7 +35,6 @@ export const OutfitEditPage_wardrobe = ({ navigation }) => {
   const ogWardrobeItems = React.useMemo(() => user.userInfo.data && user.userInfo.data.wardrobe.items ? user.userInfo.data.wardrobe.items : [], [user.userInfo.data]);
   const [wardrobeItems, setWardrobeItems] = React.useState(ogWardrobeItems.map(item => { return { ...item, checked: false } }));
   const snapPoints = React.useMemo(() => ['25%', '50%', '75%'], []);
-  const [tempOutfit, setTempOutfit] = React.useState({ name: '', items: [] });
 
   // hooks
   React.useEffect(() => {
@@ -53,9 +54,16 @@ export const OutfitEditPage_wardrobe = ({ navigation }) => {
   }, [ogWardrobeItems])
 
   // callbacks
-  const handleConfirm = React.useCallback(async () => { 
+  const handleConfirm = React.useCallback(async () => {
     bottomSheetModalRef.current.dismiss();
     // TODO: Upload new outfit to server
+    const outfitTBS = {
+      ...outfit,
+      items: wardrobeItems.filter(item => item.checked).map(item => item._id),
+      creator: user.userInfo._id,
+    };
+    await uploadOutfit(outfitTBS, user.userInfo.data.outfits_collections[0].name);
+    dispatch(fetchOutfitsData(user.userInfo._id));
     navigation.navigate('Outfit');
   }, []);
 
@@ -93,50 +101,6 @@ export const OutfitEditPage_wardrobe = ({ navigation }) => {
     )
   };
 
-  // Recommend Tab
-  // const RecommendTab = ({ wardrobeItems, setWardrobeItems }) => {
-  //   const [numColumns, setNumColumns] = React.useState(5);
-  //   const [rmdItems, setRmdItems] = React.useState([
-  //     {
-  //       _id: '6429232342da6ed45d55d776',
-  //       name: 'Black T-Shirt',
-  //       type: 'top',
-  //       checked: false,
-  //     },
-  //     {
-  //       _id: '64292012f6a6030c42002b71',
-  //       name: 'Black Jeans',
-  //       type: 'bottom',
-  //       checked: false,
-  //     },
-  //   ]);
-  //   const onLayout = React.useCallback(() => {
-  //     const { width } = Dimensions.get('window')
-  //     const itemWidth = styles.image.width
-  //     const numColumns = Math.floor(width / itemWidth)
-  //     setNumColumns(numColumns)
-  //   }, [])
-  //   return (
-  //     <View style={{ flex: 1 }}>
-  //       <List.Section style={styles.listSection} onLayout={onLayout}>
-  //         {rmdItems.length === 0 ? (
-  //           <Text style={{ marginTop: 50 }}>No item found.</Text>
-  //         ) : (
-  //           <FlatList
-  //             key={`RecommendTab-${numColumns}`}
-  //             style={styles.flatList}
-  //             numColumns={numColumns}
-  //             directionalLockEnabled={true}
-  //             data={rmdItems}
-  //             renderItem={({ item }) => <RenderItem item={item} setWardrobeItems={setRmdItems} />}
-  //             keyExtractor={(item) => item._id}
-  //           />
-  //         )}
-  //       </List.Section>
-  //     </View>
-  //   )
-  // };
-
   // Tab View
   const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -151,17 +115,27 @@ export const OutfitEditPage_wardrobe = ({ navigation }) => {
 
         <View style={{ flex: 0.75 }}>
           {/* <Text>{ JSON.stringify(tempOutfit) }</Text> */}
-          <View style={{ flex: 0, flexDirection: 'row', marginVertical: 5, justifyContent: 'center', alignItems: 'center'}}>
-            <View style={{ flex: 0.8, marginLeft: 10}}>
-              <TextInput mode="outlined" label="Outfit Name" value={tempOutfit.name} onChangeText={text => setTempOutfit({ ...tempOutfit, name: text })} />
-            </View>
-            <View style={{ flex: 0.2, width: '50%', justifyContent: 'center', alignItems: 'center'}}>
-              <IconButton icon={() => <Icon name='check' color='green' size={30}/>} onPress={handleConfirm} />
-            </View>
+          <View style={{
+            display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
+            marginVertical: 5,
+            // borderColor: 'black', borderWidth: 2,
+          }}>
+            <Text style={{
+              fontSize: 20,
+              // letterSpacing: 2,
+              marginRight: 10,
+            }}>{`Save as:`}</Text>
+            <Text style={{
+              fontSize: 20,
+              fontWeight: 'bold',
+              marginRight: 10,
+            }}>{`${outfit.name}`}</Text>
+            <IconButton icon={() => <Icon name='check' color='green' size={30} />} onPress={handleConfirm} />
           </View>
           <List.Section style={styles.listSection}>
             <FlatList
               // key={`${displayedItems.length}items`}
+              contentContainerStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
               style={styles.flatList}
               numColumns={1}
               directionalLockEnabled={true}

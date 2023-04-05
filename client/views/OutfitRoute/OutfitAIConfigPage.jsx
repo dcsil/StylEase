@@ -27,6 +27,10 @@ export const OutfitAIConfigPage = ({ navigation }) => {
     weather: "Sunny",
   });
 
+  // React.useEffect(() => { 
+  //   console.log(`outfitData.name: ${outfitData.name}`);
+  // }, [outfitData]);
+
   React.useEffect(() => {
     setWardrobeItems(ogWardrobeItems.map(item => { return { ...item, checked: false } }))
   }, [ogWardrobeItems])
@@ -38,25 +42,19 @@ export const OutfitAIConfigPage = ({ navigation }) => {
     setNumColumns(numColumns);
   }, [])
 
-  const handleSubmit = React.useCallback(async () => { 
+  const handleSubmit = async () => {
+    // console.log(outfitData);
     const outfitTBS = {
       ...outfitData,
       ...configs,
     };
     outfitTBS.items = wardrobeItems.filter(item => item.checked).map(item => item._id);
-    // TODO: get the outfit data from the backend
-    // const rmdOutfit = await outfitRecommend(outfitTBS, false);
-    const rmdOutfit = {
-      name: "Outfit 1",
-      items: [
-      ],
-      occasion: "Casual",
-      season: "Spring",
-      weather: "Sunny",
-    }
+    // console.log(outfitTBS.name);
+    // get the outfit data from the backend
+    const rmdOutfit = await outfitRecommend(outfitTBS, false);
 
-    navigation.navigate('Outfit-new-from-ai-edit', { outfit: rmdOutfit });
-  }, [])
+    navigation.navigate('Outfit-new-from_ai_edit', { outfit: rmdOutfit.ai_outfit });
+  }
 
   return (
     <View style={{
@@ -74,6 +72,7 @@ export const OutfitAIConfigPage = ({ navigation }) => {
           // borderColor: 'blue', borderWidth: 2,
           paddingHorizontal: 10,
         }}>
+          {/* <Text>{JSON.stringify(outfitData)}</Text> */}
           <Text
             style={{
               fontSize: 20,
@@ -166,6 +165,7 @@ export const OutfitAIConfigPage = ({ navigation }) => {
             mode="contained-tonal"
             style={{ borderRadius: 5 }}
             onPress={handleSubmit}
+            disabled={outfitData.name === ''}
           >
             Generate Outfit
           </Button>
@@ -237,7 +237,7 @@ const RenderChipConfig = ({ chipList, curr, title, setConfig }) => {
         }}>
         <List.Subheader
           style={{
-            color: colors.surface,
+            // color: colors.surface,
             fontSize: 16,
             fontWeight: 'bold',
             paddingLeft: 0,
@@ -248,7 +248,7 @@ const RenderChipConfig = ({ chipList, curr, title, setConfig }) => {
         <View style={{
           display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
         }}>
-          {chipList.map((item) => <RenderChip key={item._id} item={item} curr={curr} setConfig={setConfig} />)}
+          {chipList.map((item) => <RenderChip key={item} item={item} curr={curr} setConfig={setConfig} />)}
         </View>
       </List.Section>
     </View>

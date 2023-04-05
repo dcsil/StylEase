@@ -37,7 +37,7 @@ export const OutfitRoute = ({ navigation }) => {
     setVisible(false);
     switch (index) {
       case 0:
-        navigation.navigate('Outfit-new-from_wardrobe_edit');
+        navigation.navigate('Outfit-new-wardrobe_config');
         break;
       case 1:
         navigation.navigate('Outfit-new-ai_config');
