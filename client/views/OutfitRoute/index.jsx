@@ -75,7 +75,7 @@ export const OutfitRoute = ({ navigation }) => {
             renderItem={({ item }) => (
               <Card
                 contentStyle={{ marginTop: 5 }}
-                style={{ marginBottom: 10, alignSelf: 'center' }}
+                style={{ marginBottom: 10, alignSelf: 'center', width: Dimensions.get('window').width * 0.85 }}
                 mode='outlined'
               >
                 <View style={{ marginHorizontal: 5 }}>

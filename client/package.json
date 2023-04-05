@@ -22,7 +22,6 @@
     "expo-constants": "~14.2.1",
     "expo-device": "~5.2.1",
     "expo-image-picker": "~14.1.1",
-    "expo-image-picker": "~14.1.1",
     "expo-splash-screen": "~0.18.1",
     "expo-status-bar": "~1.4.4",
     "expo-updates": "~0.16.3",

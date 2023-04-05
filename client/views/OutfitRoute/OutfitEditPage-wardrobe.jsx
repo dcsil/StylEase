@@ -54,7 +54,7 @@ export const OutfitEditPage_wardrobe = ({ route, navigation }) => {
   }, [ogWardrobeItems])
 
   // callbacks
-  const handleConfirm = React.useCallback(async () => {
+  const handleConfirm = async () => {
     bottomSheetModalRef.current.dismiss();
     // TODO: Upload new outfit to server
     const outfitTBS = {
@@ -65,7 +65,7 @@ export const OutfitEditPage_wardrobe = ({ route, navigation }) => {
     await uploadOutfit(outfitTBS, user.userInfo.data.outfits_collections[0].name);
     dispatch(fetchOutfitsData(user.userInfo._id));
     navigation.navigate('Outfit');
-  }, []);
+  };
 
   // #endregion
 
