@@ -1,35 +1,35 @@
 import React, {useState} from 'react';
 import {Agenda} from 'react-native-calendars';
-import { View, StatusBar, TouchableOpacity, StyleSheet, Text, Alert, Image } from 'react-native';
-import { Appbar } from 'react-native-paper';
+import { View, StatusBar, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { Appbar, Card, FAB, Avatar, Button, Text } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import outfit1 from './outfit1.jpg';
 import outfit2 from './outfit2.jpg';
 import outfit3 from './outfit3.jpg';
 
-
+const LeftContent = props => <Avatar.Icon {...props} icon="folder" />
 
 export const CalendarRoute = ({ navigation }) => {
+    const [items, setItems] = useState();
+    const [selectedDate, setSelectedDate] = useState();
+
     const renderItem = (item) => {
       console.log('render item', item);
-      
+
       return(
-        <TouchableOpacity
-        style={[styles.item]}
-        onPress={() =>  Alert.alert(item.name, 'Temperature: 20-30 \nTime: 8:00 pm', [
-          {
-            text: 'Edit',
-            onPress: () => console.log('Ask me later pressed'),
-          },
-          {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-        ])}
-      >
-        <Text style={styles.name}>{item.name}</Text>
-        <Image style = {styles.stretch} source={item.path} />
-      </TouchableOpacity>);
+        <Card style={[styles.item]}>
+          <Card.Title title={item.name} left={LeftContent} />
+          <Card.Content>
+            <Text variant="titleLarge">{item.name}</Text>
+            <Text variant="bodyMedium">Location: Alo</Text>
+          </Card.Content>
+          <Card.Cover source={item.path} />
+          <Card.Actions>
+            <Button>Edit</Button>
+            <Button>Delete</Button>
+          </Card.Actions>
+        </Card>
+      );
     }
 
     const renderEmptyDate = () => {
@@ -41,13 +41,21 @@ export const CalendarRoute = ({ navigation }) => {
       );
     }
 
+    const renderKnob = () => {
+      return (
+        <View style = {{alignItems: 'center'}}>
+          <View style = {styles.knob}/>
+        </View>
+      );
+    }
+
     return(
     <View>
         <StatusBar style="auto" />
         <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
         <Appbar.Content title="Calendar" />
         </Appbar.Header>
-        <View style={{height: 600}}>
+        <View style={{height: '90%'}}>
         <Agenda
           items={{
             '2023-04-03': [{name: 'Date outfit', path: outfit1}],
@@ -61,11 +69,8 @@ export const CalendarRoute = ({ navigation }) => {
           }}
           selected={new Date().toJSON().slice(0, 10)}
           onDayPress={(day) => {
+            setSelectedDate(day);
             console.log('day pressed');
-          }}
-          onDayChange={(day, item) => {
-            console.log('day changed');
-            
           }}
           pastScrollRange={50}
           futureScrollRange={50}
@@ -76,18 +81,7 @@ export const CalendarRoute = ({ navigation }) => {
             return renderEmptyDate();
           }}
           renderKnob={() => {
-            return (
-              <View style = {{alignItems: 'center'}}>
-                <View style = {{
-                  backgroundColor: '#d9dcda',
-                  width: 30,
-                  height: 3,
-                  borderColor: '#d9dcda',
-                  borderWidth: 2,
-                  borderRadius: 9,
-                  justifyContent: 'center', }}/>
-              </View>
-            );
+            return renderKnob();
           }}
           renderEmptyData={() => {
             return <View />;
@@ -97,8 +91,16 @@ export const CalendarRoute = ({ navigation }) => {
           }}
           hideKnob={false}
           showClosingKnob={true}
+          theme={{
+            todayTextColor: '#6a5acd',
+            dayTextColor: '#2d4150',
+          }}
       />
       </View>
+      <FAB
+        style={styles.fab}
+        icon={(props) => <Icon name="plus" {...props} />}
+      />
     </View>
     );
 };
@@ -111,12 +113,26 @@ const styles = StyleSheet.create({
     padding: 10,
     marginRight: 10,
     marginTop: 17,
-    height: 300
+    marginBottom: 17,
   },
   emptyDate: {
     height: 15,
     flex: 1,
     paddingTop: 30
+  },
+  knob: {
+    backgroundColor: '#d9dcda',
+    width: 30,
+    height: 3,
+    borderColor: '#d9dcda',
+    borderWidth: 2,
+    borderRadius: 9,
+    justifyContent: 'center',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
   },
   stretch: {
     width: '100%',
