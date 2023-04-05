@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 
 import { WardrobeRoute } from './WardrobeRoute';
 import { OutfitRoute } from './OutfitRoute';
+import { CalendarRoute } from './CalendarRoute';
 
 const HomeRoute = ({ }) => {
   const user = useSelector(state => state.user);
@@ -24,15 +25,15 @@ const HomeRoute = ({ }) => {
   )
 }
 
-const CalendarRoute = () => (
-  <View>
-    <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
-      <Appbar.Content title="Calendar" />
-    </Appbar.Header>
-    <Text>Calendar</Text>
-  </View>
-);
+// const CalendarRoute = () => (
+//   <View>
+//     <StatusBar style="auto" />
+//     <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
+//       <Appbar.Content title="Calendar" />
+//     </Appbar.Header>
+//     <Text>Hello</Text>
+//   </View>
+// );
 const ProfileRoute = ({ navigation }) => (
   <View>
     <StatusBar style="auto" />
