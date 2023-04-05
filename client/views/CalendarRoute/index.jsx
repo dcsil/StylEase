@@ -6,22 +6,29 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import outfit1 from './outfit1.jpg';
 import outfit2 from './outfit2.jpg';
 import outfit3 from './outfit3.jpg';
+import { useDispatch, useSelector } from 'react-redux';
 
 const LeftContent = props => <Avatar.Icon {...props} icon="folder" />
+
+const log = console.log
 
 export const CalendarRoute = ({ navigation }) => {
     const [items, setItems] = useState();
     const [selectedDate, setSelectedDate] = useState();
+
+    const user = useSelector(state => state.user);
+    const outfits = user.outfits
+    log(outfits)
 
     const renderItem = (item) => {
       console.log('render item', item);
 
       return(
         <Card style={[styles.item]}>
-          <Card.Title title={item.name} left={LeftContent} />
+          <Card.Title title={item.occasion} left={LeftContent} />
           <Card.Content>
             <Text variant="titleLarge">{item.name}</Text>
-            <Text variant="bodyMedium">Location: Alo</Text>
+            <Text variant="bodyMedium">{item.Location}</Text>
           </Card.Content>
           <Card.Cover source={item.path} />
           <Card.Actions>
@@ -58,8 +65,9 @@ export const CalendarRoute = ({ navigation }) => {
         <View style={{height: '90%'}}>
         <Agenda
           items={{
-            '2023-04-03': [{name: 'Date outfit', path: outfit1}],
-            '2023-04-05': [{name: 'Ball Night', path: outfit2}, {name: 'Y2K', path: outfit3}]
+            '2023-04-03': [{name: 'Outfit1', occasion: 'Date', Location: 'Alo', path: outfit1}],
+            '2023-04-05': [{name: 'Outfit2', occasion: 'Ball Night', Location: 'School', path: outfit2}, 
+                           {name: 'Outfit3', occasion: 'Daily', Location: 'Dinner',path: outfit3}]
           }}
           loadItemsForMonth={month => {
             console.log('trigger items loading');
@@ -94,6 +102,7 @@ export const CalendarRoute = ({ navigation }) => {
           theme={{
             todayTextColor: '#6a5acd',
             dayTextColor: '#2d4150',
+            selectedDayBackgroundColor: '#6a5acd',
           }}
       />
       </View>
