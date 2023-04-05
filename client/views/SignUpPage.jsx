@@ -31,7 +31,7 @@ export const SignupPage = ({ navigation }) => {
   };
 
   const handleLogin = () => {
-    navigation.goBack(); // navigate back to the login page
+    navigation.navigate("Login"); // navigate back to the login page
   };
 
   return (

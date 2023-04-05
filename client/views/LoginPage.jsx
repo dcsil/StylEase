@@ -77,10 +77,11 @@ export const LoginPage = ({ navigation }) => {
   };
 
   const handleSignup = () => {
-    // navigate to signup page here
+    navigation.navigate("SignUp");
   };
 
   const handleForgotPassword = () => {
+    // avigation.navigate("SignUp");
     // navigate to forgot password page here
   };
 
