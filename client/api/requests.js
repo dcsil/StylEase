@@ -36,3 +36,20 @@ export const uploadOutfit = (outfitData, collectionName) => {
     outfit_collection: collectionName,
   });
 }
+
+export const Login = (email, pswd) => { 
+  console.log(email, pswd);
+  return post(`/Login`, {
+    email: email,
+    password: pswd,
+  });
+}
+
+export const SignUp = (name, email, pswd) => { 
+
+  return post(`/Register`, {
+    name: name,
+    email: email,
+    password: pswd,
+  });
+}

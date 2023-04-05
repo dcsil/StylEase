@@ -81,12 +81,14 @@ export const UserSlice = createSlice({
   initialState: {
     loading: false,
     userInfo: {
-      _id: '64237961038602a02a81cd92',
+      _id: null,
       data: null
     }
   },
   reducers: {
-
+    setUserId: (state, action) => { 
+      state.userInfo._id = action.payload;
+    },
   },
   extraReducers: (builder) => {
     // #region fetchUserInfo
@@ -142,6 +144,6 @@ export const UserSlice = createSlice({
 });
 
 export const {
-
+  setUserId
 } = UserSlice.actions;
 export default UserSlice.reducer;
