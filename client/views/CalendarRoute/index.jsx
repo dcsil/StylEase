@@ -35,7 +35,7 @@ export const CalendarRoute = ({ navigation }) => {
     const renderItem = (item) => {
       return(
         <Card style={[styles.item]} 
-        onPress = {() => navigation.navigate('Event-item', {
+        onPress = {() => navigation.navigate('Calendar-item', {
           item: item,
           selectedDate: selectedDate,
         })}
@@ -126,7 +126,7 @@ export const CalendarRoute = ({ navigation }) => {
       <FAB
         style={styles.fab}
         icon={(props) => <Icon name="plus" {...props} />}
-        onPress={() => navigation.navigate('Add-event-item', {
+        onPress={() => navigation.navigate('Calendar-add-item', {
           selectedDate: selectedDate,
         })}
       />

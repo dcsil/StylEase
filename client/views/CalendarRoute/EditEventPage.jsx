@@ -1,0 +1,76 @@
+import React, { useState } from 'react';
+import { Alert, StatusBar, View, StyleSheet } from 'react-native';
+import { Appbar, Banner, TextInput, Button } from 'react-native-paper';
+
+export const EditEventPage = ({ route, navigation }) => {
+    const { item, selectedDate } = route.params;
+    const [visible, setVisible] = useState(false);
+
+    const [name, setName] = React.useState(item.name);
+    const [occasion, setOccasion] = React.useState(item.occasion);
+
+    const editEvent = () => {
+        // TODO: push a new Item to the specific date
+        setVisible(true);
+        console.log('added')
+    }
+
+    const onEdit = () => {
+        Alert.alert('Add New Event', 'Are you sure to submit?', [
+            {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+            },
+            {text: 'Confirm', onPress: () => editEvent()},]);
+    }
+
+    const onCancel = () => {
+        Alert.alert('Warning', 'Are you sure to cancel? \nAll the changes will not be saved', [
+            {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+            },
+            {text: 'Confirm', onPress: () => navigation.goBack()},]);
+    }
+
+    return(
+        <View style={styles.container}>
+            <StatusBar barStyle="auto" />
+            <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
+              <Appbar.BackAction onPress={() => { navigation.goBack() }} />
+              <Appbar.Content title={selectedDate.dateString}/>
+            </Appbar.Header>
+            <Banner
+            visible={visible}
+            actions={[
+              {
+                label: 'OK',
+                onPress: () => {
+                    setVisible(false)
+                    navigation.goBack()
+                },
+              },
+            ]}>
+            Edited successfully! 
+        </Banner>
+        <TextInput label="Name" value={name} onChangeText={text => setName(text)}/>
+        <TextInput label="Occasion (Optional)" value={occasion} onChangeText={text => setOccasion(text)}/>
+        <Button onPress={() => onEdit()}>Confirm</Button>
+        <Button textColor='#f05353' onPress={() => onCancel()}>Cancel</Button>
+        </View>
+    )
+
+}
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    fab: {
+      position: 'absolute',
+      bottom: 20,
+      right: 20,
+    },
+  });

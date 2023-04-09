@@ -89,8 +89,8 @@ export const AddEventPage = ({ route, navigation }) => {
             ]}>
             Added successfully! 
         </Banner>
-        <TextInput label="Name" value={name} onChangeText={text => setName(name)}/>
-        <TextInput label="Occasion (Optional)" value={occasion} onChangeText={text => setOccasion(occasion)}/>
+        <TextInput label="Name" value={name} onChangeText={text => setName(text)}/>
+        <TextInput label="Occasion (Optional)" value={occasion} onChangeText={text => setOccasion(text)}/>
         <Text variant="bodyMedium">Please select your outfit: </Text>
         {selectedItem === undefined ? 
         <View

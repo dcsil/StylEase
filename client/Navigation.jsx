@@ -11,6 +11,7 @@ import { OutfitEditPage_wardrobe } from './views/OutfitRoute/OutfitEditPage-ward
 import { OutfitEditPage_ai } from './views/OutfitRoute/OutfitEditPage-ai';
 import { OutfitAIConfigPage } from './views/OutfitRoute/OutfitAIConfigPage';
 import { OutfitWardrobeConfigPage } from './views/OutfitRoute/OutfitWardrobeConfigPage';
+import { EditEventPage } from './views/CalendarRoute/EditEventPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,8 +24,10 @@ export const Navigation = () => {
         <Stack.Screen name="Main" component={MainPage} options={{ headerShown: false, }} />
         
         <Stack.Screen name="Wardrobe-item" component={WardrobeItemPage} options={{ headerShown: false, }} />
-        <Stack.Screen name="Event-item" component={EventPage} options={{ headerShown: false, }} />
-        <Stack.Screen name="Add-event-item" component={AddEventPage} options={{ headerShown: false, }} />
+
+        <Stack.Screen name="Calendar-item" component={EventPage} options={{ headerShown: false, }} />
+        <Stack.Screen name="Calendar-add-item" component={AddEventPage} options={{ headerShown: false, }} />
+        <Stack.Screen name="Calendar-edit-item" component={EditEventPage} options={{ headerShown: false, }} />
         
         <Stack.Screen name="Outfit-new-from_wardrobe_edit" component={OutfitEditPage_wardrobe} options={{ headerShown: false, }} />
         <Stack.Screen name="Outfit-new-from_ai_edit" component={OutfitEditPage_ai} options={{ headerShown: false, }} />

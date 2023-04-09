@@ -8,7 +8,10 @@ export const EventPage = ({ route, navigation }) => {
 
 
     const onEdit = () => {
-
+        navigation.navigate("Calendar-edit-item", {
+            item: item,
+            selectedDate: selectedDate,
+          });
     }
 
     const deleteItem = () => {
