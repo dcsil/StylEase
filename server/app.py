@@ -117,67 +117,6 @@ def get_user(userid):
                'user': target
            }, 200
 
-
-# Calendar Methods
-# Updating methods
-@app.route('/api/createOccasion', methods=['POST'])
-def createOccasion():
-    body = request.get_json()
-    userid = body['userid']
-    date = body['date']
-    # occasion in the format if {'name': 'Birthday Party', 'date': '2021-03-15', 'planned_outfits': [], 'place': 'Home'}
-    occasion = body['occasion']
-    # Insert the occasion to db.occasions
-    occasion_id = client.db.occasions.insert_one(occasion).inserted_id
-    # Find the day of the user
-    target = client.db.calendar.find_one({'user': userid})
-    date_db = find_day_by_date(client, target, date)
-    # Check if is tuple
-    if isinstance(date_db, tuple):
-        return date_db
-    data_db_id = date_db['_id']
-    # Add the occasion to the day
-    current_occasions = date_db['occasions']
-    # Convert the occasion_id to string
-    occasion_id = str(occasion_id)
-    current_occasions.append(occasion_id)
-    # Update the day
-    try:
-        # client.db.days.update_one(date_db, {'$set': {'occasions': current_occasions}})
-        client.db.days.update_one({'_id': ObjectId(data_db_id)}, {'$set': {'occasions': current_occasions}})
-    except Exception as e:
-        return {
-            'status': 'fail to update',
-            'error': str(e)
-        }, 400
-    return {
-        'status': 'success',
-        'occasion_name': occasion['name']
-    }, 200
-
-
-@app.route('/api/getOccationByDate', methods=['POST'])
-def getOccasionByDate():
-    body = request.get_json()
-    userid = body['userid']
-    date = body['date']
-    target = client.db.calendar.find_one({'user': userid})
-    date_db = find_day_by_date(client, target, date)
-    occ_lst = []
-    for occasion in date_db['occasions']:
-        occasion_example = client.db.occasions.find_one({'_id': ObjectId(occasion)})
-        occ_lst.append(occasion_example['name'])
-    if occ_lst:
-        return {
-            'status': 'success',
-            'response': occ_lst
-               }, 200
-    else:
-        return {
-            'status': 'occasions are not found',
-        }, 404
-
-
 # Clothing methods
 @app.route('/api/ScanNewItem', methods=['POST'])
 def detect_item():
@@ -500,3 +439,198 @@ def createAIOutfit():
         'status': 'success',
         'ai_outfit': outfit
     }, 200
+
+
+# # Calendar Methods
+# # Updating methods
+# @app.route('/api/createOccasion', methods=['POST'])
+# def createOccasion():
+#     body = request.get_json()
+#     userid = body['userid']
+#     date = body['date']
+#     # occasion in the format if {'name': 'Birthday Party', 'date': '2021-03-15', 'planned_outfits': [], 'place': 'Home'}
+#     occasion = body['occasion']
+#     # Insert the occasion to db.occasions
+#     occasion_id = client.db.occasions.insert_one(occasion).inserted_id
+#     # Find the day of the user
+#     target = client.db.calendar.find_one({'user': userid})
+#     date_db = find_day_by_date(client, target, date)
+#     # Check if is tuple
+#     if isinstance(date_db, tuple):
+#         return date_db
+#     data_db_id = date_db['_id']
+#     # Add the occasion to the day
+#     current_occasions = date_db['occasions']
+#     # Convert the occasion_id to string
+#     occasion_id = str(occasion_id)
+#     current_occasions.append(occasion_id)
+#     # Update the day
+#     try:
+#         # client.db.days.update_one(date_db, {'$set': {'occasions': current_occasions}})
+#         client.db.days.update_one({'_id': ObjectId(data_db_id)}, {'$set': {'occasions': current_occasions}})
+#     except Exception as e:
+#         return {
+#             'status': 'fail to update',
+#             'error': str(e)
+#         }, 400
+#     return {
+#         'status': 'success',
+#         'occasion_name': occasion['name']
+#     }, 200
+#
+#
+# @app.route('/api/getOccationByDate', methods=['POST'])
+# def getOccasionByDate():
+#     body = request.get_json()
+#     userid = body['userid']
+#     date = body['date']
+#     target = client.db.calendar.find_one({'user': userid})
+#     date_db = find_day_by_date(client, target, date)
+#     occ_lst = []
+#     for occasion in date_db['occasions']:
+#         occasion_example = client.db.occasions.find_one({'_id': ObjectId(occasion)})
+#         occ_lst.append(occasion_example['name'])
+#     if occ_lst:
+#         return {
+#             'status': 'success',
+#             'response': occ_lst
+#                }, 200
+#     else:
+#         return {
+#             'status': 'occasions are not found',
+#         }, 404
+#
+#
+# @app.route('/api/AddOutfittoOccasion', methods=['POST'])
+# def addoutfittoocc():
+#     body = request.get_json()
+#     occ_id = body['occ_id']
+#     outfit_id = body['outfit_id']
+#     occ_target = find_by_id(client, 'occasions', occ_id)
+#     outfit_lst = occ_target['planned_outfits']
+#     outfit_lst.append(outfit_id)
+#     try:
+#         # client.db.days.update_one(date_db, {'$set': {'occasions': current_occasions}})
+#         client.db.days.update_one({'_id': ObjectId(occ_id)}, {'$set': {'occasions': current_occasions}})
+#     except Exception as e:
+#         return {
+#             'status': 'fail to add to outfit plan',
+#             'error': str(e)
+#         }, 400
+#
+#     else:
+#         return {
+#             'status': 'occasions are not found',
+#         }, 404
+
+
+# 1. GET: user calendar里的所有day
+# 2. POST: add a new plan to a day
+# 3. UPDATE: update a new plan
+# 4. DELETE: delete plan
+
+@app.route('/api/GetAllDays/<userid>', methods=['GET'])
+def getalldays(userid):
+    target_user = find_by_id(client, 'users', userid)
+    if isinstance(target_user, tuple):
+        return target_user
+    calendar_id = target_user['calendar']
+    target_calendar = find_by_id(client, 'calendars', calendar_id)
+    if isinstance(target_calendar, tuple):
+        return target_calendar
+    days = target_calendar['days']
+    days_lst = []
+    for day_id in days:
+        day = find_by_id(client, 'days', day_id)
+        if isinstance(day, tuple):
+            return day
+        days_lst.append(day)
+    return {
+        'status': 'success',
+        'days': days_lst
+    }, 200
+
+
+# Add a new plan to a day
+@app.route('/api/AddPlanToDay', methods=['POST'])
+def addplantoday():
+    body = request.get_json()
+    day_id = body['day_id']
+    plan = body['plan']
+    # Find the day
+    target_day = find_by_id(client, 'days', day_id)
+    if isinstance(target_day, tuple):
+        return target_day
+    # Insert the plan to db.plans
+    plan_id = client.db.plans.insert_one(plan).inserted_id
+    # Add the plan to the day
+    plans = target_day['plans']
+    plans.append(plan_id)
+    # Update the day
+    try:
+        client.db.days.update_one({'_id': ObjectId(day_id)}, {'$set': {'plans': plans}})
+    except Exception as e:
+        return {
+            'status': 'fail to add plan to day',
+            'error': str(e)
+        }, 400
+    return {
+        'status': 'success',
+        'plan_id': plan_id
+    }, 200
+
+
+# Update a plan
+@app.route('/api/UpdatePlan', methods=['UPDATE'])
+def updateplan():
+    body = request.get_json()
+    plan_id = body['plan_id']
+    plan = body['plan']
+    try:
+        client.db.plans.update_one({'_id': ObjectId(plan_id)}, {'$set': plan})
+    except Exception as e:
+        return {
+            'status': 'fail to update plan',
+            'error': str(e)
+        }, 400
+    return {
+        'status': 'success',
+        'plan_id': plan_id
+    }, 200
+
+
+# Delete a plan
+@app.route('/api/DeletePlan', methods=['DELETE'])
+def deleteplan():
+    # Delete the id from the day
+    body = request.get_json()
+    day_id = body['day_id']
+    plan_id = body['plan_id']
+    # Find the day
+    target_day = find_by_id(client, 'days', day_id)
+    if isinstance(target_day, tuple):
+        return target_day
+    # Delete the plan from the day
+    plans = target_day['plans']
+    plans.remove(plan_id)
+    # Update the day
+    try:
+        client.db.days.update_one({'_id': ObjectId(day_id)}, {'$set': {'plans': plans}})
+    except Exception as e:
+        return {
+            'status': 'fail to delete plan from day',
+            'error': str(e)
+        }, 400
+    # Delete the plan from db.plans
+    try:
+        client.db.plans.delete_one({'_id': ObjectId(plan_id)})
+    except Exception as e:
+        return {
+            'status': 'fail to delete plan from db',
+            'error': str(e)
+        }, 400
+    return {
+        'status': 'success',
+        'plan_id': plan_id
+    }, 200
+

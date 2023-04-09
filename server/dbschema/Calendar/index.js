@@ -16,7 +16,7 @@ const Day = new mongoose.Schema({
     date: {
         type: Date,
     },
-    items: {
+    plans: {
         type: [mongoose.Schema.Types.ObjectId],
     }
 });
