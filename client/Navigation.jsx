@@ -1,5 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AddEventPage } from './views/CalendarRoute/AddEventPage';
+import { EventPage } from './views/CalendarRoute/EventPage';
 
 import { LoginPage } from './views/LoginPage';
 import { MainPage } from './views/MainPage';
@@ -15,7 +17,8 @@ export const Navigation = () => {
         <Stack.Screen name="Main" component={MainPage} options={{ headerShown: false, }} />
         
         <Stack.Screen name="Wardrobe-item" component={WardrobeItemPage} options={{ headerShown: false, }} />
-        
+        <Stack.Screen name="Event-item" component={EventPage} options={{ headerShown: false, }} />
+        <Stack.Screen name="Add-event-item" component={AddEventPage} options={{ headerShown: false, }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

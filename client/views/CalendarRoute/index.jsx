@@ -14,27 +14,38 @@ const log = console.log
 
 export const CalendarRoute = ({ navigation }) => {
     const [items, setItems] = useState();
-    const [selectedDate, setSelectedDate] = useState();
+    var curr_date = new Date();
+    const current_date = {
+      dateString: curr_date.toJSON().slice(0, 10),
+      day: curr_date.getDay(),
+      month: curr_date.getMonth(),
+      timestamp: curr_date.getTime(),
+      year: curr_date.getFullYear()
+    }
+    const [selectedDate, setSelectedDate] = useState(current_date);
+    const [userOutfits, setUserOutfits] = useState();
 
     const user = useSelector(state => state.user);
-    const outfits = user.outfits
-    log(outfits)
+    const outfits = user.outfits;
+    // setUserOutfits(outfits);r
+
+    // TODO: API fetch items from calendar. 
+    // setItems(items);
 
     const renderItem = (item) => {
-      console.log('render item', item);
-
       return(
-        <Card style={[styles.item]}>
+        <Card style={[styles.item]} 
+        onPress = {() => navigation.navigate('Event-item', {
+          item: item,
+          selectedDate: selectedDate,
+        })}
+        >
           <Card.Title title={item.occasion} left={LeftContent} />
           <Card.Content>
             <Text variant="titleLarge">{item.name}</Text>
-            <Text variant="bodyMedium">{item.Location}</Text>
+            <Text variant="bodyMedium">{item.locaiton}</Text>
           </Card.Content>
           <Card.Cover source={item.path} />
-          <Card.Actions>
-            <Button>Edit</Button>
-            <Button>Delete</Button>
-          </Card.Actions>
         </Card>
       );
     }
@@ -65,21 +76,25 @@ export const CalendarRoute = ({ navigation }) => {
         <View style={{height: '90%'}}>
         <Agenda
           items={{
-            '2023-04-03': [{name: 'Outfit1', occasion: 'Date', Location: 'Alo', path: outfit1}],
-            '2023-04-05': [{name: 'Outfit2', occasion: 'Ball Night', Location: 'School', path: outfit2}, 
-                           {name: 'Outfit3', occasion: 'Daily', Location: 'Dinner',path: outfit3}]
+            '2023-04-08': [{name: 'Outfit1', createdTime:new Date(), occasion: 'Date', Location: 'Alo', path: outfit1}],
+            '2023-04-09': [{name: 'Outfit2', createdTime:new Date(), occasion: 'Ball Night', Location: 'School', path: outfit2}, 
+                           {name: 'Outfit3', createdTime:new Date(), path: outfit3}]
           }}
           loadItemsForMonth={month => {
-            console.log('trigger items loading');
+            return;
           }}
           onCalendarToggled={calendarOpened => {
-            console.log(calendarOpened);
+            return;
           }}
           selected={new Date().toJSON().slice(0, 10)}
           onDayPress={(day) => {
             setSelectedDate(day);
-            console.log('day pressed');
+            log();
           }}
+          onDayChange={(day) => {
+            setSelectedDate(day);
+          }}
+          showOnlySelectedDayItems={true}
           pastScrollRange={50}
           futureScrollRange={50}
           renderItem={(item, firstItemInDay) => {
@@ -103,12 +118,17 @@ export const CalendarRoute = ({ navigation }) => {
             todayTextColor: '#6a5acd',
             dayTextColor: '#2d4150',
             selectedDayBackgroundColor: '#6a5acd',
+            agendaTodayColor: '#6a5acd',
+            dotColor: '#6a5acd',
           }}
       />
       </View>
       <FAB
         style={styles.fab}
         icon={(props) => <Icon name="plus" {...props} />}
+        onPress={() => navigation.navigate('Add-event-item', {
+          selectedDate: selectedDate,
+        })}
       />
     </View>
     );
@@ -142,10 +162,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     right: 20,
-  },
-  stretch: {
-    width: '100%',
-    height: '90%',
-    resizeMode: 'cover',
   },
 });
