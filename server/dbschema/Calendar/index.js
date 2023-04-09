@@ -16,18 +16,13 @@ const Day = new mongoose.Schema({
     date: {
         type: Date,
     },
-    occasions: {
+    items: {
         type: [mongoose.Schema.Types.ObjectId],
-    },
-    planned_outfits: {
-        type: [mongoose.Schema.Types.ObjectId],
-    },
-    weather: {
-        type: mongoose.Schema.Types.Mixed,
     }
 });
 
-const OccasionSchema = new mongoose.Schema({
+
+const PlanSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
     },
@@ -38,18 +33,20 @@ const OccasionSchema = new mongoose.Schema({
     date: {
         type: Date,
     },
+    createdTime: {
+        type: Date,
+    },
     planned_outfits: {
         type: [mongoose.Schema.Types.ObjectId],
     },
-    place: {
+    occasion: {
         type: String,
     }
-
 });
 
 module.exports = {
     Calendar: mongoose.model('Calendar', CalendarSchema),
     Day: mongoose.model('Day', Day),
-    Occasion: mongoose.model('Occasion', OccasionSchema)
+    Occasion: mongoose.model('Occasion', PlanSchema)
 }
 
