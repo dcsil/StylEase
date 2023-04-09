@@ -1,17 +1,26 @@
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Button } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
+import { TextInput, Button } from 'react-native-paper';
 
-import { fetchUserData } from "../stores/UserStore";
+import { fetchUserData, setUserId } from "../stores/UserStore";
+import { Login } from "../api/requests";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  input: {
+    width: '100%',
+    marginBottom: 10,
+  },
+  button: {
+    width: '100%',
+    marginBottom: 10,
   },
 });
 
@@ -19,6 +28,8 @@ export const LoginPage = ({ navigation }) => {
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.user.userInfo._id);
   const [content, setContent] = useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   // useEffect(() => {
   //   getName("Taylor Scott").then((result) => {
   //     setContent(result);
@@ -41,15 +52,51 @@ export const LoginPage = ({ navigation }) => {
       }
     ]);
   }
+  const handleSubmit = async () => {
+    const { userid } = await Login(email, password);
+    console.log(userid);
+    await new Promise((resolve) => resolve(dispatch(setUserId(userid))))
+      .then(() => {
+        dispatch(fetchUserData(userid));
+      })
+      .then(() => {
+        navigation.navigate('Main');
+      });
+  };
+
+  const handleSignup = () => {
+    navigation.navigate('SignUp');
+  };
+
+  const handleForgotPassword = () => {
+    // avigation.navigate('SignUp');
+    // navigate to forgot password page here
+  };
 
   return (
     <View style={styles.container}>
-      <Text>StylEase</Text>
-      {/* <Text>{`userId: ${userId}`}</Text> */}
-      <Button icon="cursor-pointer" mode="contained" onPress={alertButtonAction}>
+      <TextInput
+        label="Email"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+      />
+      <TextInput
+        label="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry={true}
+        style={styles.input}
+      />
+      <Button disabled={!email || !password} mode="contained" onPress={handleSubmit} style={styles.button}>
         Login
       </Button>
-      <StatusBar style="auto" />
+      <Button onPress={handleSignup} style={styles.button}>
+        Sign up
+      </Button>
+      <Button onPress={handleForgotPassword} style={styles.button}>
+        Forgot password or username
+      </Button>
     </View>
   );
-}
+};
