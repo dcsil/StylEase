@@ -61,7 +61,7 @@ export const OutfitAIConfigPage = ({ navigation }) => {
       flex: 1,
     }}>
       <StatusBar barStyle="auto" />
-      <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
+      <Appbar.Header statusBarHeight={30} style={{ paddingBottom: 0 }}>
         <Appbar.BackAction onPress={() => { navigation.goBack() }} />
       </Appbar.Header>
 
@@ -108,7 +108,7 @@ export const OutfitAIConfigPage = ({ navigation }) => {
               marginTop: 10,
             }}
           >
-            Select any item in your wardrobe:
+            Select items from your wardrobe:
           </Text>
           <ScrollView horizontal={true} scrollEnabled={false} contentContainerStyle={{
             width: '100%',

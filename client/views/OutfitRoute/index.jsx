@@ -47,7 +47,7 @@ export const OutfitRoute = ({ navigation }) => {
   }, [])
 
   const onLayout = React.useCallback(() => {
-    const { width } = Dimensions.get('window');
+    const { width } = Dimensions.get('window').width;
     const itemWidth = IMAGE_WIDTH
     const numColumns = Math.floor((width - 22) / itemWidth)
     setNumColumns(numColumns)
@@ -56,33 +56,36 @@ export const OutfitRoute = ({ navigation }) => {
   return (
     <View style={styles.container} onLayout={onLayout}>
       <StatusBar barStyle="auto" />
-      <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
+      <Appbar.Header statusBarHeight={30} style={{ paddingBottom: 0 }}>
         <Appbar.Content title="Outfit" />
       </Appbar.Header>
       <View
-        style={{ flex: 1 }}
+        // style={{ flex: 1 }}
       >
         <List.Section
-          style={{ flex: 1 }}
+          // style={{ flex: 1 }}
         >
           <FlatList
-            // key={`${displayedItems.length}items`}
+            key={`items`}
             style={{ width: '100%' }}
             // contentContainerStyle={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}
             numColumns={1}
             directionalLockEnabled={true}
             data={(outfits && outfits.length === 0) ? [] : outfits[0].outfits}
+            keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
               <Card
-                contentStyle={{ marginTop: 5 }}
+                contentStyle={{ marginTop: 5}}
                 style={{ marginBottom: 10, alignSelf: 'center', width: Dimensions.get('window').width * 0.85 }}
+                
                 mode='outlined'
               >
                 <View style={{ marginHorizontal: 5 }}>
                   <FlatList
                     key={`OutfitRoute-${numColumns}`}
-                    // style={{ flex: 1 }}
-                    numColumns={numColumns}
+                    style={{ flex: 1 }}
+                    // contentContainerStyle={{display: "flex", flexWrap: 'wrap', }}
+                    numColumns={4}
                     directionalLockEnabled={true}
                     data={item.items}
                     renderItem={({ item }) => (
@@ -108,7 +111,6 @@ export const OutfitRoute = ({ navigation }) => {
                 />
               </Card>
             )}
-            keyExtractor={(item) => item._id}
           />
         </List.Section>
       </View>
