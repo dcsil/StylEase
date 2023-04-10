@@ -85,19 +85,46 @@ def register():
             'status': 'fail',
             'error': 'Email already exists'
         }, 400
+    try:
+        # Encrypt the password
+        password = sha256_crypt.encrypt(password)
+        # Insert the user to db.users
+        userid = client.db.users.insert_one({
+            'name': name,
+            'email': email,
+            'password': password,
+            'calendar': '',
+            'wardrobe': '',
+            'outfits': [],
+            'outfit_collections': []
+        }).inserted_id
 
-    # Encrypt the password
-    password = sha256_crypt.encrypt(password)
-    # Insert the user to db.users
-    userid = client.db.users.insert_one({
-        'name': name,
-        'email': email,
-        'password': password,
-        'calendar': '',
-        'wardrobe': '',
-        'outfits': [],
-        'outfit_collections': []
-    }).inserted_id
+        # Create a calendar for the user
+        calendar = {
+          "user": str(userid),
+          "created_time": datetime.now(),
+          "days": []
+        }
+
+        # Create a wardrobe for the user
+        wardrobe = {
+            "user": str(userid),
+            "created_time": datetime.now(),
+            "items": []
+            }
+
+        # Insert the calendar and wardrobe to db.calendars and db.wardrobes
+        cal_id = client.db.calendars.insert_one(calendar).inserted_id
+        war_id = client.db.wardrobes.insert_one(wardrobe).inserted_id
+
+        # Update the calendar and wardrobe id in db.users
+        client.db.users.update_one({'_id': ObjectId(userid)}, {'$set': {'calendar': str(cal_id)}})
+        client.db.wardrobes.update_one({'_id': ObjectId(userid)}, {'$set': {'wardrobe': str(war_id)}})
+    except Exception as e:
+        return {
+            'status': 'fail',
+            'error': str(e)
+        }, 400
 
     return {
         'status': 'success',
@@ -153,32 +180,24 @@ def addNewItem():
         target = find_by_id(client, 'users', userid)
         if isinstance(target, tuple):
             return target
-        if target['wardrobe']:
-            wardrobe_id = target['wardrobe']
-            wardrobe = find_by_id(client, 'wardrobes', wardrobe_id)
-            if isinstance(wardrobe, tuple):
-                return wardrobe
-            current_items = wardrobe['items']
-            item_id = str(item_id)
-            current_items.append(item_id)
-            try:
-                client.db.wardrobes.update_one({'_id': ObjectId(wardrobe_id)}, {'$set': {'items': current_items}})
-            except Exception as e:
-                return {
-                    'status': 'fail to update',
-                    'error': str(e)
-                }, 400
+        wardrobe_id = target['wardrobe']
+        wardrobe = find_by_id(client, 'wardrobes', wardrobe_id)
+        if isinstance(wardrobe, tuple):
+            return wardrobe
+        current_items = wardrobe['items']
+        item_id = str(item_id)
+        current_items.append(item_id)
+        try:
+            client.db.wardrobes.update_one({'_id': ObjectId(wardrobe_id)}, {'$set': {'items': current_items}})
+        except Exception as e:
             return {
-                'status': 'success'
-            }, 200
-        else:
-            return {
-                'status': 'user has no wardrobe',
-            }, 404
-    else:
-        return {
-            'status': 'success'
-        }, 200
+                'status': 'fail to update',
+                'error': str(e)
+            }, 400
+
+    return {
+        'status': 'success'
+    }, 200
 
 
 @app.route('/api/AddNewOutfit', methods=['POST'])
@@ -333,9 +352,9 @@ def getOutfitCollection(userid):
     target = find_by_id(client, 'users', userid)
     if isinstance(target, tuple):
         return target
+    outfit_collections_lst = []
     if target['outfit_collections']:
         outfit_collections_id_lst = target['outfit_collections']
-        outfit_collections_lst = []
         for outfits_collection_id in outfit_collections_id_lst:
             outfits_collection = find_by_id(client, 'outfitcollections', outfits_collection_id)
             if isinstance(outfits_collection, tuple):
@@ -353,15 +372,11 @@ def getOutfitCollection(userid):
             outfits_collection['outfits'] = outfits_lst
             outfits_collection['_id'] = str(target['_id'])
             outfit_collections_lst.append(outfits_collection)
-
-        return {
-            'status': 'success',
-            'outfit_collections': outfit_collections_lst
-        }, 200
-    else:
-        return {
-            'status': 'user has no outfit collection',
-        }, 404
+    status = 'success' if outfit_collections_lst else 'user has no outfit collections'
+    return {
+        'status': status,
+        'outfit_collections': outfit_collections_lst
+    }, 200
 
 
 # Present formated outfits to the user
@@ -482,14 +497,11 @@ def addplantoday():
     creator = plan['user']
     # Find the user
     target_user = find_by_id(client, 'users', creator)
-    if isinstance(target_user, tuple):
-        return target_user
     # Find the calendar
     calendar_id = target_user['calendar']
     target_calendar = find_by_id(client, 'calendar', calendar_id)
-    if isinstance(target_calendar, tuple):
-        return target_calendar
     # Find whether the date is in the calandar days
+    added = False
     for day_id in target_calendar['days']:
         day = find_by_id(client, 'days', day_id)
         if isinstance(day, tuple):
@@ -500,36 +512,47 @@ def addplantoday():
             # Update the day
             try:
                 client.db.days.update_one({'_id': ObjectId(day_id)}, {'$set': {'plans': plans}})
+                added = True
             except Exception as e:
                 return {
                            'status': 'fail to add plan to day',
                            'error': str(e)
                        }, 400
-            return {
-                       'status': 'success',
-                       'plan_id': str(plan_id)
-                   }, 200
+
     # If the date is not in the calendar days, create a new day
-    new_day = {
-        'date': date,
-        'plans': [str(plan_id)]
-    }
-    day_id = client.db.days.insert_one(new_day).inserted_id
-    # Update the calendar
-    days = target_calendar['days']
-    days.append(str(day_id))
-    try:
-        client.db.calendar.update_one({'_id': ObjectId(calendar_id)}, {'$set': {'days': days}})
-    except Exception as e:
-        return {
-                   'status': 'fail to add plan to day',
-                   'error': str(e)
-               }, 400
+    if not added:
+        new_day = {
+            'date': date,
+            'plans': [str(plan_id)]
+        }
+        day_id = client.db.days.insert_one(new_day).inserted_id
+        # Update the calendar
+        days = target_calendar['days']
+        days.append(str(day_id))
+        try:
+            client.db.calendar.update_one({'_id': ObjectId(calendar_id)}, {'$set': {'days': days}})
+        except Exception as e:
+            return {
+                       'status': 'fail to add plan to day',
+                       'error': str(e)
+                   }, 400
     return {
                 'status': 'success',
                 'plan_id': str(plan_id)
               }, 200
 
+
+# Get a plan
+@app.route('/api/GetPlan/<planid>', methods=['GET'])
+def getplan(planid):
+    plan = find_by_id(client, 'plans', planid)
+    plan.drop('_id')
+    if isinstance(plan, tuple):
+        return plan
+    return {
+        'status': 'success',
+        'plan': plan
+    }, 200
 
 
 # Update a plan
@@ -572,19 +595,14 @@ def deleteplan():
     # Update the day
     try:
         client.db.days.update_one({'_id': ObjectId(day_id)}, {'$set': {'plans': plans}})
-    except Exception as e:
-        return {
-            'status': 'fail to delete plan from day',
-            'error': str(e)
-        }, 400
-    # Delete the plan from db.plans
-    try:
+        # Delete the plan from db.plans
         client.db.plans.delete_one({'_id': ObjectId(plan_id)})
     except Exception as e:
         return {
-            'status': 'fail to delete plan from db',
+            'status': 'fail to delete plan from day or db',
             'error': str(e)
         }, 400
+
     return {
         'status': 'success',
         'plan_id': str(plan_id)
