@@ -6,6 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { imageUriParser } from "../../utils/urlParser";
 import { StatusBar } from "expo-status-bar";
 import { outfitRecommend } from "../../api/requests";
+import { DefaultAppBar } from "../../components/DefaultAppbar";
+import { RenderItem } from "./RenderItem";
+import { RenderChipConfig } from "./RenderChipConfig";
 
 const IMAGE_SIZE = 100;
 const OCCASION_LIST = ["Casual", "Formal", "Sporty", "Work", "Vacation", "Party", "Other"];
@@ -60,10 +63,7 @@ export const OutfitAIConfigPage = ({ navigation }) => {
     <View style={{
       flex: 1,
     }}>
-      <StatusBar barStyle="auto" />
-      <Appbar.Header statusBarHeight={30} style={{ paddingBottom: 0 }}>
-        <Appbar.BackAction onPress={() => { navigation.goBack() }} />
-      </Appbar.Header>
+      <DefaultAppBar title="Outfit AI Config" backActionCallback={() => { navigation.goBack() }} showTitle={false} />
 
       <ScrollView>
         <View style={{
@@ -147,7 +147,7 @@ export const OutfitAIConfigPage = ({ navigation }) => {
                     numColumns={numColumns}
                     directionalLockEnabled={true}
                     data={wardrobeItems}
-                    renderItem={({ item }) => <RenderItem item={item} setWardrobeItems={setWardrobeItems} />}
+                    renderItem={({ item }) => <RenderItem item={item} setWardrobeItems={setWardrobeItems} imgSize={IMAGE_SIZE}/>}
                     keyExtractor={(item) => item._id}
                   />
                 )}
@@ -172,85 +172,6 @@ export const OutfitAIConfigPage = ({ navigation }) => {
         </View>
       </ScrollView>
 
-    </View>
-  )
-}
-
-// render item
-const RenderItem = ({ item, setWardrobeItems }) => {
-  const handlePress = React.useCallback(() => {
-    item.checked = !item.checked;
-    setWardrobeItems(prev => {
-      return prev.map((prevItem) => prevItem._id === item._id ? item : prevItem)
-    });
-  }, []);
-
-  return (
-    <TouchableOpacity onPress={handlePress}>
-      <View style={{
-        position: 'relative',
-        // borderColor: 'blue', borderWidth: 2,
-        flex: 1,
-      }}>
-        <Image
-          source={{
-            uri: imageUriParser(item._id),
-          }}
-          style={{ width: IMAGE_SIZE, height: IMAGE_SIZE, resizeMode: 'stretch', margin: 3 }} />
-        {item.checked && (
-          <View style={{ position: 'absolute', top: 5, right: 5 }}>
-            <Icon name="check" size={20} color="green" />
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-};
-
-// render chip
-const RenderChip = ({ item, curr, setConfig }) => {
-
-  return (
-    <Chip
-      selected={item === curr}
-      onPress={() => setConfig(item)}
-      style={{
-        marginVertical: 5,
-        marginRight: 10,
-      }}
-    >
-      {item}
-    </Chip>
-  )
-}
-
-// render chipConfig 
-const RenderChipConfig = ({ chipList, curr, title, setConfig }) => {
-  const { colors } = useTheme();
-  return (
-    <View style={{
-      display: 'flex', flexDirection: 'column',
-      width: '100%',
-    }}>
-      <List.Section
-        style={{
-        }}>
-        <List.Subheader
-          style={{
-            // color: colors.surface,
-            fontSize: 16,
-            fontWeight: 'bold',
-            paddingLeft: 0,
-          }}
-        >
-          {title}
-        </List.Subheader>
-        <View style={{
-          display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
-        }}>
-          {chipList.map((item) => <RenderChip key={item} item={item} curr={curr} setConfig={setConfig} />)}
-        </View>
-      </List.Section>
     </View>
   )
 }

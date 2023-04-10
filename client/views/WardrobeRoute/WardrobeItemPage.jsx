@@ -2,6 +2,7 @@ import React from 'react';
 import { StatusBar, StyleSheet, View, Text, Dimensions, Image } from 'react-native';
 import { Button, Appbar, List } from 'react-native-paper';
 import { BASE_URL } from '@env';
+import { DefaultAppBar } from '../../components/DefaultAppbar';
 
 
 export const WardrobeItemPage = ({ route, navigation }) => {
@@ -9,11 +10,7 @@ export const WardrobeItemPage = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="auto" />
-      <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
-        <Appbar.BackAction onPress={() => { navigation.goBack() }} />
-        <Appbar.Content title="Item Details" />
-      </Appbar.Header>
+      <DefaultAppBar title="Item Details" backActionCallback={() => { navigation.goBack() }} />
       {/* <Text>{JSON.stringify(item)}</Text> */}
       <Image
         source={{
@@ -21,24 +18,25 @@ export const WardrobeItemPage = ({ route, navigation }) => {
         }}
         style={styles.image} />
       <View>
-        <List.Section  style={styles.listContainer}>
+        <List.Section style={styles.listContainer}>
           <List.Subheader>Details</List.Subheader>
-          {item.name && <List.Item
-            left={() => <Text style={styles.itemLeft}>Name</Text>}
-            right={() => <Text style={styles.itemRight}>{item.name}</Text>} />}
-          {item.brand && <List.Item
-            left={() => <Text style={styles.itemLeft}>Brand</Text>}
-            right={() => <Text style={styles.itemRight}>{item.brand}</Text>} />}
-          {item.type && <List.Item
-            left={() => <Text style={styles.itemLeft}>Type</Text>}
-            right={() => <Text style={styles.itemRight}>{item.type}</Text>} />}
-          {item.color && <List.Item
-            left={() => <Text style={styles.itemLeft}>Color</Text>}
-            right={() => <Text style={styles.itemRight}>{item.color}</Text>} />}
+          {item.name && <ItemDetailLine title="Name" value={item.name} />}
+          {item.brand && <ItemDetailLine title="Brand" value={item.brand} />}
+          {item.type && <ItemDetailLine title="Type" value={item.type} />}
+          {item.color && <ItemDetailLine title="Color" value={item.color} />}
         </List.Section>
       </View>
 
     </View>
+  )
+}
+
+const ItemDetailLine = ({ title, value }) => {
+  return (
+    <List.Item
+      left={() => <Text style={styles.itemLeft}>Type</Text>}
+      right={() => <Text style={styles.itemRight}>{value}</Text>}
+    />
   )
 }
 

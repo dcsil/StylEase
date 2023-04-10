@@ -14,6 +14,10 @@ import { imageUriParser } from '../../utils/urlParser';
 import { useFocusEffect } from '@react-navigation/native';
 import { fetchOutfitsData, fetchWardrobeItems } from '../../stores/UserStore';
 import { uploadOutfit } from '../../api/requests';
+import { DefaultAppBar } from '../../components/DefaultAppbar';
+import { RenderItem } from './RenderItem';
+import { set } from 'react-native-reanimated';
+import { calculateNumCol } from '../../utils/layout';
 
 export const OutfitEditPage_ai = ({ route, navigation }) => {
   const { outfit } = route.params;
@@ -96,12 +100,7 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
   // Wardrobe Tab
   const WardrobeTab = ({ wardrobeItems, setWardrobeItems }) => {
     const [numColumns, setNumColumns] = React.useState(5);
-    const onLayout = React.useCallback(() => {
-      const { width } = Dimensions.get('window');
-      const itemWidth = styles.image.width
-      const numColumns = Math.floor(width / itemWidth)
-      setNumColumns(numColumns)
-    }, [])
+    const onLayout = () => setNumColumns(calculateNumCol(Dimensions, styles.image.width));
     return (
       <View style={{ flex: 1 }}>
         {/* <Text>{ JSON.stringify(wardrobeItems) }</Text> */}
@@ -128,12 +127,7 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
   const RecommendTab = ({ wardrobeItems, setWardrobeItems }) => {
     const [numColumns, setNumColumns] = React.useState(5);
     const items = React.useMemo(() => wardrobeItems.filter(item => item.user !== user.userInfo._id), [wardrobeItems]);
-    const onLayout = React.useCallback(() => {
-      const { width } = Dimensions.get('window')
-      const itemWidth = styles.image.width
-      const numColumns = Math.floor(width / itemWidth)
-      setNumColumns(numColumns)
-    }, [])
+    const onLayout = () => setNumColumns(calculateNumCol(Dimensions, styles.image.width));
     return (
       <View style={{ flex: 1 }}>
         <List.Section style={styles.listSection} onLayout={onLayout}>
@@ -146,7 +140,7 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
               numColumns={numColumns}
               directionalLockEnabled={true}
               data={items}
-              renderItem={({ item }) => <RenderItem item={item} setWardrobeItems={setWardrobeItems} />}
+              renderItem={({ item }) => <RenderItem item={item} setWardrobeItems={setWardrobeItems} imgSize={80} imgStyle={styles.image}/>}
               keyExtractor={(item) => item._id}
             />
           )}
@@ -161,11 +155,7 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
   return (
     <BottomSheetModalProvider>
       <View style={styles.container}>
-        <StatusBar barStyle="auto" />
-        <Appbar.Header statusBarHeight={30} style={{ paddingBottom: 0 }}>
-          <Appbar.BackAction onPress={() => { navigation.goBack() }} />
-          <Appbar.Content title="New Outfit" />
-        </Appbar.Header>
+        <DefaultAppBar title="New Outfit" backActionCallback={() => { navigation.goBack() }}/>
 
         <View style={{ flex: 0.75 }}>
           {/* <Text>{ JSON.stringify(tempOutfit) }</Text> */}
@@ -245,33 +235,3 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
     </BottomSheetModalProvider>
   )
 }
-
-// render item
-const RenderItem = ({ item, setWardrobeItems }) => {
-  const handlePress = React.useCallback(() => {
-    console.log(`Item ${item._id} pressed`);
-    item.checked = !item.checked;
-    // find item in wardrobeItems and replce it using setWardrobeItems
-    setWardrobeItems(prev => {
-      // console.log(JSON.stringify(prev));
-      return prev.map((prevItem) => prevItem._id === item._id ? item : prevItem)
-    });
-  }, []);
-
-  return (
-    <TouchableOpacity onPress={handlePress}>
-      <View style={styles.imageWrapper}>
-        <Image
-          source={{
-            uri: imageUriParser(item._id),
-          }}
-          style={styles.image} />
-        {item.checked && (
-          <View style={styles.IconWrapper}>
-            <Icon name="check" size={20} color="green" />
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-};
