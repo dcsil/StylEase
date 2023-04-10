@@ -629,7 +629,7 @@ def updateplan():
         }, 400
     return {
         'status': 'success',
-        'plan_id': plan_id
+        'plan_id': str(plan_id)
     }, 200
 
 
@@ -646,6 +646,10 @@ def deleteplan():
         return target_day
     # Delete the plan from the day
     plans = target_day['plans']
+    if not plan_id in plans:
+        return {
+            'status': 'plan is not in the day',
+        }, 404
     plans.remove(plan_id)
     # Update the day
     try:
@@ -665,6 +669,6 @@ def deleteplan():
         }, 400
     return {
         'status': 'success',
-        'plan_id': plan_id
+        'plan_id': str(plan_id)
     }, 200
 
