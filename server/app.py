@@ -172,17 +172,15 @@ def addNewItem():
     item_id = client.db.items.insert_one(item).inserted_id
     # Add the item to the user's WARDROBE if userid is given
     if userid != '' and not item['market']:
-        target = find_by_id(client, 'users', userid)
-        if isinstance(target, tuple):
-            return target
-        wardrobe_id = target['wardrobe']
-        wardrobe = find_by_id(client, 'wardrobes', wardrobe_id)
-        if isinstance(wardrobe, tuple):
-            return wardrobe
-        current_items = wardrobe['items']
-        item_id = str(item_id)
-        current_items.append(item_id)
         try:
+            target = find_by_id(client, 'users', userid)
+            wardrobe_id = target['wardrobe']
+            wardrobe = find_by_id(client, 'wardrobes', wardrobe_id)
+            if isinstance(wardrobe, tuple):
+                return wardrobe
+            current_items = wardrobe['items']
+            item_id = str(item_id)
+            current_items.append(item_id)
             client.db.wardrobes.update_one({'_id': ObjectId(wardrobe_id)}, {'$set': {'items': current_items}})
         except Exception as e:
             return {
@@ -231,20 +229,20 @@ def addNewCollection():
     body = request.get_json()
     userid = body['userid']
     collection = body['outfit_collection']
-    # Add new collection to db.outfitcollections
-    collection_id = client.db.outfitcollections.insert_one(collection).inserted_id
-    # Add the collection to the user's WARDROBE
-    target = find_by_id(client, 'users', userid)
-    if isinstance(target, tuple):
-        return target
-    collections_lst = target['outfit_collections']
-    collection_id = str(collection_id)
-    collections_lst.append(collection_id)
     try:
+        # Add new collection to db.outfitcollections
+        collection_id = client.db.outfitcollections.insert_one(collection).inserted_id
+        # Add the collection to the user's WARDROBE
+        target = find_by_id(client, 'users', userid)
+        if isinstance(target, tuple):
+            return target
+        collections_lst = target['outfit_collections']
+        collection_id = str(collection_id)
+        collections_lst.append(collection_id)
         client.db.users.update_one({'_id': ObjectId(userid)}, {'$set': {'outfit_collections': collections_lst}})
     except Exception as e:
         return {
-            'status': 'fail to update',
+            'status': 'fail',
             'error': str(e)
         }, 400
     return {
@@ -487,15 +485,15 @@ def addplantoday():
             'date': date,
             'plans': [str(plan_id)]
         }
-        day_id = client.db.days.insert_one(new_day).inserted_id
-        # Update the calendar
-        days = target_calendar['days']
-        days.append(str(day_id))
         try:
+            day_id = client.db.days.insert_one(new_day).inserted_id
+            # Update the calendar
+            days = target_calendar['days']
+            days.append(str(day_id))
             client.db.calendar.update_one({'_id': ObjectId(calendar_id)}, {'$set': {'days': days}})
         except Exception as e:
             return {
-                       'status': 'fail to add plan to day',
+                       'status': 'fail',
                        'error': str(e)
                    }, 400
     return {
