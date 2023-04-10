@@ -1,4 +1,4 @@
-from app import app
+from server.app import app
 import os
 from dotenv import load_dotenv
 
