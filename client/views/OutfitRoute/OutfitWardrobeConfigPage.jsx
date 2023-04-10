@@ -1,8 +1,8 @@
 import React from "react";
-import { Dimensions, FlatList, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View, VirtualizedList } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import { Appbar, Button, Chip, Divider, List, TextInput, useTheme } from "react-native-paper";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from "react-redux";
+import { RenderChipConfig } from './RenderChipConfig';
 import { imageUriParser } from "../../utils/urlParser";
 import { StatusBar } from "expo-status-bar";
 import { outfitRecommend } from "../../api/requests";
@@ -88,54 +88,6 @@ export const OutfitWardrobeConfigPage = ({ navigation }) => {
         </View>
       </ScrollView>
 
-    </View>
-  )
-}
-
-// render chip
-const RenderChip = ({ item, curr, setConfig }) => {
-
-  return (
-    <Chip
-      selected={item === curr}
-      onPress={() => setConfig(item)}
-      style={{
-        marginVertical: 5,
-        marginRight: 10,
-      }}
-    >
-      {item}
-    </Chip>
-  )
-}
-
-// render chipConfig 
-const RenderChipConfig = ({ chipList, curr, title, setConfig }) => {
-  const { colors } = useTheme();
-  return (
-    <View style={{
-      display: 'flex', flexDirection: 'column',
-      width: '100%',
-    }}>
-      <List.Section
-        style={{
-        }}>
-        <List.Subheader
-          style={{
-            // color: colors.surface,
-            fontSize: 16,
-            fontWeight: 'bold',
-            paddingLeft: 0,
-          }}
-        >
-          {title}
-        </List.Subheader>
-        <View style={{
-          display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
-        }}>
-          {chipList.map((item) => <RenderChip key={item} item={item} curr={curr} setConfig={setConfig} />)}
-        </View>
-      </List.Section>
     </View>
   )
 }
