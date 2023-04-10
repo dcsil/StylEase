@@ -361,8 +361,6 @@ def getOutfitCollection(userid):
 @app.route('/api/GetOutfit/<userid>/<outfitid>', methods=['GET'])
 def getOutfit(userid, outfitid):
     target = find_by_id(client, 'users', userid)
-    if isinstance(target, tuple):
-        return target
     if target['outfits']:
         outfits_id_lst = target['outfits']
         if outfitid in outfits_id_lst:
