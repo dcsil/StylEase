@@ -9,6 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOutfitsData } from '../../stores/UserStore';
 import { imageUriParser } from '../../utils/urlParser';
+import { DefaultAppBar } from '../../components/DefaultAppbar';
 
 const IMAGE_WIDTH = 80;
 
@@ -55,10 +56,7 @@ export const OutfitRoute = ({ navigation }) => {
 
   return (
     <View style={styles.container} onLayout={onLayout}>
-      <StatusBar barStyle="auto" />
-      <Appbar.Header statusBarHeight={30} style={{ paddingBottom: 0 }}>
-        <Appbar.Content title="Outfit" />
-      </Appbar.Header>
+      <DefaultAppBar title="Outfits" />
       <View
         // style={{ flex: 1 }}
       >

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { imageUriParser } from "../../utils/urlParser";
 import { StatusBar } from "expo-status-bar";
 import { outfitRecommend } from "../../api/requests";
+import { DefaultAppBar } from "../../components/DefaultAppbar";
 
 const IMAGE_SIZE = 100;
 const OCCASION_LIST = ["Casual", "Formal", "Sporty", "Work", "Vacation", "Party", "Other"];
@@ -60,10 +61,7 @@ export const OutfitAIConfigPage = ({ navigation }) => {
     <View style={{
       flex: 1,
     }}>
-      <StatusBar barStyle="auto" />
-      <Appbar.Header statusBarHeight={30} style={{ paddingBottom: 0 }}>
-        <Appbar.BackAction onPress={() => { navigation.goBack() }} />
-      </Appbar.Header>
+      <DefaultAppBar title="Outfit AI Config" backActionCallback={() => { navigation.goBack() }} showTitle={false} />
 
       <ScrollView>
         <View style={{

@@ -14,6 +14,7 @@ import { imageUriParser } from '../../utils/urlParser';
 import { useFocusEffect } from '@react-navigation/native';
 import { fetchOutfitsData, fetchWardrobeItems } from '../../stores/UserStore';
 import { uploadOutfit } from '../../api/requests';
+import { DefaultAppBar } from '../../components/DefaultAppbar';
 
 export const OutfitEditPage_wardrobe = ({ route, navigation }) => {
   const { outfit } = route.params;
@@ -107,11 +108,7 @@ export const OutfitEditPage_wardrobe = ({ route, navigation }) => {
   return (
     <BottomSheetModalProvider>
       <View style={styles.container}>
-        <StatusBar barStyle="auto" />
-        <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
-          <Appbar.BackAction onPress={() => { navigation.goBack() }} />
-          <Appbar.Content title="New Outfit" />
-        </Appbar.Header>
+        <DefaultAppBar title="New Outfit" backActionCallback={() => { navigation.goBack() }}/>
 
         <View style={{ flex: 0.75 }}>
           {/* <Text>{ JSON.stringify(tempOutfit) }</Text> */}
