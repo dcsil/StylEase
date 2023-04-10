@@ -535,7 +535,7 @@ def getalldays(userid):
     if isinstance(target_user, tuple):
         return target_user
     calendar_id = target_user['calendar']
-    target_calendar = find_by_id(client, 'calendars', calendar_id)
+    target_calendar = find_by_id(client, 'calendar', calendar_id)
     if isinstance(target_calendar, tuple):
         return target_calendar
     days = target_calendar['days']
@@ -544,6 +544,7 @@ def getalldays(userid):
         day = find_by_id(client, 'days', day_id)
         if isinstance(day, tuple):
             return day
+        day['_id'] = str(day['_id'])
         days_lst.append(day)
     return {
         'status': 'success',
@@ -554,34 +555,67 @@ def getalldays(userid):
 # Add a new plan to a day
 @app.route('/api/AddPlanToDay', methods=['POST'])
 def addplantoday():
-    body = request.get_json()
-    day_id = body['day_id']
-    plan = body['plan']
-    # Find the day
-    target_day = find_by_id(client, 'days', day_id)
-    if isinstance(target_day, tuple):
-        return target_day
+    plan = request.get_json()
+    # day_id = body['day_id']
+    # plan = body['plan']
     # Insert the plan to db.plans
     plan_id = client.db.plans.insert_one(plan).inserted_id
-    # Add the plan to the day
-    plans = target_day['plans']
-    plans.append(plan_id)
-    # Update the day
+    date = plan['date']
+    creator = plan['user']
+    # Find the user
+    target_user = find_by_id(client, 'users', creator)
+    if isinstance(target_user, tuple):
+        return target_user
+    # Find the calendar
+    calendar_id = target_user['calendar']
+    target_calendar = find_by_id(client, 'calendar', calendar_id)
+    if isinstance(target_calendar, tuple):
+        return target_calendar
+    # Find whether the date is in the calandar days
+    for day_id in target_calendar['days']:
+        day = find_by_id(client, 'days', day_id)
+        if isinstance(day, tuple):
+            return day
+        if day['date'] == date:
+            plans = day['plans']
+            plans.append(str(plan_id))
+            # Update the day
+            try:
+                client.db.days.update_one({'_id': ObjectId(day_id)}, {'$set': {'plans': plans}})
+            except Exception as e:
+                return {
+                           'status': 'fail to add plan to day',
+                           'error': str(e)
+                       }, 400
+            return {
+                       'status': 'success',
+                       'plan_id': str(plan_id)
+                   }, 200
+    # If the date is not in the calendar days, create a new day
+    new_day = {
+        'date': date,
+        'plans': [str(plan_id)]
+    }
+    day_id = client.db.days.insert_one(new_day).inserted_id
+    # Update the calendar
+    days = target_calendar['days']
+    days.append(str(day_id))
     try:
-        client.db.days.update_one({'_id': ObjectId(day_id)}, {'$set': {'plans': plans}})
+        client.db.calendar.update_one({'_id': ObjectId(calendar_id)}, {'$set': {'days': days}})
     except Exception as e:
         return {
-            'status': 'fail to add plan to day',
-            'error': str(e)
-        }, 400
+                   'status': 'fail to add plan to day',
+                   'error': str(e)
+               }, 400
     return {
-        'status': 'success',
-        'plan_id': plan_id
-    }, 200
+                'status': 'success',
+                'plan_id': str(plan_id)
+              }, 200
+
 
 
 # Update a plan
-@app.route('/api/UpdatePlan', methods=['UPDATE'])
+@app.route('/api/UpdatePlan', methods=['POST'])
 def updateplan():
     body = request.get_json()
     plan_id = body['plan_id']
@@ -600,7 +634,7 @@ def updateplan():
 
 
 # Delete a plan
-@app.route('/api/DeletePlan', methods=['DELETE'])
+@app.route('/api/DeletePlan', methods=['POST'])
 def deleteplan():
     # Delete the id from the day
     body = request.get_json()
