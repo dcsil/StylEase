@@ -1,4 +1,3 @@
-from data_classes import WardrobeDataset
 from datasets import load_dataset, load_metric
 from transformers import AutoTokenizer
 from transformers import AutoModelForSequenceClassification

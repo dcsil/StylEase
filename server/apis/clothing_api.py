@@ -1,17 +1,13 @@
-import pymongo
-import certifi
-
 from flask import *
-from AI.detection import detect
-from tool_box.finder import *
-import os
+from server.apis.detection import detect
 import base64
 import io
 from flask import Blueprint
+import os
+from server.apis.finder import *
+from server.database import client
 
 clothing_api = Blueprint('clothing_api', __name__)
-
-client = pymongo.MongoClient(os.environ.get("MONGODB_URL"), tlsCAFile=certifi.where())
 
 
 # Clothing methods

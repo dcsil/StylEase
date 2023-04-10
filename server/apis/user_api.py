@@ -1,21 +1,12 @@
 from datetime import datetime
-import pymongo
-import certifi
-from bson import ObjectId
-import flask_pymongo
 from flask import *
-from flask_cors import CORS
-from flask_pymongo import PyMongo
-import sentry_sdk
-from sentry_sdk.integrations.flask import FlaskIntegration
-from dotenv import load_dotenv
-from AI.detection import detect
-from tool_box.finder import *
 import os
-import base64
-import io
 from passlib.hash import sha256_crypt
 from flask import Blueprint
+from server.apis.finder import *
+# from server.app import client
+from server.database import client
+
 
 user_api = Blueprint('user_api', __name__)
 # cors = CORS(user_api)
@@ -23,7 +14,7 @@ user_api = Blueprint('user_api', __name__)
 # user_api.config['MONGO_URI'] = os.environ.get("MONGODB_URL")
 # Connect to MongoDB, where client is the MongoClient object
 # client = flask_pymongo.MongoClient(os.environ.get("MONGODB_URL"))
-client = pymongo.MongoClient(os.environ.get("MONGODB_URL"), tlsCAFile=certifi.where())
+# client = pymongo.MongoClient(os.environ.get("MONGODB_URL"), tlsCAFile=certifi.where())
 
 
 # Login
@@ -112,6 +103,7 @@ def register():
 # GET carries request parameter appended in URL string while POST carries request parameter in message body
 @user_api.route('/api/GetUser/<userid>', methods=['GET'])
 def get_user(userid):
+
     target = find_by_id(client, 'users', userid)
     if isinstance(target, tuple):
         return target

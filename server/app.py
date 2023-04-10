@@ -5,14 +5,16 @@ from flask_cors import CORS
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from dotenv import load_dotenv
-from server.apis.AI.detection import detect
-from server.apis.tool_box.finder import *
+from server.apis.detection import detect
+from server.apis.finder import *
 import os
 import base64
 import io
 from apis.calendar_api import calendar_api
 from apis.user_api import user_api
 from apis.clothing_api import clothing_api
+
+from server.database import client
 
 load_dotenv()
 sentry_sdk.init(
@@ -40,8 +42,10 @@ cors = CORS(app)
 app.config['MONGO_URI'] = os.environ.get("MONGODB_URL")
 # Connect to MongoDB, where client is the MongoClient object
 # client = flask_pymongo.MongoClient(os.environ.get("MONGODB_URL"))
-client = pymongo.MongoClient(os.environ.get("MONGODB_URL"), tlsCAFile=certifi.where())
+
+# client = pymongo.MongoClient(os.environ.get("MONGODB_URL"), tlsCAFile=certifi.where())
 # mongo = PyMongo(app)
+# mongo.init_app(app)
 
 # Register the calendar_api blueprint
 app.register_blueprint(calendar_api)

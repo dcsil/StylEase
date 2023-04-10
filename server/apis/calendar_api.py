@@ -1,18 +1,10 @@
-from datetime import datetime
-import pymongo
-import certifi
 from flask import *
-
-from tool_box.finder import *
 import os
-import base64
-import io
-from passlib.hash import sha256_crypt
 from flask import Blueprint
-
+from server.apis.finder import *
+from server.database import client
 
 calendar_api = Blueprint('calendar_api', __name__)
-client = pymongo.MongoClient(os.environ.get("MONGODB_URL"), tlsCAFile=certifi.where())
 
 
 @calendar_api.route('/api/GetAllDays/<userid>', methods=['GET'])
@@ -99,7 +91,7 @@ def addplantoday():
 @calendar_api.route('/api/GetPlan/<planid>', methods=['GET'])
 def getplan(planid):
     plan = find_by_id(client, 'plans', planid)
-    plan.drop('_id')
+    plan.pop('_id')
     if isinstance(plan, tuple):
         return plan
     return {
