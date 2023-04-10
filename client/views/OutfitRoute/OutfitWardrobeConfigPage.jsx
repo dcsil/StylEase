@@ -41,7 +41,7 @@ export const OutfitWardrobeConfigPage = ({ navigation }) => {
       flex: 1,
     }}>
       <StatusBar barStyle="auto" />
-      <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
+      <Appbar.Header statusBarHeight={30} style={{ paddingBottom: 0 }}>
         <Appbar.BackAction onPress={() => { navigation.goBack() }} />
       </Appbar.Header>
 

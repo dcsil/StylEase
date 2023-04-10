@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useDispatch, useSelector } from "react-redux";
-import { TextInput, Button } from 'react-native-paper';
+import { TextInput, Button, useTheme } from 'react-native-paper';
 
 import { fetchUserData, setUserId } from "../stores/UserStore";
 import { Login } from "../api/requests";
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
-    marginBottom: 10,
+    marginVertical: 10,
   },
 });
 
@@ -30,6 +30,8 @@ export const LoginPage = ({ navigation }) => {
   const [content, setContent] = useState('')
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const {colors} = useTheme();
   // useEffect(() => {
   //   getName("Taylor Scott").then((result) => {
   //     setContent(result);
@@ -75,6 +77,12 @@ export const LoginPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={{
+        color: colors.primary,
+        fontSize: 50,
+        fontWeight: 'bold',
+        marginBottom: 50,
+      }}>StylEase</Text>
       <TextInput
         label="Email"
         value={email}

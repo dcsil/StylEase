@@ -1,5 +1,5 @@
 import { Appbar, BottomNavigation, Button } from 'react-native-paper';
-import { ScrollView, StatusBar, Text, View } from 'react-native';
+import { Image, ScrollView, StatusBar, Text, View } from 'react-native';
 import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { WardrobeRoute } from './WardrobeRoute';
 import { OutfitRoute } from './OutfitRoute';
 import { CalendarRoute } from './CalendarRoute';
+import { imageUriParser } from '../utils/urlParser';
 
 const HomeRoute = ({ }) => {
   const user = useSelector(state => state.user);
@@ -16,11 +17,27 @@ const HomeRoute = ({ }) => {
   return (
     <ScrollView>
       <StatusBar style="auto" />
-      <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
+      <Appbar.Header statusBarHeight={30} style={{ paddingBottom: 0 }}>
         <Appbar.Content title="Home" />
       </Appbar.Header>
-      <Text>Home</Text>
-      <Text>{JSON.stringify(user.userInfo.data && user.userInfo.data.outfits_collections)}</Text>
+      {/* <Text>Home</Text> */}
+      <View style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        <Image
+          source={{
+            uri: imageUriParser("642df77cd1038d49ecfa3983")
+          }}
+          style={{
+            width: 400,
+            height: 600,
+            resizeMode: 'stretch'
+          }}
+        />
+      </View>
+      {/* <Text>{JSON.stringify(user.userInfo.data && user.userInfo.data.outfits_collections)}</Text> */}
     </ScrollView>
   )
 }
