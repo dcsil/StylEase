@@ -44,11 +44,6 @@ app.config['MONGO_URI'] = os.environ.get("MONGODB_URL")
 client = pymongo.MongoClient(os.environ.get("MONGODB_URL"), tlsCAFile=certifi.where())
 # mongo = PyMongo(app)
 
-@app.route('/api/test/<name>', methods=['GET'])
-def test(name):
-    target = client.sample_mflix.comments.find_one({'name': name})
-    return target['text']
-
 # Login
 @app.route('/api/Login', methods=['POST'])
 def login():
@@ -209,44 +204,27 @@ def addNewOutfit():
     outfit_id = client.db.outfits.insert_one(outfit).inserted_id
     # Add the outfit to the user's WARDROBE
     target = find_by_id(client, 'users', outfit['creator'])
-    if isinstance(target, tuple):
-        return target
     outfits_lst = target['outfits']
     outfit_id = str(outfit_id)
     outfits_lst.append(outfit_id)
     try:
         client.db.users.update_one({'_id': ObjectId(outfit['creator'])}, {'$set': {'outfits': outfits_lst}})
+        # Add the outfit to the user's outfit collection
+        if outfit_collection != '':
+            for collection in target["outfit_collections"]:
+                collection_target = find_by_id(client, 'outfitcollections', collection)
+                if collection_target['name'] == outfit_collection:
+                    collection_target['outfits'].append(outfit_id)
+                    client.db.outfitcollections.update_one({'_id': ObjectId(collection)}, {'$set': {'outfits': collection_target['outfits']}})
+                    break
+        return {
+            'status': 'success'
+        }, 200
     except Exception as e:
         return {
             'status': 'fail to update',
             'error': str(e)
         }, 400
-    # Add the outfit to the user's outfit collection
-    if outfit_collection != '':
-        added = False
-        for collection in target["outfit_collections"]:
-            collection_target = find_by_id(client, 'outfitcollections', collection)
-            if isinstance(collection_target, tuple):
-                return collection_target
-            if collection_target['name'] == outfit_collection:
-                collection_target['outfits'].append(outfit_id)
-                try:
-                    client.db.outfitcollections.update_one({'_id': ObjectId(collection)}, {'$set': {'outfits': collection_target['outfits']}})
-                except Exception as e:
-                    return {
-                        'status': 'fail to update',
-                        'error': str(e)
-                    }, 400
-                added = True
-                break
-        if not added:
-            return {
-                'status': 'outfit collection not found',
-            }, 404
-    return {
-        'status': 'success'
-    }, 200
-
 
 @app.route('/api/AddNewCollection', methods=['POST'])
 def addNewCollection():
@@ -415,38 +393,24 @@ def createAIOutfit():
     outfit = data['outfit']
     # Hard Code
     # get item 64237ecfa77fdcf57203ff96
+    items = [
+        {'_id': '64237ecfa77fdcf57203ff96', 'user': '64237961038602a02a81cd92'},
+        {'_id': '642c9b687032063a2f2f1e78', 'user': ''}
+    ]
     if data['regenerate']:
         # Suggest items 642c9b687032063a2f2f1e78, 642c9a701f8bd8fef92cbf18,
         # 642c9a27756f6d8ab3562456, 642c99a94146ee0f23e68bf6
-        # ai_outfit = {'items': [
-        #     {'_id': '64237ecfa77fdcf57203ff96', 'market': False},
-        #     {'_id': '642c9b687032063a2f2f1e78', 'market': True},
-        #     {'_id': '642c9a701f8bd8fef92cbf18', 'market': True},
-        #     {'_id': '642c9a27756f6d8ab3562456', 'market': True},
-        #     {'_id': '642c99a94146ee0f23e68bf6', 'market': True}
-        # ]}
-        items = [
-            {'_id': '64237ecfa77fdcf57203ff96', 'user': '64237961038602a02a81cd92'},
-            {'_id': '642c9b687032063a2f2f1e78', 'user': ''},
+        items.append([
             {'_id': '642c9a701f8bd8fef92cbf18', 'user': ''},
             {'_id': '642c9a27756f6d8ab3562456', 'user': ''},
             {'_id': '642c99a94146ee0f23e68bf6', 'user': ''}
-        ]
+        ])
     else:
-        # ai_outfit = {'items': [
-        #     {'_id': '64237ecfa77fdcf57203ff96', 'market': False},
-        #     {'_id': '64237df5ad0c1edddca0f8dc', 'market': False},
-        #     {'_id': '642c96dcbaac041ea8a98a01', 'market': True},
-        #     {'_id': '642c9a4d917524429c1bf982', 'market': True},
-        #     {'_id': '642c9b687032063a2f2f1e78', 'market': True}
-        # ]}
-        items = [
-            {'_id': '64237ecfa77fdcf57203ff96', 'user': '64237961038602a02a81cd92'},
+        items.append([
             {'_id': '64237df5ad0c1edddca0f8dc', 'user': '64237961038602a02a81cd92'},
             {'_id': '642c96dcbaac041ea8a98a01', 'user': ''},
-            {'_id': '642c9a4d917524429c1bf982', 'user': ''},
-            {'_id': '642c9b687032063a2f2f1e78', 'user': ''}
-        ]
+            {'_id': '642c9a4d917524429c1bf982', 'user': ''}
+        ])
 
     outfit['items'] = items
 
