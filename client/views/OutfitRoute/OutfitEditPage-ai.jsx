@@ -16,6 +16,8 @@ import { fetchOutfitsData, fetchWardrobeItems } from '../../stores/UserStore';
 import { uploadOutfit } from '../../api/requests';
 import { DefaultAppBar } from '../../components/DefaultAppbar';
 import { RenderItem } from './RenderItem';
+import { set } from 'react-native-reanimated';
+import { calculateNumCol } from '../../utils/layout';
 
 export const OutfitEditPage_ai = ({ route, navigation }) => {
   const { outfit } = route.params;
@@ -98,12 +100,7 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
   // Wardrobe Tab
   const WardrobeTab = ({ wardrobeItems, setWardrobeItems }) => {
     const [numColumns, setNumColumns] = React.useState(5);
-    const onLayout = React.useCallback(() => {
-      const { width } = Dimensions.get('window');
-      const itemWidth = styles.image.width
-      const numColumns = Math.floor(width / itemWidth)
-      setNumColumns(numColumns)
-    }, [])
+    const onLayout = () => setNumColumns(calculateNumCol(Dimensions, styles.image.width));
     return (
       <View style={{ flex: 1 }}>
         {/* <Text>{ JSON.stringify(wardrobeItems) }</Text> */}
@@ -130,12 +127,7 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
   const RecommendTab = ({ wardrobeItems, setWardrobeItems }) => {
     const [numColumns, setNumColumns] = React.useState(5);
     const items = React.useMemo(() => wardrobeItems.filter(item => item.user !== user.userInfo._id), [wardrobeItems]);
-    const onLayout = React.useCallback(() => {
-      const { width } = Dimensions.get('window')
-      const itemWidth = styles.image.width
-      const numColumns = Math.floor(width / itemWidth)
-      setNumColumns(numColumns)
-    }, [])
+    const onLayout = () => setNumColumns(calculateNumCol(Dimensions, styles.image.width));
     return (
       <View style={{ flex: 1 }}>
         <List.Section style={styles.listSection} onLayout={onLayout}>

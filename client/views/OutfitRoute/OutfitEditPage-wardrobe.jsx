@@ -16,6 +16,7 @@ import { fetchOutfitsData, fetchWardrobeItems } from '../../stores/UserStore';
 import { uploadOutfit } from '../../api/requests';
 import { DefaultAppBar } from '../../components/DefaultAppbar';
 import { RenderItem } from './RenderItem';
+import { calculateNumCol } from '../../utils/layout';
 
 export const OutfitEditPage_wardrobe = ({ route, navigation }) => {
   const { outfit } = route.params;
@@ -75,12 +76,7 @@ export const OutfitEditPage_wardrobe = ({ route, navigation }) => {
   // Wardrobe Tab
   const WardrobeTab = ({ wardrobeItems, setWardrobeItems }) => {
     const [numColumns, setNumColumns] = React.useState(5);
-    const onLayout = React.useCallback(() => {
-      const { width } = Dimensions.get('window');
-      const itemWidth = styles.image.width
-      const numColumns = Math.floor(width / itemWidth)
-      setNumColumns(numColumns)
-    }, [])
+    const onLayout = () => setNumColumns(calculateNumCol(Dimensions, styles.image.width));
     return (
       <View style={{ flex: 1 }}>
         {/* <Text>{ JSON.stringify(wardrobeItems) }</Text> */}
