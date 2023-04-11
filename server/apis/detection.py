@@ -29,4 +29,5 @@ def detect(img):
     #     return "Nothing detected"
     response = requests.post(API_URL, headers=headers, data=img)
     response = response.json()
+    print(response)
     return response[0]['label']
