@@ -3,9 +3,10 @@ from flask import *
 import os
 from passlib.hash import sha256_crypt
 from flask import Blueprint
-from server.apis.finder import *
+from apis.finder import *
 # from server.app import client
-from server.database import client
+from database import client
+from bson import ObjectId
 
 
 user_api = Blueprint('user_api', __name__)

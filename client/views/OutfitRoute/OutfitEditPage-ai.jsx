@@ -5,7 +5,7 @@ import {
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Appbar, List, Button, IconButton, TextInput } from 'react-native-paper';
+import { Appbar, List, Button, IconButton, TextInput, Portal, Modal, useTheme } from 'react-native-paper';
 
 import styles from './outfitEditStyles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -60,7 +60,8 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
   const [wardrobeItems, setWardrobeItems] = React.useState(combineItems(ogWardrobeItems, ogOutfitItems));
 
   const snapPoints = React.useMemo(() => ['25%', '50%', '75%'], []);
-  // const [tempOutfit, setTempOutfit] = React.useState({ name: '', items: [] });
+  const [shoppingModalVisible, setShoppingModalVisible] = React.useState(false);
+  const [shoppingItem, setShoppingItem] = React.useState(null);
 
   // hooks
   React.useEffect(() => {
@@ -94,6 +95,11 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
     navigation.navigate('Outfit');
   }, []);
 
+  const handleShopItemPress = (item) => {
+    setShoppingItem(item);
+    setShoppingModalVisible(true);
+  }
+
   // #endregion
 
   // #region Tab View
@@ -109,7 +115,7 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
             <Text style={{ marginTop: 50 }}>No item found.</Text>
           ) : (
             <FlatList
-              key={numColumns}
+              key={`WardrobeTab-${numColumns}`}
               style={styles.flatList}
               numColumns={numColumns}
               directionalLockEnabled={true}
@@ -126,12 +132,11 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
   // Recommend Tab
   const RecommendTab = ({ wardrobeItems, setWardrobeItems }) => {
     const [numColumns, setNumColumns] = React.useState(5);
-    const items = React.useMemo(() => wardrobeItems.filter(item => item.user !== user.userInfo._id), [wardrobeItems]);
     const onLayout = () => setNumColumns(calculateNumCol(Dimensions, styles.image.width));
     return (
       <View style={{ flex: 1 }}>
         <List.Section style={styles.listSection} onLayout={onLayout}>
-          {items.length === 0 ? (
+          {wardrobeItems.length === 0 ? (
             <Text style={{ marginTop: 50 }}>No item found.</Text>
           ) : (
             <FlatList
@@ -139,8 +144,8 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
               style={styles.flatList}
               numColumns={numColumns}
               directionalLockEnabled={true}
-              data={items}
-              renderItem={({ item }) => <RenderItem item={item} setWardrobeItems={setWardrobeItems} imgSize={80} imgStyle={styles.image}/>}
+              data={wardrobeItems.filter(item => item.user !== user.userInfo._id)}
+              renderItem={({ item }) => <RecommendItem item={item} imgSize={80} imgStyle={styles.image} handlePress={handleShopItemPress} />}
               keyExtractor={(item) => item._id}
             />
           )}
@@ -155,8 +160,8 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
   return (
     <BottomSheetModalProvider>
       <View style={styles.container}>
-        <DefaultAppBar title="New Outfit" backActionCallback={() => { navigation.goBack() }}/>
-
+        <DefaultAppBar title="New Outfit" backActionCallback={() => { navigation.goBack() }} />
+        <Text>{JSON.stringify(outfit.items[2])}</Text>
         <View style={{ flex: 0.75 }}>
           {/* <Text>{ JSON.stringify(tempOutfit) }</Text> */}
           <View style={{
@@ -176,11 +181,11 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
             }}>{`${outfit.name}`}</Text>
             <IconButton icon={() => <Icon name='check' color='green' size={30} />} onPress={handleConfirm} />
           </View>
-          <List.Section style={{ flex: 1}}>
+          <List.Section style={{ flex: 1 }}>
             <FlatList
               // key={`${displayedItems.length}items`}
               style={{ flex: 1 }}
-              contentContainerStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+              contentContainerStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
               numColumns={1}
               directionalLockEnabled={true}
               data={wardrobeItems.filter(item => item.checked)}
@@ -231,7 +236,86 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
           </View>
         </BottomSheetModal>
 
+        <ShoppingModal
+          visible={shoppingModalVisible}
+          setVisible={setShoppingModalVisible}
+          item={shoppingItem}
+        />
+
+
       </View>
     </BottomSheetModalProvider>
   )
+}
+
+const ShoppingModal = ({ visible, setVisible, item }) => {
+  const buildShoppingDetail = (item) => {
+    const infoList = [
+      { key: 'Name', value: item.name },
+      { key: 'Type', value: item.type },
+      { key: 'Color', value: item.color },
+      { key: 'Brand', value: item.brand },
+    ];
+
+    return (
+      <React.Fragment>
+        
+      </React.Fragment>
+    )
+  }
+  return (
+    <Portal>
+      <Modal
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        contentContainerStyle={{
+
+        }}
+      >
+        <View style={{
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center',
+        }}>
+          <Image
+            source={{
+              uri: imageUriParser(item._id),
+            }}
+            style={{
+              width: 200, height: 200, resizeMode: 'stretch', marginBottom: 10,
+            }}
+          />
+          <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+            <View style={{ flex: 1 }}>
+
+            </View>
+            <View style={{ flex: 1 }}>
+
+            </View>
+          </View>
+        </View>
+        <Text>ShoppingModal</Text>
+        {/* <Text>{JSON.stringify(item)}</Text> */}
+
+      </Modal>
+    </Portal>
+  )
+}
+
+const RecommendItem = ({ item, imgSize, imgStyle, handlePress }) => {
+  const { colors } = useTheme();
+
+  return (
+    <TouchableOpacity onPress={() => handlePress(item)}>
+      <View style={{ position: 'relative', flex: 1 }}>
+        <Image
+          source={{
+            uri: imageUriParser(item._id),
+          }}
+          style={imgStyle ? imgStyle : { width: imgSize, height: imgSize, resizeMode: 'stretch', margin: 3 }}
+        />
+        <View style={{ position: 'absolute', top: 5, right: 5 }}>
+          <Icon name="cart-outline" size={20} color={colors.primary} />
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 }
