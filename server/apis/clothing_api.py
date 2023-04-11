@@ -3,8 +3,6 @@ from server.apis.detection import detect
 import base64
 import io
 from flask import Blueprint
-import os
-from server.apis.finder import *
 from server.database import client
 
 clothing_api = Blueprint('clothing_api', __name__)

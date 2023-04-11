@@ -1,5 +1,4 @@
 from flask import *
-import os
 from flask import Blueprint
 from server.apis.finder import *
 from server.database import client
