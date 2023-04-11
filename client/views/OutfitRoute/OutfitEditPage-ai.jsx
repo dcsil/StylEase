@@ -23,6 +23,7 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
   const { outfit } = route.params;
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
+  const { colors } = useTheme();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -109,7 +110,7 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
     const onLayout = () => setNumColumns(calculateNumCol(Dimensions, styles.image.width));
     return (
       <View style={{ flex: 1 }}>
-        {/* <Text>{ JSON.stringify(wardrobeItems) }</Text> */}
+        {/* <Text>{ JSON.stringify(wardrobeItems.filter(item => item.user === user.userInfo._id)[0]) }</Text> */}
         <List.Section style={styles.listSection} onLayout={onLayout}>
           {wardrobeItems.length === 0 ? (
             <Text style={{ marginTop: 50 }}>No item found.</Text>
@@ -120,7 +121,7 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
               numColumns={numColumns}
               directionalLockEnabled={true}
               data={wardrobeItems.filter(item => item.user === user.userInfo._id)}
-              renderItem={({ item }) => <RenderItem item={item} setWardrobeItems={setWardrobeItems} />}
+              renderItem={({ item }) => <RenderItem item={item} imgSize={80} setWardrobeItems={setWardrobeItems} />}
               keyExtractor={(item) => item._id}
             />
           )}
@@ -161,7 +162,7 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
     <BottomSheetModalProvider>
       <View style={styles.container}>
         <DefaultAppBar title="New Outfit" backActionCallback={() => { navigation.goBack() }} />
-        <Text>{JSON.stringify(outfit.items[2])}</Text>
+        {/* <Text>{JSON.stringify(wardrobeItems.filter(item => item.user === user.userInfo._id)[0])}</Text> */}
         <View style={{ flex: 0.75 }}>
           {/* <Text>{ JSON.stringify(tempOutfit) }</Text> */}
           <View style={{
@@ -214,16 +215,18 @@ export const OutfitEditPage_ai = ({ route, navigation }) => {
             <View style={{ flex: 0, flexDirection: 'row', marginVertical: 5 }}>
               <View style={{ borderBottomColor: tabIndex === 0 ? 'grey' : 'transparent', borderBottomWidth: 1 }}>
                 <Button
-                  onPress={() => setTabIndex(0)}
-                  disabled={tabIndex === 0}
+                  onPress={() => tabIndex===1 && setTabIndex(0)}
+                  // disabled={tabIndex === 0}
+                  textColor={tabIndex === 0 ? colors.primary : colors.secondary}
                 >
                   My Wardrobe
                 </Button>
               </View>
               <View style={{ borderBottomColor: tabIndex === 1 ? 'grey' : 'transparent', borderBottomWidth: 1 }}>
                 <Button
-                  onPress={() => setTabIndex(1)}
-                  disabled={tabIndex === 1}
+                  onPress={() => tabIndex===0 && setTabIndex(1)}
+                  // disabled={tabIndex === 1}
+                  textColor={tabIndex === 1 ? colors.primary : colors.secondary}
                 >
                   Recommendation
                 </Button>
@@ -259,7 +262,16 @@ const ShoppingModal = ({ visible, setVisible, item }) => {
 
     return (
       <React.Fragment>
-        
+        {infoList.filter(item => item.value).map((info, index) => (
+          <View key={index} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+            <View style={{ flex: 1 }}>
+              <Text>{info.key}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text>{info.value}</Text>
+            </View>
+          </View>
+        ))}
       </React.Fragment>
     )
   }
@@ -269,31 +281,25 @@ const ShoppingModal = ({ visible, setVisible, item }) => {
         visible={visible}
         onDismiss={() => setVisible(false)}
         contentContainerStyle={{
-
+          borderColor: 'red', borderWidth: 2, 
         }}
       >
-        <View style={{
-          display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center',
-        }}>
-          <Image
-            source={{
-              uri: imageUriParser(item._id),
-            }}
-            style={{
-              width: 200, height: 200, resizeMode: 'stretch', marginBottom: 10,
-            }}
-          />
-          <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-            <View style={{ flex: 1 }}>
-
-            </View>
-            <View style={{ flex: 1 }}>
-
-            </View>
+        {!item ? null : (
+          <View style={{
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center',
+          }}>
+            <Text>{JSON.stringify(item)}</Text>
+            <Image
+              source={{
+                uri: imageUriParser(item._id),
+              }}
+              style={{
+                width: 200, height: 200, resizeMode: 'stretch', marginBottom: 10,
+              }}
+            />
+            {buildShoppingDetail(item)}
           </View>
-        </View>
-        <Text>ShoppingModal</Text>
-        {/* <Text>{JSON.stringify(item)}</Text> */}
+        )}
 
       </Modal>
     </Portal>
