@@ -1,20 +1,14 @@
-import pymongo
-import certifi
+
 from flask import *
 from flask_cors import CORS
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from dotenv import load_dotenv
-from server.apis.detection import detect
-from server.apis.finder import *
 import os
-import base64
-import io
+
 from apis.calendar_api import calendar_api
 from apis.user_api import user_api
 from apis.clothing_api import clothing_api
-
-from server.database import client
 
 load_dotenv()
 sentry_sdk.init(
