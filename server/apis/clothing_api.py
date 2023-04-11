@@ -237,13 +237,13 @@ def createAIOutfit():
     if data['regenerate']:
         # Suggest items 642c9b687032063a2f2f1e78, 642c9a701f8bd8fef92cbf18,
         # 642c9a27756f6d8ab3562456, 642c99a94146ee0f23e68bf6
-        items.append([
+        items.extend([
             {'_id': '642c9a701f8bd8fef92cbf18', 'user': ''},
             {'_id': '642c9a27756f6d8ab3562456', 'user': ''},
             {'_id': '642c99a94146ee0f23e68bf6', 'user': ''}
         ])
     else:
-        items.append([
+        items.extend([
             {'_id': '64237df5ad0c1edddca0f8dc', 'user': '64237961038602a02a81cd92'},
             {'_id': '642c96dcbaac041ea8a98a01', 'user': ''},
             {'_id': '642c9a4d917524429c1bf982', 'user': ''}
