@@ -1,10 +1,3 @@
-# import os
-# import sys
-# sys.path.append('..')
-# # print("SYSPATH")
-# # print(sys.path)
-# from server.app import app
-
 from flask import *
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -13,7 +6,6 @@ import os
 import sys
 sys.path.append('..')
 
-# from server.app import app
 from server.apis.clothing_api import clothing_api
 
 # initialize app

@@ -26,3 +26,8 @@ def test_get_plan_endpoint():
         print(response.data.decode('utf-8'))
         assert response.status_code == 200
         assert response.data.decode('utf-8') == '{"plan":{"createdTime":"2022-04-08","date":"2022-04-12","name":"Meeting with Professor Zhou","occasion":"","planned_outfits":["642923806fc81a6ea84a433e"],"user":"64237961038602a02a81cd92"},"status":"success"}\n'
+
+# Test get all days
+def test_get_all_days_endpoint():
+    with app.test_client() as client:
+        response = client.get('/api/GetPlan/643348269d79a18b19781a0c')

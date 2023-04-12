@@ -26,6 +26,11 @@ def login():
     password = body['password']
     # Compare to the password that encrypted in the database
     target = client.db.users.find_one({'email': email})
+    if not target:
+        return {
+            'status': 'fail',
+            'error': 'Email does not exist'
+        }, 400
     if isinstance(target, tuple):
         return target
     if sha256_crypt.verify(password, target['password']):
@@ -56,7 +61,8 @@ def register():
         }, 400
     try:
         # Encrypt the password
-        password = sha256_crypt.encrypt(password)
+        # password = sha256_crypt.encrypt(password)
+        password = sha256_crypt.hash(password)
         # Insert the user to db.users
         userid = client.db.users.insert_one({
             'name': name,
@@ -114,7 +120,6 @@ def register():
 # GET carries request parameter appended in URL string while POST carries request parameter in message body
 @user_api.route('/api/GetUser/<userid>', methods=['GET'])
 def get_user(userid):
-
     target = find_by_id(client, 'users', userid)
     if isinstance(target, tuple):
         return target
