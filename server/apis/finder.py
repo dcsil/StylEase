@@ -5,9 +5,7 @@ def find_by_id(client, collection, obj_id):
     target = client.db[collection].find_one({'_id': ObjectId(obj_id)})
     if target:
         return target
-    return {
-               'status': f'{collection} not found',
-           }, 404
+    return {'status': 'fail', 'error': f'{collection} not found'}, 404
 
 
 def find_day_by_date(client, target, date):
