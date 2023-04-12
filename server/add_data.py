@@ -1,9 +1,10 @@
 import sys
 sys.path.append('..')
 from app import app
+import base64
 
 if __name__ == "__main__":
-    # with open("test_image/bracelet.png", "rb") as img_file:
+    # with open("test_image/shoes.png", "rb") as img_file:
     #     my_string = base64.b64encode(img_file.read()).decode('utf-8')
     #     my_string = 'data:image/png;base64,{}'.format(my_string)
 
@@ -23,27 +24,39 @@ if __name__ == "__main__":
     #     print(response.data.decode('utf-8'))
     #
     # item = {
-    #     "name": "David Yurman Bracelet",
-    #     "user": "64237961038602a02a81cd92",
+    #     "name": "Sneaker",
+    #     "user": "6435f5a3ea5f65cdf025881d",
     #     "image": str(my_string),
-    #     "created_time": "2023-03-15",
-    #     "type": "Bracelet",
-    #     "color": "Blue",
-    #     "brand": "David Yurman",
+    #     "created_time": "2023-04-01",
+    #     "type": "",
+    #     "color": "White",
+    #     "brand": "Amiri",
+    #     "market": False
     # }
-    # #
+    # # #
     # body = {
-    #     'userid': "64237961038602a02a81cd92",
+    #     'userid': "6435f5a3ea5f65cdf025881d",
     #     'item': item
     # }
     #
     # with app.test_client() as client:
     #     response = client.post('/api/AddNewItem', json=body)
     #     print(response.data.decode('utf-8'))
-
+    #
+    # item_id = response.json['item_id']
+    #
+    # body = {
+    #     'userid': "6435f5a3ea5f65cdf025881d",
+    #     'itemid': item_id
+    # }
+    #
     # with app.test_client() as client:
-    #     response = client.get('/api/GetWardrobeItems/64237961038602a02a81cd92')
+    #     response = client.post('/api/DeleteItem', json=body)
     #     print(response.data.decode('utf-8'))
+
+    with app.test_client() as client:
+        response = client.get('/api/GetWardrobeItems/6435f5a3ea5f65cdf025881d')
+        print(response.data.decode('utf-8'))
 
     # with app.test_client() as client:
     #     response = client.get('/api/GetUser/64237961038602a02a81cd92')
@@ -61,23 +74,64 @@ if __name__ == "__main__":
     #     response = client.get('/api/GetOutfit/64237961038602a02a81cd92/642923806fc81a6ea84a433d')
     #     print(response.data.decode('utf-8'))
 
-    # body =     {
-    #     "creator": "64237961038602a02a81cd92",
-    #     "created_time": "2023-03-17",
-    #     "occasion": "CEO's birthday party",
-    #     "style": "Business Casual",
-    #     "items": ["64291e3aea96ab8185344b7b",
-    #               "64291e958a0cda6951b3ac14",
-    #               "64291f0e451e8ff87f993d49",
-    #               "64291f784bfd243b92b97283",
-    #               "64292012f6a6030c42002b71"],
+    # outfit = {
+    #     "creator": "6435f5a3ea5f65cdf025881d",
+    #     "created_time": "2023-04-01",
+    #     "occasion": "Bro's birthday party",
+    #     "style": "Casual",
+    #     "items": ["6435f753de08bc1aa531d3b1",
+    #               "6435f7a199def560bc4e51d0",
+    #               "6435f7cb053aa5049e92c83e",
+    #               "6435f7e23161988ce7efa68b"],
     #      "budget": 5000,
-    #      "is_AI": True
+    #      "is_AI": False
     #  }
+    # body = {
+    #     'outfit': outfit,
+    #     'outfit_collection': "Default"
+    # }
     #
     # with app.test_client() as client:
     #     response = client.post('/api/AddNewOutfit', json=body)
     #     print(response.data.decode('utf-8'))
+    #
+    # body = {
+    #     'outfit_id': '6435fa8ff7c3fa9af405f876',
+    #     'user_id': '6435f5a3ea5f65cdf025881d'
+    # }
+    #
+    # with app.test_client() as client:
+    #     response = client.post('/api/DeleteOutfit', json=body)
+    #     print(response.data.decode('utf-8'))
+
+    # outfitcollection = {
+    #         'name': 'Default',
+    #         "owner": '6435f5a3ea5f65cdf025881d',
+    #         "created_time": '2023-04-01',
+    #         "outfits": []
+    #     }
+    # body = {
+    #     'outfit_collection': outfitcollection,
+    #     'userid': '6435f5a3ea5f65cdf025881d'
+    # }
+    #
+    # with app.test_client() as client:
+    #     response = client.post('/api/AddNewCollection', json=body)
+    #     print(response.data.decode('utf-8'))
+    #
+    # collect_id = response.json['collection_id']
+    # print(collect_id)
+    #
+    # body = {
+    #     'collection_id': collect_id,
+    #     'userid': '6435f5a3ea5f65cdf025881d'
+    # }
+    #
+    # with app.test_client() as client:
+    #     response = client.post('/api/DeleteCollection', json=body)
+    #     print(response.data.decode('utf-8'))
+
+
 
     # body = {
     #     'email': "zhoueric0603@gmail.com",
@@ -147,6 +201,41 @@ if __name__ == "__main__":
     #     response = client.get('/api/GetPlan/643348269d79a18b19781a0c')
     #     print(response.data.decode('utf-8'))
 
-    with app.test_client() as client:
-        response = client.get('/api/GetWardrobeItems/64237961038602a02a81cd92')
-        print(response.data.decode('utf-8'))
+    # with app.test_client() as client:
+    #     response = client.get('/api/GetWardrobeItems/64237961038602a02a81cd92')
+    #     print(response.data.decode('utf-8'))
+
+    # with app.test_client() as client:
+    #     response = client.get('/api/GetPlan/643348269d79a18b19781a0c')
+    #     print(response.data.decode('utf-8'))
+
+    # body = {
+    #     'name': 'test_user',
+    #     'email': 'testing',
+    #     'password': 'testing'
+    # }
+    #
+    # with app.test_client() as client:
+    #     response = client.post('/api/Register', json=body)
+    #     print(response.data.decode('utf-8'))
+
+    # body = {
+    #     'userid': "6435f5a3ea5f65cdf025881d",
+    #     'itemid': '64237aef7bd7fa3c355dda11'
+    # }
+    #
+    # with app.test_client() as client:
+    #     response = client.post('/api/DeleteItem', json=body)
+    #     print(response.data.decode('utf-8'))
+
+    # with app.test_client() as client:
+    #     response = client.get('/api/Getoutfitcollection/6435f5a3ea5f65cdf025881d')
+    #     print(response.data.decode('utf-8'))
+
+    # with app.test_client() as client:
+    #     response = client.get('/api/GetOutfit/6435f5a3ea5f65cdf025881d/6435f8e40b57cf80541c8037')
+    #     print(response.data.decode('utf-8'))
+
+    # with app.test_client() as client:
+    #     response = client.get('/api/GetUser/6435f5a3ea5f65cdf025881d')
+    #     print(response.data.decode('utf-8'))
