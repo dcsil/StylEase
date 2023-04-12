@@ -59,8 +59,52 @@ def addNewItem():
             }, 400
 
     return {
-        'status': 'success'
+        'status': 'success',
+        'item_id': str(item_id)
     }, 200
+
+
+@clothing_api.route('/api/DeleteItem', methods=['POST'])
+def deleteItem():
+    body = request.get_json()
+    item_id = body['itemid']
+    user_id = body['userid']
+    try:
+        # Find the item
+        target = find_by_id(client, 'items', item_id)
+        if isinstance(target, tuple):
+            return target
+        if target['user'] != user_id:
+            return {
+                'status': 'fail to delete',
+                'error': 'user not match'
+            }, 400
+        # Delete the item from db.items
+        client.db.items.delete_one({'_id': ObjectId(item_id)})
+        # Delete the item from the user's wardrobe
+        target = find_by_id(client, 'users', user_id)
+        wardrobe_id = target['wardrobe']
+        wardrobe = find_by_id(client, 'wardrobes', wardrobe_id)
+        current_items = wardrobe['items']
+        current_items.remove(item_id)
+        client.db.wardrobes.update_one({'_id': ObjectId(wardrobe_id)}, {'$set': {'items': current_items}})
+        # Delete item from all users' outfits
+        for outfit in target['outfits']:
+            outfit_target = find_by_id(client, 'outfits', outfit)
+            if item_id in outfit_target['items']:
+                outfit_target['items'].remove(item_id)
+                client.db.outfits.update_one({'_id': ObjectId(outfit)}, {'$set': {'items': outfit_target['items']}})
+        return {
+            'status': 'success',
+            'item_id': item_id
+        }, 200
+    except Exception as e:
+        return {
+            'status': 'fail to delete',
+            'error': str(e)
+        }, 400
+
+
 
 
 @clothing_api.route('/api/AddNewOutfit', methods=['POST'])
@@ -86,13 +130,48 @@ def addNewOutfit():
                     client.db.outfitcollections.update_one({'_id': ObjectId(collection)}, {'$set': {'outfits': collection_target['outfits']}})
                     break
         return {
-            'status': 'success'
+            'status': 'success',
+            'outfit_id': outfit_id
         }, 200
     except Exception as e:
         return {
             'status': 'fail to update',
             'error': str(e)
         }, 400
+
+
+# Delete outfit
+@clothing_api.route('/api/DeleteOutfit', methods=['POST'])
+def deleteOutfit():
+    body = request.get_json()
+    outfit_id = body['outfit_id']
+    creator_id = body['user_id']
+
+    try:
+        # Delete outfit from db.outfits
+        client.db.outfits.delete_one({'_id': ObjectId(outfit_id)})
+        # Delete outfit from user's outfits
+        target = find_by_id(client, 'users', creator_id)
+        outfits_lst = target['outfits']
+        outfits_lst.remove(outfit_id)
+        client.db.users.update_one({'_id': ObjectId(creator_id)}, {'$set': {'outfits': outfits_lst}})
+        # Delete outfit from user's outfit collections
+        for collection in target["outfit_collections"]:
+            collection_target = find_by_id(client, 'outfitcollections', collection)
+            if outfit_id in collection_target['outfits']:
+                collection_target['outfits'].remove(outfit_id)
+                client.db.outfitcollections.update_one({'_id': ObjectId(collection)}, {'$set': {'outfits': collection_target['outfits']}})
+                break
+        # Need to check the outfit plan in calendar in later release
+    except Exception as e:
+        return {
+            'status': 'fail',
+            'error': str(e)
+        }, 400
+    return {
+        'status': 'success',
+        'outfit_id': outfit_id
+    }, 200
 
 @clothing_api.route('/api/AddNewCollection', methods=['POST'])
 def addNewCollection():
@@ -116,7 +195,31 @@ def addNewCollection():
             'error': str(e)
         }, 400
     return {
-        'status': 'success'
+        'status': 'success',
+        'collection_id': collection_id
+    }, 200
+
+@clothing_api.route('/api/DeleteCollection', methods=['POST'])
+def deleteCollection():
+    body = request.get_json()
+    collection_id = body['collection_id']
+    user_id = body['userid']
+    try:
+        # Delete collection from db.outfitcollections
+        client.db.outfitcollections.delete_one({'_id': ObjectId(collection_id)})
+        # Delete collection from user's collections
+        target = find_by_id(client, 'users', user_id)
+        collections_lst = target['outfit_collections']
+        collections_lst.remove(collection_id)
+        client.db.users.update_one({'_id': ObjectId(user_id)}, {'$set': {'outfit_collections': collections_lst}})
+    except Exception as e:
+        return {
+            'status': 'fail',
+            'error': str(e)
+        }, 400
+    return {
+        'status': 'success',
+        'collection_id': collection_id
     }, 200
 
 @clothing_api.route('/api/GetItemImage/<itemid>', methods=['GET'])
@@ -144,7 +247,7 @@ def getItemimg(itemid):
 def getWardrobeItems(userid):
     target = find_by_id(client, 'users', userid)
     if isinstance(target, tuple):
-        return target
+        return target, 404
     if target['wardrobe']:
         wardrobe_id = target['wardrobe']
         wardrobe = find_by_id(client, 'wardrobes', wardrobe_id)
