@@ -71,24 +71,34 @@ def register():
         # Create a calendar for the user
         calendar = {
           "user": str(userid),
-          "created_time": datetime.now(),
+          "created_time": str(datetime.now()),
           "days": []
         }
 
         # Create a wardrobe for the user
         wardrobe = {
             "user": str(userid),
-            "created_time": datetime.now(),
+            "created_time": str(datetime.now()),
             "items": []
             }
 
+        # Create a outfitcollection for the user
+        outfitcollection = {
+            'name': 'Default',
+            "owner": str(userid),
+            "created_time": str(datetime.now()),
+            "outfits": []
+        }
+
         # Insert the calendar and wardrobe to db.calendars and db.wardrobes
-        cal_id = client.db.calendars.insert_one(calendar).inserted_id
+        cal_id = client.db.calendar.insert_one(calendar).inserted_id
         war_id = client.db.wardrobes.insert_one(wardrobe).inserted_id
+        outfitcollection_id = client.db.outfitcollections.insert_one(outfitcollection).inserted_id
 
         # Update the calendar and wardrobe id in db.users
         client.db.users.update_one({'_id': ObjectId(userid)}, {'$set': {'calendar': str(cal_id)}})
-        client.db.wardrobes.update_one({'_id': ObjectId(userid)}, {'$set': {'wardrobe': str(war_id)}})
+        client.db.users.update_one({'_id': ObjectId(userid)}, {'$set': {'wardrobe': str(war_id)}})
+        client.db.users.update_one({'_id': ObjectId(userid)}, {'$push': {'outfit_collections': str(outfitcollection_id)}})
     except Exception as e:
         return {
             'status': 'fail',
