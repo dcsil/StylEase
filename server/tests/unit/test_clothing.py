@@ -45,7 +45,7 @@ def test_add_del_new_item_endpoint():
         "user": "6435f5a3ea5f65cdf025881d",
         "image": str(my_string),
         "created_time": "2023-04-01",
-        "type": "",
+        "type": "Sneaker",
         "color": "White",
         "brand": "Amiri",
         "market": False

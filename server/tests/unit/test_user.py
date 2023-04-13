@@ -77,7 +77,7 @@ def test_register_login_endpoint():
         cl.db.users.delete_one({'_id': ObjectId(userid)})
         cl.db.wardrobes.delete_one({'_id': ObjectId(wardrobe_id)})
         cl.db.outfitcollections.delete_one({'_id': ObjectId(outfit_collection_id)})
-        cl.db.calendar.delete_one({'_id': ObjectId(calendar_id)})
+        cl.db.calendars.delete_one({'_id': ObjectId(calendar_id)})
 
     # Test fail login
     login_body = {
