@@ -13,7 +13,7 @@ def getalldays(userid):
     if isinstance(target_user, tuple):
         return target_user
     calendar_id = target_user['calendar']
-    target_calendar = find_by_id(client, 'calendar', calendar_id)
+    target_calendar = find_by_id(client, 'calendars', calendar_id)
     if isinstance(target_calendar, tuple):
         return target_calendar
     days = target_calendar['days']
@@ -44,9 +44,10 @@ def addplantoday():
     target_user = find_by_id(client, 'users', creator)
     # Find the calendar
     calendar_id = target_user['calendar']
-    target_calendar = find_by_id(client, 'calendar', calendar_id)
+    target_calendar = find_by_id(client, 'calendars', calendar_id)
     # Find whether the date is in the calandar days
     added = False
+    dayid = None
     for day_id in target_calendar['days']:
         day = find_by_id(client, 'days', day_id)
         if isinstance(day, tuple):
@@ -58,6 +59,7 @@ def addplantoday():
             try:
                 client.db.days.update_one({'_id': ObjectId(day_id)}, {'$set': {'plans': plans}})
                 added = True
+                dayid = day_id
             except Exception as e:
                 return {
                            'status': 'fail to add plan to day',
@@ -71,11 +73,11 @@ def addplantoday():
             'plans': [str(plan_id)]
         }
         try:
-            day_id = client.db.days.insert_one(new_day).inserted_id
+            dayid = client.db.days.insert_one(new_day).inserted_id
             # Update the calendar
             days = target_calendar['days']
-            days.append(str(day_id))
-            client.db.calendar.update_one({'_id': ObjectId(calendar_id)}, {'$set': {'days': days}})
+            days.append(str(dayid))
+            client.db.calendars.update_one({'_id': ObjectId(calendar_id)}, {'$set': {'days': days}})
         except Exception as e:
             return {
                        'status': 'fail',
@@ -83,7 +85,8 @@ def addplantoday():
                    }, 400
     return {
                 'status': 'success',
-                'plan_id': str(plan_id)
+                'plan_id': str(plan_id),
+                'day_id': str(dayid)
               }, 200
 
 

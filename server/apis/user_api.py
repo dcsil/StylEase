@@ -97,7 +97,7 @@ def register():
         }
 
         # Insert the calendar and wardrobe to db.calendars and db.wardrobes
-        cal_id = client.db.calendar.insert_one(calendar).inserted_id
+        cal_id = client.db.calendars.insert_one(calendar).inserted_id
         war_id = client.db.wardrobes.insert_one(wardrobe).inserted_id
         outfitcollection_id = client.db.outfitcollections.insert_one(outfitcollection).inserted_id
 

@@ -36,7 +36,8 @@ def addNewItem():
     userid = body['userid']
     item = body['item']
     # Add type of the item
-    item['type'] = detect(item['image'])
+    if item['type'] == '':
+        item['type'] = detect(item['image'])
     # item['type'] = "Suit"
     # Add new item to db.items
     item_id = client.db.items.insert_one(item).inserted_id
