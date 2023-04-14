@@ -38,7 +38,9 @@ export const CalendarRoute = ({ navigation }) => {
             var plans = []
             for (let j = 0; j < days[i].plans.length; j++){
               const item = await getPlan(days[i].plans[j]);
-              plans.push(item.plan);
+              var p = item.plan;
+              p['planId'] = days[i].plans[j];
+              plans.push(p);
             }
             if(plans.length > 0) {
               items_[days[i].date] = plans;
@@ -228,6 +230,7 @@ export const CalendarRoute = ({ navigation }) => {
         style={styles.fab}
         icon={(props) => <Icon name="plus" {...props} />}
         onPress={() => navigation.navigate('Calendar-add-item', {
+          userId: userId,
           selectedDate: selectedDate,
         })}
       />

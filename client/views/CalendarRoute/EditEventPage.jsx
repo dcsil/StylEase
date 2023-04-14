@@ -17,10 +17,11 @@ export const EditEventPage = ({ route, navigation }) => {
           "date": item.date,
           "createdTime": new Date().toJSON().slice(0, 10),
           "planned_outfits": item.planned_outfits,
-          "occasion": occasion}
+          "occasion": occasion
+        }
         await updatePlan(new_plan, item.planId).then(()=>{
           setVisible(true);
-          console.log('added')
+          console.log('added');
         })
     }
 

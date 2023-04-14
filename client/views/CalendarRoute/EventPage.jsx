@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, StatusBar, View, Image, StyleSheet, SafeAreaView, FlatList } from 'react-native';
 import { Appbar, Banner, FAB, Avatar, Button, Text, Card } from 'react-native-paper';
-import { getOutfit } from '../../api/requests';
+import { deletePlan, getOutfit } from '../../api/requests';
 
 const LeftContent = props => <Avatar.Icon {...props} icon="tshirt-crew" />
 
@@ -30,14 +30,14 @@ export const EventPage = ({ route, navigation }) => {
       setIsItemLoaded(true);
     }
 
-    const renderItem = (item, index) => {
+    const renderItem = (item) => {
       return(
         <View>
           <Card>
-          <Card.Title title={imageUris[index]['name']} left={LeftContent} />
+          <Card.Title title={item['name']} left={LeftContent} />
           <Card.Content>
           </Card.Content>
-          <Card.Cover source={{ uri: imageUris[index]['uri'] }} />
+          <Card.Cover source={{ uri: item['uri'] }} />
           </Card>
         </View>
       );
@@ -47,14 +47,18 @@ export const EventPage = ({ route, navigation }) => {
     const onEdit = () => {
         navigation.navigate("Calendar-edit-item", {
             item: item,
+            userId: userId,
             selectedDate: selectedDate,
           });
     }
 
-    const deleteItem = () => {
+    const deleteItem = async () => {
         // TODO: Delete item API
-        setVisible(true);
-        console.log('deleted')
+        await deletePlan(item.planId).then(()=>{
+          setVisible(true);
+          console.log('deleted');
+        }
+        )
     }
 
     const onDelete = () =>
@@ -94,8 +98,8 @@ export const EventPage = ({ route, navigation }) => {
         <SafeAreaView style={styles.container}>
           <FlatList
             data={imageUris}
-            renderItem={(item, index) => {
-              return renderItem(item, index);}}
+            renderItem={(item) => {
+              return renderItem(item);}}
             keyExtractor={item => item.id}
           />
         </SafeAreaView>
@@ -107,5 +111,8 @@ export const EventPage = ({ route, navigation }) => {
 }
 
 const styles = StyleSheet.create({
-
-  });
+  container: {
+    flex: 1,
+    marginTop: StatusBar.currentHeight || 0,
+  },
+});
