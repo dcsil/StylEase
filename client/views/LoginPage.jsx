@@ -37,23 +37,6 @@ export const LoginPage = ({ navigation }) => {
   //     setContent(result);
   //   });
   // }, [])
-
-  const alertButtonAction = () => {
-    Alert.alert("Hello", "test login", [
-      {
-        text: "Cancel",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel"
-      },
-      {
-        text: "Confirm", onPress: () => {
-          // console.log(userId);
-          dispatch(fetchUserData(userId));
-          navigation.navigate('Main');
-        }
-      }
-    ]);
-  }
   const handleSubmit = async () => {
     const { userid } = await Login(email, password);
     console.log(userid);
