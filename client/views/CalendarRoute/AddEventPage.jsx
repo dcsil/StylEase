@@ -5,11 +5,12 @@ import { imageUriParser } from '../../utils/urlParser';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOutfitsData } from '../../stores/UserStore';
 import { useFocusEffect } from '@react-navigation/native';
+import { addPlanToDay } from '../../api/requests';
 
 const IMAGE_WIDTH = 80;
 
 export const AddEventPage = ({ route, navigation }) => {
-    const { selectedDate } = route.params;
+    const { userId, selectedDate } = route.params;
     const [visible, setVisible] = useState(false);
 
     const dispatch = useDispatch();
@@ -43,10 +44,19 @@ export const AddEventPage = ({ route, navigation }) => {
         setSelectedItem(item);
     }
 
-    const addEvent = () => {
+    const addEvent = async () => {
         // TODO: push a new Item to the specific date
-        setVisible(true);
-        console.log('added')
+        await addPlanToDay(
+            userId, 
+            name, 
+            selectedDate, 
+            new Date().toJSON().slice(0, 10),
+            [selectedItem._id],
+            occasion).then(()=>{
+                setVisible(true);
+                console.log('added')
+            })
+        
     }
 
     const onAdd = () => {
@@ -141,7 +151,7 @@ export const AddEventPage = ({ route, navigation }) => {
                     subtitle={`created at ${item.created_time ? item.created_time : ''}`}
                     />
                     <Card.Actions>
-                        <Button onPress={()=>onSelect(item)}>Select</Button>
+                        <Button onPress={() => onSelect(item)}>Select</Button>
                     </Card.Actions>
                 </Card>
                 )}
