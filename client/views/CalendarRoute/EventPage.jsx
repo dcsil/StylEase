@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, StatusBar, View, Image, StyleSheet, SafeAreaView, FlatList } from 'react-native';
 import { Appbar, Banner, FAB, Avatar, Button, Text, Card } from 'react-native-paper';
 import { deletePlan, getOutfit } from '../../api/requests';
+import { imageUriParser } from '../../utils/urlParser';
 
 const LeftContent = props => <Avatar.Icon {...props} icon="tshirt-crew" />
 
+const log = console.log
+
 export const EventPage = ({ route, navigation }) => {
-    const { item, userId, selectedDate } = route.params;
+    const { item, userId, selectedDate, setItemName, setItemOccassion } = route.params;
     const [visible, setVisible] = useState(false);
     const [imageUris, setImageUris] = useState([]);
     const [isItemLoaded, setIsItemLoaded] = useState(false);
+    const [planName, setPlanName] = useState(item.name);
+    const [planOccasion, setPlanOccasion] = useState(item.occasion);
 
     const getItemImages = async () => {
       await getOutfit(userId, item.planned_outfits[0]).then((data) => {
@@ -25,19 +30,25 @@ export const EventPage = ({ route, navigation }) => {
       });
     }
 
-    if (isItemLoaded) {
+    if (!isItemLoaded) {
+      log("getting item images")
       getItemImages();
       setIsItemLoaded(true);
     }
 
+    useEffect(() => {
+      log("Updated", imageUris)
+      renderPage();
+   }, [imageUris])
+
     const renderItem = (item) => {
       return(
         <View>
-          <Card>
-          <Card.Title title={item['name']} left={LeftContent} />
+          <Card style={[styles.item]}>
+          <Card.Title title={item.item['name']} left={LeftContent} />
           <Card.Content>
           </Card.Content>
-          <Card.Cover source={{ uri: item['uri'] }} />
+          <Card.Cover source={{ uri: item.item['uri'] }} />
           </Card>
         </View>
       );
@@ -49,6 +60,8 @@ export const EventPage = ({ route, navigation }) => {
             item: item,
             userId: userId,
             selectedDate: selectedDate,
+            setPlanName: setPlanName,
+            setPlanOccasion: setPlanOccasion,
           });
     }
 
@@ -71,48 +84,60 @@ export const EventPage = ({ route, navigation }) => {
         {text: 'Confirm', onPress: () => deleteItem()},
     ]);
 
-    return(
-    <View>
-        <StatusBar barStyle="auto" />
-        <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
-          <Appbar.BackAction onPress={() => { navigation.goBack() }} />
-          <Appbar.Content title={selectedDate.dateString}/>
-        </Appbar.Header>
-        <Banner
-            visible={visible}
-            actions={[
-              {
-                label: 'OK',
-                onPress: () => {
-                    setVisible(false)
-                    navigation.goBack()
-                },
-              },
-            ]}>
-            Deleted successfully! 
-        </Banner>
-        <Text variant="titleLarge">{item.name}</Text>
-        <Text variant="bodyMedium">Created Time: {item.createdTime}</Text>
-        {item.occasion != undefined && item.occasion !== null && 
-        <Text variant="bodyMedium">Occasion: {item.occasion}</Text>}
-        <SafeAreaView style={styles.container}>
-          <FlatList
-            data={imageUris}
-            renderItem={(item) => {
-              return renderItem(item);}}
-            keyExtractor={item => item.id}
-          />
-        </SafeAreaView>
+    const renderPage = () => {
+      return(
+        <View style={{flex: 1}}>
+            <StatusBar barStyle="auto" />
+            <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
+              <Appbar.BackAction onPress={() => 
+              { 
+                setItemName(planName);
+                setItemOccassion(planOccasion);
+                navigation.goBack() 
+              }} />
+              <Appbar.Content title={selectedDate.dateString}/>
+            </Appbar.Header>
+            <Banner
+                visible={visible}
+                actions={[
+                  {
+                    label: 'OK',
+                    onPress: () => {
+                        setVisible(false)
+                        navigation.goBack()
+                    },
+                  },
+                ]}>
+                Deleted successfully! 
+            </Banner>
+            <Text variant="titleLarge">{planName}</Text>
+            <Text variant="bodyMedium">Created Time: {item.createdTime}</Text>
+            {planOccasion != "" && planOccasion !== null && 
+            <Text variant="bodyMedium">Occasion: {planOccasion}</Text>}
+            <FlatList
+              data={imageUris}
+              renderItem={(item) => {
+                return renderItem(item);
+              }}
+              keyExtractor={item => item.id}
+            />
+    
+            <Button onPress={() => onEdit()}>Edit</Button>
+            <Button textColor='#f05353' onPress={() => onDelete()}>Delete</Button>
+        </View>
+        );
+    }
 
-        <Button onPress={() => onEdit()}>Edit</Button>
-        <Button textColor='#f05353' onPress={() => onDelete()}>Delete</Button>
-    </View>
-    );
+    return renderPage();
 }
 
 const styles = StyleSheet.create({
-  container: {
+  item: {
+    backgroundColor: 'white',
     flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
+    borderRadius: 5,
+    padding: 10,
+    marginRight: 10,
+    marginTop: 5,
   },
 });

@@ -28,6 +28,8 @@ export const CalendarRoute = ({ navigation }) => {
 
     const user = useSelector(state => state.user);
     const userId = user.userInfo._id;
+    const [itemName, setItemName] = useState("");
+    const [itemOccasion, setItemOccassion] = useState("");
 
     const getCoverImage = async (outfitID) => {
       if(!outfitID) return;
@@ -72,20 +74,28 @@ export const CalendarRoute = ({ navigation }) => {
 
     useEffect(() => {
       renderPage();
-   }, [items, coverUris])
+   }, [items, coverUris, itemloaded])
 
     const renderItem = (item) => {
+      setItemName(item.name);
+      setItemOccassion(item.occasion);
+
       return(
         <Card style={[styles.item]} 
-        onPress = {() => navigation.navigate('Calendar-item', {
+        onPress = {() => {
+          navigation.navigate('Calendar-item', {
           item: item,
           userId: userId,
           selectedDate: selectedDate,
-        })}
+          setItemName: setItemName,
+          setItemOccassion: setItemOccassion
+        })
+      }}
         >
-          <Card.Title title={item.occasion} left={LeftContent} />
+          {itemOccasion!==""?<Card.Title title={itemOccasion} left={LeftContent} />: <Card.Title title={item.occasion} left={LeftContent} />}
           <Card.Content>
-            <Text variant="titleLarge">{item.name}</Text>
+          {itemName!==""?<Text variant="titleLarge">{itemName}</Text>: <Text variant="titleLarge">{item.name}</Text>}
+            <Text variant="titleLarge">{itemName}</Text>
           </Card.Content>
           <Card.Cover source={{uri: coverUris[item.planned_outfits[0]]}} />
         </Card>

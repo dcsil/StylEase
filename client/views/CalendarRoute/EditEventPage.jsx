@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Alert, StatusBar, View, StyleSheet } from 'react-native';
 import { Appbar, Banner, TextInput, Button } from 'react-native-paper';
+import { updatePlan } from '../../api/requests';
 
-export const EditEventPage = ({ route, navigation }) => {
-    const { item, userId, selectedDate } = route.params;
+export const EditEventPage = ({ route, navigation}) => {
+    const { item, userId, selectedDate, setPlanName, setPlanOccasion } = route.params;
     const [visible, setVisible] = useState(false);
 
     const [name, setName] = React.useState(item.name);
@@ -19,6 +20,9 @@ export const EditEventPage = ({ route, navigation }) => {
           "planned_outfits": item.planned_outfits,
           "occasion": occasion
         }
+        setPlanName(name);
+        setPlanOccasion(occasion);
+
         await updatePlan(new_plan, item.planId).then(()=>{
           setVisible(true);
           console.log('added');
@@ -65,8 +69,8 @@ export const EditEventPage = ({ route, navigation }) => {
             ]}>
             Edited successfully! 
         </Banner>
-        <TextInput label="Name" value={name} onChangeText={text => setName(text)}/>
-        <TextInput label="Occasion (Optional)" value={occasion} onChangeText={text => setOccasion(text)}/>
+        <TextInput style={styles.textInput} label="Name" value={name} onChangeText={text => setName(text)}/>
+        <TextInput style={styles.textInput} label="Occasion (Optional)" value={occasion} onChangeText={text => setOccasion(text)}/>
         <Button onPress={() => onEdit()}>Confirm</Button>
         <Button textColor='#f05353' onPress={() => onCancel()}>Cancel</Button>
         </View>
@@ -83,4 +87,9 @@ const styles = StyleSheet.create({
       bottom: 20,
       right: 20,
     },
+    textInput:{
+      marginHorizontal: 5,
+      marginVertical: 5
+    }
   });
+
