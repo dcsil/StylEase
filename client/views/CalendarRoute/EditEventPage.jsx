@@ -3,16 +3,25 @@ import { Alert, StatusBar, View, StyleSheet } from 'react-native';
 import { Appbar, Banner, TextInput, Button } from 'react-native-paper';
 
 export const EditEventPage = ({ route, navigation }) => {
-    const { item, selectedDate } = route.params;
+    const { item, userId, selectedDate } = route.params;
     const [visible, setVisible] = useState(false);
 
     const [name, setName] = React.useState(item.name);
     const [occasion, setOccasion] = React.useState(item.occasion);
 
-    const editEvent = () => {
+    const editEvent = async () => {
         // TODO: push a new Item to the specific date
-        setVisible(true);
-        console.log('added')
+        const new_plan =  {
+          "user": userId,
+          "name": name,
+          "date": item.date,
+          "createdTime": new Date().toJSON().slice(0, 10),
+          "planned_outfits": item.planned_outfits,
+          "occasion": occasion}
+        await updatePlan(new_plan, item.planId).then(()=>{
+          setVisible(true);
+          console.log('added')
+        })
     }
 
     const onEdit = () => {
