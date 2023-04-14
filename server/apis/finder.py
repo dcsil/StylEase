@@ -40,3 +40,21 @@ def get_items(client, items):
         item['_id'] = str(item['_id'])
         items_lst.append(item)
     return items_lst
+
+
+def remove_item_from_all(client, item_id, collections, collection_name, item_name):
+    for collection in collections:
+        target = find_by_id(client, collection_name, collection)
+        if item_id in target[item_name]:
+            target[item_name].remove(item_id)
+            # try:
+            client.db[collection_name].update_one({'_id': ObjectId(collection)}, {'$set': {item_name: target[item_name]}})
+            # except Exception as e:
+            #     return {
+            #         'status': 'fail to remove item from all',
+            #         'error': str(e)
+            #     }, 400
+    # return {
+    #     'status': 'success',
+    #     'item_id': str(item_id)
+    # }, 200

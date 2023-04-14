@@ -90,11 +90,12 @@ def deleteItem():
         current_items.remove(item_id)
         client.db.wardrobes.update_one({'_id': ObjectId(wardrobe_id)}, {'$set': {'items': current_items}})
         # Delete item from all users' outfits
-        for outfit in target['outfits']:
-            outfit_target = find_by_id(client, 'outfits', outfit)
-            if item_id in outfit_target['items']:
-                outfit_target['items'].remove(item_id)
-                client.db.outfits.update_one({'_id': ObjectId(outfit)}, {'$set': {'items': outfit_target['items']}})
+        # for outfit in target['outfits']:
+        #     outfit_target = find_by_id(client, 'outfits', outfit)
+        #     if item_id in outfit_target['items']:
+        #         outfit_target['items'].remove(item_id)
+        #         client.db.outfits.update_one({'_id': ObjectId(outfit)}, {'$set': {'items': outfit_target['items']}})
+        remove_item_from_all(client, item_id, target['outfits'], 'outfits', 'items')
         return {
             'status': 'success',
             'item_id': item_id
@@ -157,11 +158,7 @@ def deleteOutfit():
         outfits_lst.remove(outfit_id)
         client.db.users.update_one({'_id': ObjectId(creator_id)}, {'$set': {'outfits': outfits_lst}})
         # Delete outfit from user's outfit collections
-        for collection in target["outfit_collections"]:
-            collection_target = find_by_id(client, 'outfitcollections', collection)
-            if outfit_id in collection_target['outfits']:
-                collection_target['outfits'].remove(outfit_id)
-                client.db.outfitcollections.update_one({'_id': ObjectId(collection)}, {'$set': {'outfits': collection_target['outfits']}})
+        remove_item_from_all(client, outfit_id, target["outfit_collections"], 'outfitcollections', 'outfits')
         # Need to check the outfit plan in calendar in later release
     except Exception as e:
         return {
