@@ -1,55 +1,66 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react-native';
-import configureMockStore from 'redux-mock-store';
-import { LoginPage} from '../views/LoginPage';
-import thunk from 'redux-thunk';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react-native';
+import { LoginPage } from '../views/LoginPage';
 import { RenderWithProviders } from '../utils/renderWithProvider';
+import stores from '../stores';
+jest.useFakeTimers();
 
-const mockStore = configureMockStore([thunk]);
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useDispatch: () => jest.fn(),
+  useSelector: jest.fn()
+}));
+const mockNavigation = jest.fn();
+const mockLogin = jest.fn().mockReturnValue({userid: '111'});
+
+jest.mock('../api/requests', () => ({
+  ...jest.requireActual('../api/requests'),
+  Login: async (e, p) => mockLogin(e, p),
+}));
+
+const mockStore = stores
 
 describe('LoginPage', () => {
+  let emailInput, passwordInput, loginButton, signUpButton, forgotPU;
+  beforeEach(() => {
+    RenderWithProviders(<LoginPage navigation={{ navigate: mockNavigation }} />, mockStore);
+    emailInput = screen.getAllByText("Email");
+    passwordInput = screen.getAllByText("Password");
+    loginButton = screen.getAllByText('Login');
+    signUpButton = screen.getAllByText('Sign up');
+    forgotPU = screen.getAllByText('Forgot password or username');
+  });
 
-  const initialState = {
-    user: {
-      userInfo: {
-        _id: 'mockUserId'
-      }
-    }
-  };
-
-  const store = mockStore(initialState);
-
-  it('should render correctly', () => {
-    RenderWithProviders(<LoginPage />, { store: store });
+  it('should render correctly', async () => {
+    // RenderWithProviders(<LoginPage navigation={{navigate: mockNavigation}}/>, mockStore);
     expect(screen.getByText('StylEase')).toBeDefined();
-    const emailInput = screen.getByRole('textbox', { name: "Email" });
+    // const emailInput = screen.getAllByText("Email");
     expect(emailInput).toBeTruthy();
 
-    const passwordInput = screen.getByRole('textbox', { name: "Password" });
+    // const passwordInput = screen.getAllByText("Password");
     expect(passwordInput).toBeTruthy();
 
-    const loginButton = screen.getByText('Login');
+    // const loginButton = screen.getAllByText('Login');
     expect(loginButton).toBeTruthy();
-    const signUpButton = screen.getByText('Sign up');
+
+    // const signUpButton = screen.getAllByText('Sign up');
     expect(signUpButton).toBeTruthy();
-    const forgotPU = screen.getByText('Forgot password or username');
+
+    // const forgotPU = screen.getAllByText('Forgot password or username');
     expect(forgotPU).toBeTruthy();
   });
 
   it('should handle form submission', async () => {
-    const mockNavigate = jest.fn();
-    const { getByText, getByLabelText } = RenderWithProviders(<LoginPage />, { store: store });
-    fireEvent.changeText(getByLabelText('Email'), 'test@example.com');
-    fireEvent.changeText(getByLabelText('Password'), 'password123');
-    fireEvent.press(getByText('Login'));
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('Main'));
+    fireEvent.changeText(emailInput[0], 'test@mail');
+    fireEvent.changeText(passwordInput[0], 'password123');
+    fireEvent.press(loginButton[0]);
+    await waitFor(() => expect(mockLogin).toHaveBeenCalledWith('test@mail', 'password123'));
+    await waitFor(() => expect(mockNavigation).toHaveBeenCalledWith('Main'));
   });
 
-  it('should navigate to signup page', () => {
-    const mockNavigate = jest.fn();
-    const { getByText, getByLabelText } = RenderWithProviders(<LoginPage />, { store: store });
-    fireEvent.press(getByText('Sign up'));
-    expect(mockNavigate).toHaveBeenCalledWith('SignUp');
+  it('should navigate to signup page', async () => {
+    fireEvent.press(signUpButton[0]);
+    await waitFor(() => expect(mockNavigation).toHaveBeenCalledWith('SignUp'));
   });
 
 });
