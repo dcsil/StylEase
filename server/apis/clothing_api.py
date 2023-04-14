@@ -162,7 +162,6 @@ def deleteOutfit():
             if outfit_id in collection_target['outfits']:
                 collection_target['outfits'].remove(outfit_id)
                 client.db.outfitcollections.update_one({'_id': ObjectId(collection)}, {'$set': {'outfits': collection_target['outfits']}})
-                break
         # Need to check the outfit plan in calendar in later release
     except Exception as e:
         return {
