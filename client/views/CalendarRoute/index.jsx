@@ -29,27 +29,6 @@ export const CalendarRoute = ({ navigation }) => {
     const user = useSelector(state => state.user);
     const userId = user.userInfo._id;
 
-    const fetchCalendarDays = async (userId) => {
-        if (!userId) return;
-        await getAllDays(userId).then(async (data) => {
-          const days = data.days;
-          var items_ = {};
-          for (let i = 0; i < days.length; i++){
-            var plans = []
-            for (let j = 0; j < days[i].plans.length; j++){
-              const item = await getPlan(days[i].plans[j]);
-              var p = item.plan;
-              p['planId'] = days[i].plans[j];
-              plans.push(p);
-            }
-            if(plans.length > 0) {
-              items_[days[i].date] = plans;
-            }
-          }
-          setItems(items_);
-        });
-    };
-
     const getCoverImage = async (outfitID) => {
       if(!outfitID) return;
       var uri;
@@ -61,6 +40,31 @@ export const CalendarRoute = ({ navigation }) => {
       })
     }
 
+    const fetchCalendarDays = async (userId) => {
+        if (!userId) return;
+        await getAllDays(userId).then(async (data) => {
+          const days = data.days;
+          var items_ = {};
+          for (let i = 0; i < days.length; i++){
+            var plans = []
+            for (let j = 0; j < days[i].plans.length; j++){
+              // const item = await getPlan(days[i].plans[j]);
+              // plans.push(item.plan);
+              const item = await getPlan(days[i].plans[j]).then((item)=>{
+                var p = item.plan;
+                p['planId'] = days[i].plans[j];
+                plans.push(p);
+                getCoverImage(p.planned_outfits[0]);
+              })
+            }
+            if(plans.length > 0) {
+              items_[days[i].date] = plans;
+            }
+          }
+          setItems(items_);
+        });
+    };
+
     if (!itemloaded) {
       fetchCalendarDays(userId);
       setItemloaded(true);
@@ -68,10 +72,9 @@ export const CalendarRoute = ({ navigation }) => {
 
     useEffect(() => {
       renderPage();
-   }, [items])
+   }, [items, coverUris])
 
     const renderItem = (item) => {
-      getCoverImage(item.planned_outfits[0]);
       return(
         <Card style={[styles.item]} 
         onPress = {() => navigation.navigate('Calendar-item', {
@@ -230,7 +233,6 @@ export const CalendarRoute = ({ navigation }) => {
         style={styles.fab}
         icon={(props) => <Icon name="plus" {...props} />}
         onPress={() => navigation.navigate('Calendar-add-item', {
-          userId: userId,
           selectedDate: selectedDate,
         })}
       />
