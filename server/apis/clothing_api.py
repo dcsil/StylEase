@@ -107,8 +107,6 @@ def deleteItem():
         }, 400
 
 
-
-
 @clothing_api.route('/api/AddNewOutfit', methods=['POST'])
 def addNewOutfit():
     body = request.get_json()

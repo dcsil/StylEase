@@ -3,6 +3,7 @@ import base64
 import io
 from PIL import Image
 import requests
+import time
 
 def detect(img):
     API_URL = "https://api-inference.huggingface.co/models/abhishek/autotrain_fashion_mnist_vit_base"
@@ -28,6 +29,8 @@ def detect(img):
     # else:
     #     return "Nothing detected"
     response = requests.post(API_URL, headers=headers, data=img)
+    # Wait for loading
+    time.sleep(5)
     response = response.json()
     print(response)
     return response[0]['label']
