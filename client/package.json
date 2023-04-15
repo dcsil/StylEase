@@ -7,7 +7,7 @@
     "android": "npx expo run:android",
     "ios": "npx expo run:ios",
     "web": "npx expo start --web",
-    "test": "jest --passWithNoTests",
+    "test": "jest --passWithNoTests --coverage",
     "test-cover": "jest --coverage"
   },
   "dependencies": {

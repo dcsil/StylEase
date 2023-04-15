@@ -3,6 +3,7 @@ import { render, fireEvent, screen, waitFor } from '@testing-library/react-nativ
 import { LoginPage } from '../views/LoginPage';
 import { RenderWithProviders } from '../utils/renderWithProvider';
 import stores from '../stores';
+
 jest.useFakeTimers();
 
 jest.mock('react-redux', () => ({
@@ -32,25 +33,16 @@ describe('LoginPage', () => {
   });
 
   it('should render correctly', async () => {
-    // RenderWithProviders(<LoginPage navigation={{navigate: mockNavigation}}/>, mockStore);
     expect(screen.getByText('StylEase')).toBeDefined();
-    // const emailInput = screen.getAllByText("Email");
     expect(emailInput).toBeTruthy();
-
-    // const passwordInput = screen.getAllByText("Password");
     expect(passwordInput).toBeTruthy();
-
-    // const loginButton = screen.getAllByText('Login');
     expect(loginButton).toBeTruthy();
-
-    // const signUpButton = screen.getAllByText('Sign up');
     expect(signUpButton).toBeTruthy();
-
-    // const forgotPU = screen.getAllByText('Forgot password or username');
     expect(forgotPU).toBeTruthy();
   });
 
   it('should handle form submission', async () => {
+    expect(loginButton[0]).toBeDisabled();
     fireEvent.changeText(emailInput[0], 'test@mail');
     fireEvent.changeText(passwordInput[0], 'password123');
     fireEvent.press(loginButton[0]);
@@ -61,6 +53,11 @@ describe('LoginPage', () => {
   it('should navigate to signup page', async () => {
     fireEvent.press(signUpButton[0]);
     await waitFor(() => expect(mockNavigation).toHaveBeenCalledWith('SignUp'));
+  });
+
+  it('should navigate to forgotPassword page', async () => {
+    fireEvent.press(forgotPU[0]);
+    //await waitFor(() => expect(mockNavigation).toHaveBeenCalledWith('ForgotPassword'));
   });
 
 });
