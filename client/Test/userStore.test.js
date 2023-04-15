@@ -32,10 +32,18 @@ describe('UserReducer Test', () => {
     expect(userReducer(undefined, { type: setUserId.type, payload: '123' })).toEqual({ loading: false, userInfo: { _id: '123', data: null } })
   });
 
-  it('should handle fetchUserData', async () => {
+  it('should handle fetch methods', async () => {
     await store.dispatch(fetchUserData('123', 666)).then(() => {
       const state = store.getState();
       expect(state.userInfo.data).toEqual({ wardrobe: [] });
+    });
+    await store.dispatch(fetchOutfitsData(666)).then(() => {
+      const state = store.getState();
+      expect(state.userInfo.data).toEqual({ outfits_collections: [], wardrobe: [] });
+    });
+    await store.dispatch(fetchWardrobeItems(666)).then(() => {
+      const state = store.getState();
+      expect(state.userInfo.data).toEqual({ outfits_collections: [], wardrobe: [] });
     });
   });
 })
