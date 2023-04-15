@@ -80,11 +80,6 @@ export const CalendarRoute = ({ navigation }) => {
       return unsubscribe;
    }, [navigation, items, coverUris, itemloaded])
 
-    const refreshPage = (userId) =>{
-      fetchCalendarDays(userId);
-      renderPage();
-    }
-
     const renderItem = (item) => {
       return(
         <Card style={[styles.item]} 
@@ -102,15 +97,6 @@ export const CalendarRoute = ({ navigation }) => {
           </Card.Content>
           <Card.Cover source={{uri: coverUris[item.planned_outfits[0]]}} />
         </Card>
-      );
-    }
-
-    const renderEmptyDate = () => {
-      console.log('render empty');
-      return (
-        <View style={styles.emptyDate}>
-          <Text>This is empty date!</Text>
-        </View>
       );
     }
 
@@ -148,14 +134,8 @@ export const CalendarRoute = ({ navigation }) => {
           renderItem={(item, firstItemInDay) => {
             return renderItem(item);
           }}
-          renderEmptyDate={() => {
-            return renderEmptyDate();
-          }}
           renderKnob={() => {
             return renderKnob();
-          }}
-          renderEmptyData={() => {
-            return <View />;
           }}
           rowHasChanged={(r1, r2) => {
             return r1.text !== r2.text;
