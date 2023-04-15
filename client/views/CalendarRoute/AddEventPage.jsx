@@ -9,6 +9,7 @@ import { addPlanToDay } from '../../api/requests';
 
 const IMAGE_WIDTH = 80;
 
+
 export const AddEventPage = ({ route, navigation }) => {
     const { userId, selectedDate } = route.params;
     const [visible, setVisible] = useState(false);
