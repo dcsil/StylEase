@@ -56,7 +56,8 @@ const ProfileRoute = ({ navigation }) => (
 const ScreenBuilder = (routeName, routeComponent, routeIconName) => {
   return (
     <Tab.Screen
-      name="routeName"
+      key={routeName}
+      name={routeName}
       component={routeComponent}
       options={{
         tabBarIcon: ({ color, size }) => <Icon name={routeIconName} size={size} color={color} />,

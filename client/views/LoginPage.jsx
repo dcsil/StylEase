@@ -37,9 +37,9 @@ export const LoginPage = ({ navigation }) => {
   //     setContent(result);
   //   });
   // }, [])
+
   const handleSubmit = async () => {
     const { userid } = await Login(email, password);
-    console.log(userid);
     await new Promise((resolve) => resolve(dispatch(setUserId(userid))))
       .then(() => {
         dispatch(fetchUserData(userid));
@@ -54,7 +54,7 @@ export const LoginPage = ({ navigation }) => {
   };
 
   const handleForgotPassword = () => {
-    // avigation.navigate('SignUp');
+    // navigation.navigate('ForgotPassword');
     // navigate to forgot password page here
   };
 

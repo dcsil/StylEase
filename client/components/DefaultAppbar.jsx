@@ -8,8 +8,8 @@ export const DefaultAppBar = ({ title, backActionCallback=null, showTitle=true }
     <React.Fragment>
       <StatusBar key={title} />
       <Appbar.Header statusBarHeight={30} style={{ paddingBottom: 0 }}>
-        {showTitle && <Appbar.Content title={title} />}
         {backActionCallback && <Appbar.BackAction onPress={backActionCallback} />}
+        {showTitle && <Appbar.Content title={title} />}
       </Appbar.Header>
     </React.Fragment>
   )

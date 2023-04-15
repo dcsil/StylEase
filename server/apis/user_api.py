@@ -1,21 +1,13 @@
 from datetime import datetime
-import pymongo
-import certifi
-from bson import ObjectId
-import flask_pymongo
 from flask import *
-from flask_cors import CORS
-from flask_pymongo import PyMongo
-import sentry_sdk
-from sentry_sdk.integrations.flask import FlaskIntegration
-from dotenv import load_dotenv
-from AI.detection import detect
-from tool_box.finder import *
 import os
-import base64
-import io
 from passlib.hash import sha256_crypt
 from flask import Blueprint
+from apis.finder import *
+# from server.app import client
+from database import client
+from bson import ObjectId
+
 
 user_api = Blueprint('user_api', __name__)
 # cors = CORS(user_api)
@@ -23,7 +15,7 @@ user_api = Blueprint('user_api', __name__)
 # user_api.config['MONGO_URI'] = os.environ.get("MONGODB_URL")
 # Connect to MongoDB, where client is the MongoClient object
 # client = flask_pymongo.MongoClient(os.environ.get("MONGODB_URL"))
-client = pymongo.MongoClient(os.environ.get("MONGODB_URL"), tlsCAFile=certifi.where())
+# client = pymongo.MongoClient(os.environ.get("MONGODB_URL"), tlsCAFile=certifi.where())
 
 
 # Login
@@ -34,6 +26,11 @@ def login():
     password = body['password']
     # Compare to the password that encrypted in the database
     target = client.db.users.find_one({'email': email})
+    if not target:
+        return {
+            'status': 'fail',
+            'error': 'Email does not exist'
+        }, 400
     if isinstance(target, tuple):
         return target
     if sha256_crypt.verify(password, target['password']):
@@ -64,7 +61,8 @@ def register():
         }, 400
     try:
         # Encrypt the password
-        password = sha256_crypt.encrypt(password)
+        # password = sha256_crypt.encrypt(password)
+        password = sha256_crypt.hash(password)
         # Insert the user to db.users
         userid = client.db.users.insert_one({
             'name': name,
@@ -79,24 +77,34 @@ def register():
         # Create a calendar for the user
         calendar = {
           "user": str(userid),
-          "created_time": datetime.now(),
+          "created_time": str(datetime.now()),
           "days": []
         }
 
         # Create a wardrobe for the user
         wardrobe = {
             "user": str(userid),
-            "created_time": datetime.now(),
+            "created_time": str(datetime.now()),
             "items": []
             }
+
+        # Create a outfitcollection for the user
+        outfitcollection = {
+            'name': 'Default',
+            "owner": str(userid),
+            "created_time": str(datetime.now()),
+            "outfits": []
+        }
 
         # Insert the calendar and wardrobe to db.calendars and db.wardrobes
         cal_id = client.db.calendars.insert_one(calendar).inserted_id
         war_id = client.db.wardrobes.insert_one(wardrobe).inserted_id
+        outfitcollection_id = client.db.outfitcollections.insert_one(outfitcollection).inserted_id
 
         # Update the calendar and wardrobe id in db.users
         client.db.users.update_one({'_id': ObjectId(userid)}, {'$set': {'calendar': str(cal_id)}})
-        client.db.wardrobes.update_one({'_id': ObjectId(userid)}, {'$set': {'wardrobe': str(war_id)}})
+        client.db.users.update_one({'_id': ObjectId(userid)}, {'$set': {'wardrobe': str(war_id)}})
+        client.db.users.update_one({'_id': ObjectId(userid)}, {'$push': {'outfit_collections': str(outfitcollection_id)}})
     except Exception as e:
         return {
             'status': 'fail',

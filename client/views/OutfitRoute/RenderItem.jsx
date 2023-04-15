@@ -1,9 +1,9 @@
 import React from "react";
-import { Image, TouchableOpacity, View } from "react-native"
+import { Image, Text, TouchableOpacity, View } from "react-native"
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { imageUriParser } from "../../utils/urlParser";
 
-export const RenderItem = ({ item, setWardrobeItems, imgSize, imgStyle=null }) => {
+export const RenderItem = ({ item, setWardrobeItems, imgSize, imgStyle }) => {
   const handlePress = React.useCallback(() => {
     item.checked = !item.checked;
     setWardrobeItems(prev => {
