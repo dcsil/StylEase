@@ -9,12 +9,13 @@ const LeftContent = props => <Avatar.Icon {...props} icon="tshirt-crew" />
 const log = console.log
 
 export const EventPage = ({ route, navigation }) => {
-    const { item, userId, selectedDate, setItemName, setItemOccassion } = route.params;
+    const { item, userId, selectedDate } = route.params;
     const [visible, setVisible] = useState(false);
     const [imageUris, setImageUris] = useState([]);
     const [isItemLoaded, setIsItemLoaded] = useState(false);
     const [planName, setPlanName] = useState(item.name);
     const [planOccasion, setPlanOccasion] = useState(item.occasion);
+    log("This ITEMMM", item)
 
     const getItemImages = async () => {
       await getOutfit(userId, item.planned_outfits[0]).then((data) => {
@@ -67,7 +68,7 @@ export const EventPage = ({ route, navigation }) => {
 
     const deleteItem = async () => {
         // TODO: Delete item API
-        await deletePlan(item.planId).then(()=>{
+        await deletePlan(item.planId, item.dayId).then(()=>{
           setVisible(true);
           console.log('deleted');
         }
@@ -91,8 +92,6 @@ export const EventPage = ({ route, navigation }) => {
             <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
               <Appbar.BackAction onPress={() => 
               { 
-                setItemName(planName);
-                setItemOccassion(planOccasion);
                 navigation.goBack() 
               }} />
               <Appbar.Content title={selectedDate.dateString}/>

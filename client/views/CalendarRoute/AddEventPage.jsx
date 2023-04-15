@@ -9,6 +9,8 @@ import { addPlanToDay } from '../../api/requests';
 
 const IMAGE_WIDTH = 80;
 
+const log = console.log
+
 export const AddEventPage = ({ route, navigation }) => {
     const { userId, selectedDate } = route.params;
     const [visible, setVisible] = useState(false);
@@ -49,13 +51,13 @@ export const AddEventPage = ({ route, navigation }) => {
         await addPlanToDay(
             userId, 
             name, 
-            selectedDate, 
+            selectedDate.dateString, 
             new Date().toJSON().slice(0, 10),
             [selectedItem._id],
             occasion).then(()=>{
                 setVisible(true);
                 console.log('added')
-            })
+        })
         
     }
 

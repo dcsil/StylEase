@@ -25,7 +25,7 @@ export const EditEventPage = ({ route, navigation}) => {
 
         await updatePlan(new_plan, item.planId).then(()=>{
           setVisible(true);
-          console.log('added');
+          console.log('updated');
         })
     }
 

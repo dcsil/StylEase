@@ -28,8 +28,6 @@ export const CalendarRoute = ({ navigation }) => {
 
     const user = useSelector(state => state.user);
     const userId = user.userInfo._id;
-    const [itemName, setItemName] = useState("");
-    const [itemOccasion, setItemOccassion] = useState("");
 
     const getCoverImage = async (outfitID) => {
       if(!outfitID) return;
@@ -54,6 +52,7 @@ export const CalendarRoute = ({ navigation }) => {
               // plans.push(item.plan);
               const item = await getPlan(days[i].plans[j]).then((item)=>{
                 var p = item.plan;
+                p['dayId'] = days[i]._id;
                 p['planId'] = days[i].plans[j];
                 plans.push(p);
                 getCoverImage(p.planned_outfits[0]);
@@ -77,9 +76,6 @@ export const CalendarRoute = ({ navigation }) => {
    }, [items, coverUris, itemloaded])
 
     const renderItem = (item) => {
-      setItemName(item.name);
-      setItemOccassion(item.occasion);
-
       return(
         <Card style={[styles.item]} 
         onPress = {() => {
@@ -87,15 +83,12 @@ export const CalendarRoute = ({ navigation }) => {
           item: item,
           userId: userId,
           selectedDate: selectedDate,
-          setItemName: setItemName,
-          setItemOccassion: setItemOccassion
         })
       }}
         >
-          {itemOccasion!==""?<Card.Title title={itemOccasion} left={LeftContent} />: <Card.Title title={item.occasion} left={LeftContent} />}
+          <Card.Title title={item.occasion} left={LeftContent} />
           <Card.Content>
-          {itemName!==""?<Text variant="titleLarge">{itemName}</Text>: <Text variant="titleLarge">{item.name}</Text>}
-            <Text variant="titleLarge">{itemName}</Text>
+          <Text variant="titleLarge">{item.name}</Text>
           </Card.Content>
           <Card.Cover source={{uri: coverUris[item.planned_outfits[0]]}} />
         </Card>
@@ -178,7 +171,7 @@ export const CalendarRoute = ({ navigation }) => {
     </View>);
     }
     
-    // return renderPage();
+    return renderPage();
     return(
     <View>
         <StatusBar style="auto" />
@@ -244,6 +237,7 @@ export const CalendarRoute = ({ navigation }) => {
         icon={(props) => <Icon name="plus" {...props} />}
         onPress={() => navigation.navigate('Calendar-add-item', {
           selectedDate: selectedDate,
+          userId: userId
         })}
       />
     </View>
