@@ -47,6 +47,5 @@ jobs:
         with:
           coverageCommand: coverage report && coverage xml
           debug: true
-          coverageLocations: ${{github.workspace}}/coverage.xml:coverage.py
 
       
