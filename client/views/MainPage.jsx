@@ -89,6 +89,11 @@ export const MainPage = ({ navigation }) => {
       tabBar={
         ({ navigation, state, descriptors, insets }) => (
           <BottomNavigation.Bar
+            testID='lol'
+            getTestID={({ route }) => {
+              // console.log(route);
+              return `${route.name}-tab`;
+            }}
             navigationState={state}
             style={{ height: 85 }}
             safeAreaInsets={insets}

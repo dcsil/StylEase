@@ -4,7 +4,6 @@ import { RenderWithProviders } from '../utils/renderWithProvider';
 import stores from '../stores';
 import { MainPage } from '../views/MainPage';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 jest.useFakeTimers();
 
@@ -23,10 +22,10 @@ const mockStore = stores;
 //   createBottomTabNavigator:
 // }));
 
-jest.mock('@react-navigation/bottom-tabs', () => ({
-  ...jest.requireActual('@react-navigation/bottom-tabs'),
-  
-}));
+// jest.mock('@react-navigation/bottom-tabs', () => ({
+//   ...jest.requireActual('@react-navigation/bottom-tabs'),
+
+// }));
 
 
 describe('MainPage', () => {
@@ -38,11 +37,11 @@ describe('MainPage', () => {
         <MainPage navigation={{ navigate: mockNavigation }} />
       </NavigationContainer>,
       mockStore);
-    homeTab = screen.getAllByTestId('Home')[0];
-    wardrobeTab = screen.getAllByTestId('Wardrobe')[0];
-    outfitTab = screen.getAllByTestId('Outfit')[0];
-    calendarTab = screen.getAllByTestId('Calendar')[0];
-    profileTab = screen.getAllByTestId('Profile')[0];
+    homeTab = screen.getByTestId('Home-tab');
+    wardrobeTab = screen.getByTestId('Wardrobe-tab');
+    outfitTab = screen.getByTestId('Outfit-tab');
+    calendarTab = screen.getByTestId('Calendar-tab');
+    profileTab = screen.getByTestId('Profile-tab');
   });
 
   it('should render correctly', async () => {
@@ -53,24 +52,24 @@ describe('MainPage', () => {
     expect(profileTab).toBeTruthy();
   });
 
-  // it('should navigate to wardrobe page when wardrobe tab is pressed', async () => {
-  //     fireEvent.press(wardrobeTab);
-  //     await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
-  // });
+  it('should navigate to wardrobe page when wardrobe tab is pressed', async () => {
+      fireEvent.press(wardrobeTab);
+      // await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
+  });
 
-  // it('should navigate to outfit page when outfit tab is pressed', async () => {
-  //     fireEvent.press(outfitTab);
-  //     await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
-  // });
+  it('should navigate to outfit page when outfit tab is pressed', async () => {
+      fireEvent.press(outfitTab);
+      // await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
+  });
 
-  // it('should navigate to calendar page when calendar tab is pressed', async () => {
-  //     fireEvent.press(calendarTab);
-  //     await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
-  // });
+  it('should navigate to calendar page when calendar tab is pressed', async () => {
+      fireEvent.press(calendarTab);
+      // await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
+  });
 
-  // it('should navigate to profile page when profile tab is pressed', async () => {
-  //     fireEvent.press(profileTab);
-  //     await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
-  // });
+  it('should navigate to profile page when profile tab is pressed', async () => {
+      fireEvent.press(profileTab);
+      // await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
+  });
 
 });
