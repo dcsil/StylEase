@@ -25,7 +25,6 @@ export const WardrobeRoute = ({ navigation }) => {
   const userId = user.userInfo._id;
   const wardrobeItems = user.userInfo.data ? user.userInfo.data.wardrobe.items : [];
   const userStoreLoading = useSelector(state => state.user.loading);
-
   useFocusEffect(
     React.useCallback(() => {
       if (navigation.isFocused()) {
@@ -83,7 +82,7 @@ export const WardrobeRoute = ({ navigation }) => {
   };
 
   return (
-    < View style={styles.container} onLayout={onLayout} >
+    < View style={styles.container} onLayout={onLayout}>
       <StatusBar barStyle="auto" />
       <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
         <Appbar.Content title="Wordrobe" />
@@ -110,6 +109,7 @@ export const WardrobeRoute = ({ navigation }) => {
       </List.Section>
 
       <FAB
+        testID='wardrobe-route-add-item'
         style={styles.fab}
         icon={(props) => <Icon name="plus" {...props} />}
         onPress={handleAddItem}
