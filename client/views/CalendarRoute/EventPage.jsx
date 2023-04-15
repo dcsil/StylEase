@@ -103,11 +103,14 @@ export const EventPage = ({ route, navigation }) => {
                 ]}>
                 Deleted successfully! 
             </Banner>
-            <Text variant="titleLarge">{planName}</Text>
-            <Text variant="bodyMedium">Created Time: {item.createdTime}</Text>
-            {planOccasion != "" && planOccasion !== null && 
-            <Text variant="bodyMedium">Occasion: {planOccasion}</Text>}
+            <View style={styles.text}>
+              <Text  variant="titleLarge">{planName}</Text>
+              <Text variant="bodyLarge">Created Time: {item.createdTime}</Text>
+              {planOccasion != "" && planOccasion !== null && 
+              <Text variant="bodyLarge">Occasion: {planOccasion}</Text>}
+            </View> 
             <FlatList
+              style = {styles.text}
               data={imageUris}
               renderItem={(item) => {
                 return renderItem(item);
@@ -133,4 +136,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginTop: 5,
   },
+  text: {
+    marginHorizontal: '5%',
+    marginTop: '5%'
+  }
 });

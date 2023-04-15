@@ -46,7 +46,6 @@ export const AddEventPage = ({ route, navigation }) => {
     }
 
     const addEvent = async () => {
-        // TODO: push a new Item to the specific date
         await addPlanToDay(
             userId, 
             name, 
@@ -111,9 +110,7 @@ export const AddEventPage = ({ route, navigation }) => {
             style={{ flex: 1 }}
             >
             <FlatList
-                // key={`${displayedItems.length}items`}
                 style={{ width: '100%' }}
-                // contentContainerStyle={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}
                 numColumns={1}
                 directionalLockEnabled={true}
                 data={(outfits && outfits.length === 0) ? [] : outfits[0].outfits}
@@ -126,7 +123,6 @@ export const AddEventPage = ({ route, navigation }) => {
                     <View style={{ marginHorizontal: 5 }}>
                     <FlatList
                         key={`OutfitRoute-${numColumns}`}
-                        // style={{ flex: 1 }}
                         numColumns={numColumns}
                         directionalLockEnabled={true}
                         data={item.items}
@@ -169,7 +165,6 @@ export const AddEventPage = ({ route, navigation }) => {
                 <View style={{ marginHorizontal: 5 }}>
                 <FlatList
                     key={`OutfitRoute-${numColumns}`}
-                    // style={{ flex: 1 }}
                     numColumns={numColumns}
                     directionalLockEnabled={true}
                     data={selectedItem.items}
