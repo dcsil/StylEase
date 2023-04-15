@@ -6,7 +6,7 @@ import os
 import sys
 sys.path.append('..')
 
-from server.apis.clothing_api import clothing_api
+from apis.clothing_api import clothing_api
 
 # initialize app
 load_dotenv()

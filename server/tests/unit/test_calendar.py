@@ -7,7 +7,7 @@ import sys
 sys.path.append('..')
 
 # from server.app import app
-from server.apis.calendar_api import calendar_api
+from apis.calendar_api import calendar_api
 
 # initialize app
 load_dotenv()

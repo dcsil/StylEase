@@ -7,9 +7,9 @@ import sys
 sys.path.append('..')
 
 # from server.app import app
-from server.apis.user_api import user_api
-from server.database import client as cl
-from server.apis.finder import *
+from apis.user_api import user_api
+from database import client as cl
+from apis.finder import *
 
 # initialize app
 load_dotenv()
