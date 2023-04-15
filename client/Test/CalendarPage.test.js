@@ -5,7 +5,6 @@ import { RenderWithProviders } from '../utils/renderWithProvider';
 import stores from '../stores';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import  { Input } from "./Input";
 
 
 
