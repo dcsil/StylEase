@@ -14,7 +14,6 @@ jest.mock('react-redux', () => ({
   }));
 
 const mockNavigation = jest.fn();
-const mockIsValidInfo = jest.fn();
 const mockSignUp = jest.fn();
 
 jest.mock('../api/requests', () => ({
