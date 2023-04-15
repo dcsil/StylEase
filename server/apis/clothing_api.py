@@ -6,6 +6,7 @@ from flask import Blueprint
 from database import client
 from apis.finder import *
 from bson import ObjectId
+from apis.recommand import *
 
 clothing_api = Blueprint('clothing_api', __name__)
 
@@ -327,31 +328,58 @@ def getOutfit(userid, outfitid):
 @clothing_api.route('/api/CreateAIOutfit', methods=['POST'])
 def createAIOutfit():
     data = request.get_json()
-    outfit = data['outfit']
-    # Hard Code
-    # get item 64237ecfa77fdcf57203ff96
-    items = [
-        {'_id': '64237ecfa77fdcf57203ff96', 'user': '64237961038602a02a81cd92'},
-        {'_id': '642c9b687032063a2f2f1e78', 'user': ''}
-    ]
-    if data['regenerate']:
-        # Suggest items 642c9b687032063a2f2f1e78, 642c9a701f8bd8fef92cbf18,
-        # 642c9a27756f6d8ab3562456, 642c99a94146ee0f23e68bf6
-        items.extend([
-            {'_id': '642c9a701f8bd8fef92cbf18', 'user': ''},
-            {'_id': '642c9a27756f6d8ab3562456', 'user': ''},
-            {'_id': '642c99a94146ee0f23e68bf6', 'user': ''}
-        ])
-    else:
-        items.extend([
-            {'_id': '64237df5ad0c1edddca0f8dc', 'user': '64237961038602a02a81cd92'},
-            {'_id': '642c96dcbaac041ea8a98a01', 'user': ''},
-            {'_id': '642c9a4d917524429c1bf982', 'user': ''}
-        ])
+    # outfit = data['outfit']
+    # # Hard Code
+    # # get item 64237ecfa77fdcf57203ff96
+    # items = [
+    #     {'_id': '64237ecfa77fdcf57203ff96', 'user': '64237961038602a02a81cd92'},
+    #     {'_id': '642c9b687032063a2f2f1e78', 'user': ''}
+    # ]
+    # if data['regenerate']:
+    #     # Suggest items 642c9b687032063a2f2f1e78, 642c9a701f8bd8fef92cbf18,
+    #     # 642c9a27756f6d8ab3562456, 642c99a94146ee0f23e68bf6
+    #     items.extend([
+    #         {'_id': '642c9a701f8bd8fef92cbf18', 'user': ''},
+    #         {'_id': '642c9a27756f6d8ab3562456', 'user': ''},
+    #         {'_id': '642c99a94146ee0f23e68bf6', 'user': ''}
+    #     ])
+    # else:
+    #     items.extend([
+    #         {'_id': '64237df5ad0c1edddca0f8dc', 'user': '64237961038602a02a81cd92'},
+    #         {'_id': '642c96dcbaac041ea8a98a01', 'user': ''},
+    #         {'_id': '642c9a4d917524429c1bf982', 'user': ''}
+    #     ])
+    #
+    # outfit['items'] = items
+    #
+    # return {
+    #     'status': 'success',
+    #     'ai_outfit': outfit
+    # }, 200
 
-    outfit['items'] = items
+    # body = {
+    #     'selected_items': [],
+    #     'style': 'casual',
+    #     'from_market': True,
+    #     'userid': '6435f5a3ea5f65cdf025881d'
+    # }
 
-    return {
-        'status': 'success',
-        'ai_outfit': outfit
-    }, 200
+    selected_items = data['selected_items']
+    style = data['style']
+    from_market = data['from_market']
+    userid = data['userid']
+    try:
+        picked_items = recommand_outfit(client, selected_items, style, from_market, userid)
+        return {
+            'status': 'success',
+            'ai_outfit': picked_items
+        }, 200
+    except Exception as e:
+        return {
+            'status': 'failed',
+            'error': str(e)
+        }, 500
+
+
+
+
