@@ -1,6 +1,6 @@
 import React from "react";
 import { Dimensions, FlatList, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View, VirtualizedList } from "react-native"
-import { Appbar, Button, Chip, List, TextInput, useTheme } from "react-native-paper";
+import { Appbar, Button, Chip, List, Switch, TextInput, useTheme } from "react-native-paper";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from "react-redux";
 import { imageUriParser } from "../../utils/urlParser";
@@ -28,6 +28,7 @@ export const OutfitAIConfigPage = ({ navigation }) => {
     occasion: "Casual",
     season: "Spring",
     weather: "Sunny",
+    fromMarket: true,
   });
 
   // React.useEffect(() => { 
@@ -54,7 +55,7 @@ export const OutfitAIConfigPage = ({ navigation }) => {
     outfitTBS.items = wardrobeItems.filter(item => item.checked).map(item => item._id);
     // console.log(outfitTBS.name);
     // get the outfit data from the backend
-    const rmdOutfit = await outfitRecommend(outfitTBS, false);
+    const rmdOutfit = await outfitRecommend(user.userInfo._id, outfitTBS, false);
 
     navigation.navigate('Outfit-new-from_ai_edit', { outfit: rmdOutfit.ai_outfit });
   }
@@ -92,6 +93,10 @@ export const OutfitAIConfigPage = ({ navigation }) => {
           <RenderChipConfig chipList={OCCASION_LIST} curr={configs.occasion} title="Occasion" setConfig={(item) => setConfigs(prev => { return { ...prev, occasion: item } })} />
           <RenderChipConfig chipList={SEASON_LIST} curr={configs.season} title="Season" setConfig={(item) => setConfigs(prev => { return { ...prev, season: item } })} />
           <RenderChipConfig chipList={WEATHER_LIST} curr={configs.weather} title="Weather" setConfig={(item) => setConfigs(prev => { return { ...prev, weather: item } })} />
+          
+          <View style={{}}>
+            <Switch value={configs.fromMarket} onValueChange={() => setConfigs(prev => {return {...configs, fromMarket: !prev.fromMarket}})}/>
+          </View>
         </View>
 
         <View style={{

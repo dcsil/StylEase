@@ -23,9 +23,12 @@ export const uploadWardrobeItem = (uuid, base64) => {
   });
 }
 
-export const outfitRecommend = (outfitData, regen=false) => { 
+export const outfitRecommend = (userId, outfitData, regen=false) => { 
   return post(`/CreateAIOutfit`, {
-    outfit: outfitData,
+    selected_items: outfitData.items,
+    style: outfitData.occasion.toUpperCase(),
+    from_market: outfitData.fromMarket,
+    userid: userId,
     regenerate: regen,
   });
 }
