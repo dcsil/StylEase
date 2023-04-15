@@ -67,6 +67,14 @@ export const CalendarRoute = ({ navigation }) => {
       setItemloaded(true);
     }
 
+    const renderEmptyDate = () => {
+      return (
+        <View style={styles.emptyDate}>
+          <Text variant="bodyLarge">This is empty date!</Text>
+        </View>
+      );
+    }
+
     useEffect(() => {
       const unsubscribe = navigation.addListener(
         'focus',
@@ -118,7 +126,7 @@ export const CalendarRoute = ({ navigation }) => {
         <Agenda
           items={items}
           loadItemsForMonth={month => {
-            fetchCalendarDays(userId);
+            return;
           }}
           selected={new Date().toJSON().slice(0, 10)}
           onDayPress={(day) => {
@@ -130,7 +138,7 @@ export const CalendarRoute = ({ navigation }) => {
           showOnlySelectedDayItems={true}
           pastScrollRange={50}
           futureScrollRange={50}
-          renderItem={(item, firstItemInDay) => {
+          renderItem={(item) => {
             return renderItem(item);
           }}
           renderKnob={() => {
@@ -138,6 +146,9 @@ export const CalendarRoute = ({ navigation }) => {
           }}
           rowHasChanged={(r1, r2) => {
             return r1.text !== r2.text;
+          }}
+          renderEmptyData={()=>{
+            return renderEmptyDate();
           }}
           hideKnob={false}
           showClosingKnob={true}
@@ -155,6 +166,7 @@ export const CalendarRoute = ({ navigation }) => {
         icon={(props) => <Icon name="plus" {...props} />}
         onPress={() => navigation.navigate('Calendar-add-item', {
           selectedDate: selectedDate,
+          userId: userId,
         })}
       />
     </View>);
@@ -175,6 +187,7 @@ const styles = StyleSheet.create({
   },
   emptyDate: {
     height: 15,
+    marginHorizontal: '10%',
     flex: 1,
     paddingTop: 30
   },
