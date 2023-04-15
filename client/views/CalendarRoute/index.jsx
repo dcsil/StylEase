@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useReducer} from 'react';
 import {Agenda} from 'react-native-calendars';
 import { View, StatusBar, StyleSheet } from 'react-native';
 import { Appbar, Card, FAB, Avatar, Text } from 'react-native-paper';
@@ -57,6 +57,7 @@ export const CalendarRoute = ({ navigation }) => {
               items_[days[i].date] = plans;
             }
           }
+          setItems({});
           setItems(items_);
         });
     };
@@ -70,15 +71,13 @@ export const CalendarRoute = ({ navigation }) => {
       const unsubscribe = navigation.addListener(
         'focus',
         () => {
-            console.log("re-fetch data");
             fetchCalendarDays(userId);
-            console.log(items)
             renderPage();
         }
       );
       renderPage();
       return unsubscribe;
-   }, [navigation, items, coverUris, itemloaded])
+   }, [navigation.isFocused(), items, coverUris, itemloaded])
 
     const renderItem = (item) => {
       return(
