@@ -7,45 +7,37 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 jest.useFakeTimers();
 
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: () => jest.fn(),
-  useSelector: jest.fn()
-}));
 
 const mockNavigation = jest.fn();
 
-const mockStore = stores;
 const mockRoute = {
-    params: {
-      item: {
-        _id: 1,
-        name: "mockName",
-        brand: "mockBrand",
-        color: "mockColor"
-      }
+  params: {
+    item: {
+      _id: 1,
+      name: "mockName",
+      brand: "mockBrand",
+      color: "mockColor"
     }
-  };
+  }
+};
+
+jest.useFakeTimers();
+jest.mock('react-native/Libraries/Utilities/Dimensions', () => ({
+  get: jest.fn().mockReturnValue({ width: 800, height: 1200 }),
+}));
 
 describe('WardrobeItemPage', () => {
-    let appBar, image, name, brand, color, type;
-    beforeEach(() => {
-        const component = RenderWithProviders(
-        <SafeAreaProvider>
-            <WardrobeItemPage route={mockRoute} navigation={{mockNavigation}}  />
-        </SafeAreaProvider>, mockStore);
-        // name = component.getAllByText("Name")[0];
-        // brand = component.getAllByText("Brand")[0];
-        // color = component.getAllByText("Color")[0];
-        // type = component.getAllByText("Type")[0];
-    });
-
-    it('should render correctly', () => {
-        expect(true).toBeTruthy();
-        // expect(name).toBeTruthy();
-        // expect(brand).toBeTruthy();
-        // expect(type).toBeTruthy();
-        // expect(color).toBeTruthy();
-    });
+  it('should render correctly', () => {
+    render(
+      <SafeAreaProvider>
+        <WardrobeItemPage route={mockRoute} navigation={{navigate: mockNavigation}} />
+      </SafeAreaProvider>
+    );
+    expect(true).toBeTruthy();
+    // expect(name).toBeTruthy();
+    // expect(brand).toBeTruthy();
+    // expect(type).toBeTruthy();
+    // expect(color).toBeTruthy();
+  });
 });
 
