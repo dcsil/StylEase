@@ -67,17 +67,25 @@ export const CalendarRoute = ({ navigation }) => {
     setItemloaded(true);
   }
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener(
-      'focus',
-      () => {
-        fetchCalendarDays(userId);
-        renderPage();
-      }
-    );
-    renderPage();
-    return unsubscribe;
-  }, [navigation.isFocused(), items, coverUris, itemloaded])
+    const renderEmptyDate = () => {
+      return (
+        <View style={styles.emptyDate}>
+          <Text variant="bodyLarge">This is empty date!</Text>
+        </View>
+      );
+    }
+
+    useEffect(() => {
+      const unsubscribe = navigation.addListener(
+        'focus',
+        () => {
+            fetchCalendarDays(userId);
+            renderPage();
+        }
+      );
+      renderPage();
+      return unsubscribe;
+   }, [navigation.isFocused(), items, coverUris, itemloaded])
 
   const renderItem = (item) => {
     return (
@@ -114,54 +122,57 @@ export const CalendarRoute = ({ navigation }) => {
         <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
           <Appbar.Content title="Calendar" />
         </Appbar.Header>
-        <View style={{ height: '90%' }}>
-          <Agenda
-            items={items}
-            loadItemsForMonth={month => {
-              fetchCalendarDays(userId);
-            }}
-            selected={new Date().toJSON().slice(0, 10)}
-            onDayPress={(day) => {
-              setSelectedDate(day);
-            }}
-            onDayChange={(day) => {
-              setSelectedDate(day);
-            }}
-            showOnlySelectedDayItems={true}
-            pastScrollRange={50}
-            futureScrollRange={50}
-            renderItem={(item, firstItemInDay) => {
-              return renderItem(item);
-            }}
-            renderKnob={() => {
-              return renderKnob();
-            }}
-            rowHasChanged={(r1, r2) => {
-              return r1.text !== r2.text;
-            }}
-            hideKnob={false}
-            showClosingKnob={true}
-            theme={{
-              todayTextColor: '#6a5acd',
-              dayTextColor: '#2d4150',
-              selectedDayBackgroundColor: '#6a5acd',
-              agendaTodayColor: '#6a5acd',
-              dotColor: '#6a5acd',
-            }}
-          />
-        </View>
-        <FAB
-          testID={'calender-add-item'}
-          style={styles.fab}
-          icon={(props) => <Icon name="plus" {...props} />}
-          onPress={() => navigation.navigate('Calendar-add-item', {
-            selectedDate: selectedDate,
-          })}
+        <View style={{height: '90%'}}>
+        <Agenda
+          items={items}
+          loadItemsForMonth={month => {
+            return;
+          }}
+          selected={new Date().toJSON().slice(0, 10)}
+          onDayPress={(day) => {
+            setSelectedDate(day);
+          }}
+          onDayChange={(day) => {
+            setSelectedDate(day);
+          }}
+          showOnlySelectedDayItems={true}
+          pastScrollRange={50}
+          futureScrollRange={50}
+          renderItem={(item) => {
+            return renderItem(item);
+          }}
+          renderKnob={() => {
+            return renderKnob();
+          }}
+          rowHasChanged={(r1, r2) => {
+            return r1.text !== r2.text;
+          }}
+          renderEmptyData={()=>{
+            return renderEmptyDate();
+          }}
+          hideKnob={false}
+          showClosingKnob={true}
+          theme={{
+            todayTextColor: '#6a5acd',
+            dayTextColor: '#2d4150',
+            selectedDayBackgroundColor: '#6a5acd',
+            agendaTodayColor: '#6a5acd',
+            dotColor: '#6a5acd',
+          }}
         />
-      </View>);
-  }
-
-  return renderPage();
+        </View>
+      <FAB
+        style={styles.fab}
+        icon={(props) => <Icon name="plus" {...props} />}
+        onPress={() => navigation.navigate('Calendar-add-item', {
+          selectedDate: selectedDate,
+          userId: userId,
+        })}
+      />
+    </View>);
+    }
+    
+    return renderPage();
 };
 
 const styles = StyleSheet.create({
@@ -176,6 +187,7 @@ const styles = StyleSheet.create({
   },
   emptyDate: {
     height: 15,
+    marginHorizontal: '10%',
     flex: 1,
     paddingTop: 30
   },

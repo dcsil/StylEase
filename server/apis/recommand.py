@@ -62,7 +62,7 @@ def item_finder(client, type, color, from_market, style, userid):
             type_lst.remove(item['type'])
             if not type_lst:
                 break
-    print(picked_item_lst)
+    # print(picked_item_lst)
     return picked_item_lst
 
 
@@ -74,6 +74,7 @@ def recommand_outfit(client, selected_items, style, from_market, userid):
     else:
         combination = ["T - shirt / top", "Ankle boot", "Trouser", "Coat", "Bag"]
     selected_item_lst = get_items(client, selected_items)
+    # print(selected_item_lst)
     selected_item_types = [item['type'] for item in selected_item_lst]
     # Take the missing types from the combination
     missing_types = [type for type in combination if type not in selected_item_types]
@@ -95,6 +96,11 @@ def recommand_outfit(client, selected_items, style, from_market, userid):
     selected_item_colors = list(set(selected_item_colors))
     from_market_lst = [True, False] if from_market else [False]
     style_lst = [style, '']
+    # print(missing_types)
+    # print(selected_item_colors)
+    # print(from_market_lst)
+    # print(style_lst)
+    # print(userid)
     # Find the missing items
     missing_items = item_finder(client, missing_types, selected_item_colors, from_market_lst, style_lst, userid)
     # Combine the selected items and the missing items

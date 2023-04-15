@@ -11,7 +11,6 @@ export const EditEventPage = ({ route, navigation}) => {
     const [occasion, setOccasion] = React.useState(item.occasion);
 
     const editEvent = async () => {
-        // TODO: push a new Item to the specific date
         const new_plan =  {
           "user": userId,
           "name": name,

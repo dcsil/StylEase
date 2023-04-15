@@ -36,12 +36,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Run tests
+        run: |
+           coverage run -m pytest
+
+      - name: Generate coverage report
+        run: |
+          coverage report
+          coverage xml
+
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v3.2.0
         env: 
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
-          coverageCommand: python -m pytest --cov-report term --cov=server/tests/
           debug: true
+          coverageLocations: ${{github.workspace}}/coverage.xml:coverage.py
 
       
