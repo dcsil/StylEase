@@ -1,16 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import {Agenda} from 'react-native-calendars';
-import { View, StatusBar, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
-import { Appbar, Card, FAB, Avatar, Button, Text } from 'react-native-paper';
+import { View, StatusBar, StyleSheet } from 'react-native';
+import { Appbar, Card, FAB, Avatar, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllDays, getOutfit, getPlan } from '../../api/requests';
 import { imageUriParser } from '../../utils/urlParser';
-import UserStore from '../../stores/UserStore';
 
 const LeftContent = props => <Avatar.Icon {...props} icon="folder" />
-
-const log = console.log
 
 export const CalendarRoute = ({ navigation }) => {
     const [items, setItems] = useState({});
@@ -48,9 +45,7 @@ export const CalendarRoute = ({ navigation }) => {
           for (let i = 0; i < days.length; i++){
             var plans = []
             for (let j = 0; j < days[i].plans.length; j++){
-              // const item = await getPlan(days[i].plans[j]);
-              // plans.push(item.plan);
-              const item = await getPlan(days[i].plans[j]).then((item)=>{
+              await getPlan(days[i].plans[j]).then((item)=>{
                 var p = item.plan;
                 p['dayId'] = days[i]._id;
                 p['planId'] = days[i].plans[j];
@@ -72,8 +67,23 @@ export const CalendarRoute = ({ navigation }) => {
     }
 
     useEffect(() => {
+      const unsubscribe = navigation.addListener(
+        'focus',
+        () => {
+            console.log("re-fetch data");
+            fetchCalendarDays(userId);
+            console.log(items)
+            renderPage();
+        }
+      );
       renderPage();
-   }, [items, coverUris, itemloaded])
+      return unsubscribe;
+   }, [navigation, items, coverUris, itemloaded])
+
+    const refreshPage = (userId) =>{
+      fetchCalendarDays(userId);
+      renderPage();
+    }
 
     const renderItem = (item) => {
       return(
@@ -172,76 +182,6 @@ export const CalendarRoute = ({ navigation }) => {
     }
     
     return renderPage();
-    return(
-    <View>
-        <StatusBar style="auto" />
-        <Appbar.Header statusBarHeight={20} style={{ paddingBottom: 0 }}>
-        <Appbar.Content title="Calendar" />
-        </Appbar.Header>
-        <View style={{height: '90%'}}>
-        <Agenda
-          // items={{
-          //   '2023-04-08': [{name: 'Outfit1', createdTime:new Date(), occasion: 'Date', Location: 'Alo', path: outfit1}],
-          //   '2023-04-09': [{name: 'Outfit2', createdTime:new Date(), occasion: 'Ball Night', Location: 'School', path: outfit2}, 
-          //                  {name: 'Outfit3', createdTime:new Date(), path: outfit3}]
-          // }}
-          // items = {{
-          //   "2022-04-12": [{"createdTime": "2022-04-08", "date": "2022-04-12", "name": "Meeting with Professor Zhou", "occasion": "", "planned_outfits": [Array], "user": "64237961038602a02a81cd92"}, 
-          //                  {"createdTime": "2022-04-08", "date": "2022-04-12", "name": "Professor Zhou's Birthday Party", "occasion": "", "planned_outfits": [Array], "user": "64237961038602a02a81cd92"}], 
-          //   "2022-04-14": [{"createdTime": "2022-04-08", "date": "2022-04-14", "name": "CEO's Birthday Party", "occasion": "", "planned_outfits": [Array], "user": "64237961038602a02a81cd92"}]}}
-          items={items}
-          loadItemsForMonth={month => {
-            fetchCalendarDays(userId);
-          }}
-          onCalendarToggled={calendarOpened => {
-            return;
-          }}
-          selected={new Date().toJSON().slice(0, 10)}
-          onDayPress={(day) => {
-            setSelectedDate(day);
-          }}
-          onDayChange={(day) => {
-            setSelectedDate(day);
-          }}
-          showOnlySelectedDayItems={true}
-          pastScrollRange={50}
-          futureScrollRange={50}
-          renderItem={(item, firstItemInDay) => {
-            return renderItem(item);
-          }}
-          renderEmptyDate={() => {
-            return renderEmptyDate();
-          }}
-          renderKnob={() => {
-            return renderKnob();
-          }}
-          renderEmptyData={() => {
-            return <View />;
-          }}
-          rowHasChanged={(r1, r2) => {
-            return r1.text !== r2.text;
-          }}
-          hideKnob={false}
-          showClosingKnob={true}
-          theme={{
-            todayTextColor: '#6a5acd',
-            dayTextColor: '#2d4150',
-            selectedDayBackgroundColor: '#6a5acd',
-            agendaTodayColor: '#6a5acd',
-            dotColor: '#6a5acd',
-          }}
-      />
-      </View>
-      <FAB
-        style={styles.fab}
-        icon={(props) => <Icon name="plus" {...props} />}
-        onPress={() => navigation.navigate('Calendar-add-item', {
-          selectedDate: selectedDate,
-          userId: userId
-        })}
-      />
-    </View>
-    );
 };
 
 const styles = StyleSheet.create({

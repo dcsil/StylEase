@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, StatusBar, View, Image, StyleSheet, SafeAreaView, FlatList } from 'react-native';
-import { Appbar, Banner, FAB, Avatar, Button, Text, Card } from 'react-native-paper';
+import { Alert, StatusBar, View, StyleSheet, FlatList } from 'react-native';
+import { Appbar, Banner, Avatar, Button, Text, Card } from 'react-native-paper';
 import { deletePlan, getOutfit } from '../../api/requests';
 import { imageUriParser } from '../../utils/urlParser';
 
 const LeftContent = props => <Avatar.Icon {...props} icon="tshirt-crew" />
-
-const log = console.log
 
 export const EventPage = ({ route, navigation }) => {
     const { item, userId, selectedDate } = route.params;
@@ -15,7 +13,6 @@ export const EventPage = ({ route, navigation }) => {
     const [isItemLoaded, setIsItemLoaded] = useState(false);
     const [planName, setPlanName] = useState(item.name);
     const [planOccasion, setPlanOccasion] = useState(item.occasion);
-    log("This ITEMMM", item)
 
     const getItemImages = async () => {
       await getOutfit(userId, item.planned_outfits[0]).then((data) => {
@@ -32,13 +29,11 @@ export const EventPage = ({ route, navigation }) => {
     }
 
     if (!isItemLoaded) {
-      log("getting item images")
       getItemImages();
       setIsItemLoaded(true);
     }
 
     useEffect(() => {
-      log("Updated", imageUris)
       renderPage();
    }, [imageUris])
 
@@ -67,7 +62,6 @@ export const EventPage = ({ route, navigation }) => {
     }
 
     const deleteItem = async () => {
-        // TODO: Delete item API
         await deletePlan(item.planId, item.dayId).then(()=>{
           setVisible(true);
           console.log('deleted');
