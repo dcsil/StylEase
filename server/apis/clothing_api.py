@@ -368,17 +368,17 @@ def createAIOutfit():
     style = data['style']
     from_market = data['from_market']
     userid = data['userid']
-    try:
-        picked_items = recommand_outfit(client, selected_items, style, from_market, userid)
-        return {
-            'status': 'success',
-            'ai_outfit': picked_items
-        }, 200
-    except Exception as e:
-        return {
-            'status': 'failed',
-            'error': str(e)
-        }, 500
+    # try:
+    picked_items = recommand_outfit(client, selected_items, style, from_market, userid)
+    return {
+        'status': 'success',
+        'ai_outfit': picked_items
+    }, 200
+    # except Exception as e:
+    #     return {
+    #         'status': 'failed',
+    #         'error': str(e)
+    #     }, 500
 
 
 
