@@ -4,6 +4,8 @@ import { RenderWithProviders } from '../utils/renderWithProvider';
 import stores from '../stores';
 import { MainPage } from '../views/MainPage';
 import { NavigationContainer } from '@react-navigation/native';
+import { WardrobeRoute } from '../views/WardrobeRoute';
+import { View } from 'react-native';
 
 jest.useFakeTimers();
 
@@ -17,16 +19,12 @@ const mockNavigation = jest.fn();
 
 const mockStore = stores;
 
-// jest.mock('react-native-paper', () => ({
-//   ...jest.requireActual('react-native-paper'),
-//   createBottomTabNavigator:
-// }));
-
-// jest.mock('@react-navigation/bottom-tabs', () => ({
-//   ...jest.requireActual('@react-navigation/bottom-tabs'),
-
-// }));
-
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: () => {
+    return mockNavigation;
+  },
+}));
 
 describe('MainPage', () => {
   let homeTab, wardrobeTab, outfitTab, calendarTab, profileTab;
@@ -53,23 +51,28 @@ describe('MainPage', () => {
   });
 
   it('should navigate to wardrobe page when wardrobe tab is pressed', async () => {
-      fireEvent.press(wardrobeTab);
-      // await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
+    profileRoute = screen.queryAllByTestId('ProfileRoute');
+    expect(profileRoute).toHaveLength(0);
+    // console.log('profileRoute', profileRoute);
+    fireEvent.press(profileTab);
+    // await waitFor(() => expect(screen.getAllByTestId('ProfileRoute')).toHaveLength(1));
+    // expect(profileRoute).toBeTruthy();
+    // await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
   });
 
   it('should navigate to outfit page when outfit tab is pressed', async () => {
-      fireEvent.press(outfitTab);
-      // await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
+    fireEvent.press(outfitTab);
+    // await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
   });
 
   it('should navigate to calendar page when calendar tab is pressed', async () => {
-      fireEvent.press(calendarTab);
-      // await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
+    fireEvent.press(calendarTab);
+    // await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
   });
 
   it('should navigate to profile page when profile tab is pressed', async () => {
-      fireEvent.press(profileTab);
-      // await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
+    fireEvent.press(profileTab);
+    // await waitFor(() => expect(mockNavigation).toHaveBeenCalled());
   });
 
 });
