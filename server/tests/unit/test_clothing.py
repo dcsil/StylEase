@@ -36,14 +36,15 @@ app.register_blueprint(clothing_api)
 
 # Test add and del new item
 def test_add_del_new_item_endpoint():
-    with open("tests/unit/shoes.png", "rb") as img_file:
-        my_string = base64.b64encode(img_file.read()).decode('utf-8')
-        my_string = 'data:image/png;base64,{}'.format(my_string)
+    # with open("tests/unit/shoes.png", "rb") as img_file:
+    # with open("./shoes.png", "rb") as img_file:
+    #     my_string = base64.b64encode(img_file.read()).decode('utf-8')
+    #     my_string = 'data:image/png;base64,{}'.format(my_string)
 
     item = {
         "name": "Sneaker",
         "user": "6435f5a3ea5f65cdf025881d",
-        "image": str(my_string),
+        "image": "test img string in base64",
         "created_time": "2023-04-01",
         "type": "Sneaker",
         "color": "White",
