@@ -10,9 +10,6 @@ const WardrobeSchema = new mongoose.Schema({
     },
     items: {
         type: [mongoose.Schema.Types.ObjectId],
-    },
-    outfits: {
-        type: [mongoose.Schema.Types.ObjectId],
     }
 });
 
@@ -23,6 +20,9 @@ const ItemSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
+    },
+    image:{
+        type: String,
     },
     created_time: {
         type: Date,

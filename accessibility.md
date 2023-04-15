@@ -1,0 +1,28 @@
+Guideline | Summary | Description of how you accommodated this
+--- | --- | ---
+1.1.1 – Non-text Content | Provide text alternatives for non-text content | We have used alternative text to all of our non-text content, such as images. 
+1.2.1 – Audio-only and Video-only (Pre-recorded) | Provide an alternative to video-only and audio-only content | We do not have any Audio and Video content currently in our App. 
+1.2.2 – Captions (Pre-recorded) | Provide captions for videos with audio | We do not have any Audio and Video content currently in our App. 
+1.2.3 – Audio Description or Media Alternative (Pre-recorded) | Video with Audio has a second alternative | We do not have any Audio and Video content currently in our App. 
+1.3.1 – Info and Relationships | Logical structure | We have titles at the top of different tabs. We also used cohesive elements such as a list for outfit wardrobe collection UI. These structures also make our App more intuitive for new users.  
+1.3.2 – Meaningful Sequence | Present content in a meaningful order | User's control is designed in a familiar left-to-right sequence. For example, the bottom navigation bar has the home tab on the left, the main features in the middle, and the profile on the right. 
+1.3.3 – Sensory Characteristics | Use more than one sense for instructions | We try to bind the text elements with icons as much as possible. We also use elements such as shadow backgrounds to highlight the main content. 
+1.4.1 – Use of Colour | Don't use presentation that relies solely on colour | Similar to 1.3.3, we try our best to bind the text with visual components so that all groups can understand the instructions of the App.
+1.4.2 – Audio Control | Don't play Audio automatically | We do not have Audio in our App.
+2.1.1 – Keyboard | Accessible by keyboard only | Since we are developing a mobile app, we do not have keyboard controls. The users will be able to access every interactive element of our App at the tip of their fingertips.
+2.1.2 – No Keyboard Trap | Don’t trap keyboard users | Like 2.1.1, we do not have keyboard controls. The users will be able to navigate to and away from every page of our App.
+2.2.1 – Timing Adjustable | Time limits have user controls | The pages and tabs only change when the User takes action. The User has complete control over the length of time on each screen.
+2.2.2 – Pause, Stop, Hide | Provide user controls for moving content | All of our elements are static unless the User interacts with them. The User has complete control over dynamic contents.
+2.3.1 – Three Flashes or Below | No content flashes more than three times per second | Our App has no flashing contents.
+2.4.1 – Bypass Blocks | Provide a 'Skip to Content' link | The navigation bar at the bottom of the screen is designed so the User can instantly skip to the content or the feature they would like to access. There is no set-to-stone sequence that they have to follow to get to specific content.
+2.4.2 – Page Titled | Use helpful and clear page titles | All of our pages have clear titles. For example, we have "Welcome!" and "Sign up Now!" as a title for sign-up and log-in pages. In addition to sending a warm welcome to the User, it makes it clear to the User the purpose of the page.
+2.4.3 – Focus Order | Logical order | The pages are designed to use focus to convey a logical sequence and functionality to the User. For instance, the Outfits tab uses a dark background to separate and focus on each outfit section. 
+2.4.4 – Link Purpose (In Context) | Every link's purpose is clear from its context | Since StylEase is a mobile app, we do not have links. 
+3.1.1 – Language of Page | Page has a language assigned | Since we rely on React Native and not the underlying HTML for our front end, we do have the control to set a language tag. All screens of our App are designed to be in English.
+3.2.1 – On Focus | Elements do not change when they receive focus | The elements do not change unless the User takes action on the element.
+3.2.2 – On Input | Elements do not change when they receive input | The elements do not change unless the User takes action on the element, except for the elements that provide input feedback to the User, such as the text input bar.
+3.3.1 – Error Identification | Clearly identify input errors | We prevent users from certain actions if their input is not provided correctly. For example, the sign-up button is disabled unless the User has matched passwords.
+3.3.2 – Labels or Instructions | Label elements and give instructions | We implemented a text holder for input elements so that the User can quickly understand the functionality of the fields.
+4.1.1 – Parsing | No major code errors | We have more than 65% test coverage on all of our codes. The main functionalities are tested thoroughly to ensure a smooth user experience.
+4.1.2 – Name, Role, Value | Build all elements for accessibility | For front-end, rely on reactive native library instead of basic HTML. We have implemented our code according to the specification docs of React Native to ensure that our code can be understood by different environments such as IOS and Android.
+Colour Part II | [Colours are chosen in a way that won't make things difficult for colour-blind users](https://venngage.com/blog/color-blind-friendly-palette/)| We rely on the React-Native Paper component library. It is a popular library that offers full theme support. Their library is designed to serve a diver audience, including colour-blind users. 

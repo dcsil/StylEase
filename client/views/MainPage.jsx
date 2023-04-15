@@ -1,51 +1,48 @@
 import { Appbar, BottomNavigation, Button } from 'react-native-paper';
-import { StatusBar, Text, View } from 'react-native';
+import { Image, ScrollView, StatusBar, Text, View } from 'react-native';
 import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const HomeRoute = () => (
-  <View>
-    <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{paddingBottom: 0}}>
-      <Appbar.Content title="Home"/>
-    </Appbar.Header>
-    <Text>Home</Text>
-  </View>
-);
-const WardrobeRoute = () => (
-  <View>
-    <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{paddingBottom: 0}}>
-      <Appbar.Content title="Wardrobe"/>
-    </Appbar.Header>
-    <Text>Wardrobe</Text>
-  </View>
-);
-const OutfitRoute = () => (
-  <View>
-    <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{paddingBottom: 0}}>
-      <Appbar.Content title="Outfit"/>
-    </Appbar.Header>
-    <Text>Outfit</Text>
-  </View>
-);
-const CalendarRoute = () => (
-  <View>
-    <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{paddingBottom: 0}}>
-      <Appbar.Content title="Calendar"/>
-    </Appbar.Header>
-    <Text>Calendar</Text>
-  </View>
-);
+import { useSelector } from 'react-redux';
+
+import { WardrobeRoute } from './WardrobeRoute';
+import { OutfitRoute } from './OutfitRoute';
+import { CalendarRoute } from './CalendarRoute';
+import { imageUriParser } from '../utils/urlParser';
+
+import { DefaultAppBar } from '../components/DefaultAppbar';
+
+const HomeRoute = ({ }) => {
+  const user = useSelector(state => state.user);
+  // const userId = useSelector(state => state.user.userInfo._id);
+  return (
+    <ScrollView testID='HomeRoute'>
+      <DefaultAppBar title="Home" />
+
+      <View style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        <Image
+          source={{
+            uri: imageUriParser("642df77cd1038d49ecfa3983")
+          }}
+          style={{
+            width: 400,
+            height: 600,
+            resizeMode: 'stretch'
+          }}
+        />
+      </View>
+    </ScrollView>
+  )
+}
+
 const ProfileRoute = ({ navigation }) => (
-  <View>
-    <StatusBar style="auto" />
-    <Appbar.Header statusBarHeight={20} style={{paddingBottom: 0}}>
-      <Appbar.Content title="Profile"/>
-    </Appbar.Header>
+  <View testID='ProfileRoute'>
+    <DefaultAppBar title="Profile" />
     <Text>Profile</Text>
     <Button icon="cursor-pointer" mode="contained" onPress={() => navigation.navigate('Calendar')}>
       To Calendar
@@ -56,9 +53,32 @@ const ProfileRoute = ({ navigation }) => (
   </View>
 );
 
+const ScreenBuilder = (routeName, routeComponent, routeIconName) => {
+  return (
+    <Tab.Screen
+      key={routeName}
+      name={routeName}
+      component={routeComponent}
+      options={{
+        tabBarIcon: ({ color, size }) => <Icon name={routeIconName} size={size} color={color} />,
+        tabBarLabel: routeName,
+      }}
+    />
+  )
+}
+
 const Tab = createBottomTabNavigator();
 
+const Routers = [
+  { name: 'Home', component: HomeRoute, iconName: 'home-outline' },
+  { name: 'Wardrobe', component: WardrobeRoute, iconName: 'wardrobe-outline' },
+  { name: 'Outfit', component: OutfitRoute, iconName: 'hanger' },
+  { name: 'Calendar', component: CalendarRoute, iconName: 'calendar-month-outline' },
+  { name: 'Profile', component: ProfileRoute, iconName: 'account-box-outline' },
+];
+
 export const MainPage = ({ navigation }) => {
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -69,6 +89,11 @@ export const MainPage = ({ navigation }) => {
       tabBar={
         ({ navigation, state, descriptors, insets }) => (
           <BottomNavigation.Bar
+            testID='lol'
+            getTestID={({ route }) => {
+              // console.log(route);
+              return `${route.name}-tab`;
+            }}
             navigationState={state}
             style={{ height: 85 }}
             safeAreaInsets={insets}
@@ -108,7 +133,8 @@ export const MainPage = ({ navigation }) => {
         )
       }
     >
-      <Tab.Screen
+      { Routers.map((route) => ScreenBuilder(route.name, route.component, route.iconName)) }
+      {/* <Tab.Screen
         name="Home"
         component={HomeRoute}
         options={{
@@ -147,7 +173,7 @@ export const MainPage = ({ navigation }) => {
           tabBarIcon: ({ color, size }) => <Icon name="account-box-outline" size={size} color={color} />,
           tabBarLabel: 'Me',
         }}
-      />
+      /> */}
     </Tab.Navigator>
   )
 }

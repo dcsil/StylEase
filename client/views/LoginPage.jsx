@@ -1,46 +1,93 @@
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Button } from 'react-native-paper';
+import { useDispatch, useSelector } from "react-redux";
+import { TextInput, Button, useTheme } from 'react-native-paper';
 
-import { getName } from "../api/temp";
+import { fetchUserData, setUserId } from "../stores/UserStore";
+import { Login } from "../api/requests";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  input: {
+    width: '100%',
+    marginBottom: 10,
+  },
+  button: {
+    width: '100%',
+    marginVertical: 10,
   },
 });
 
 export const LoginPage = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const userId = useSelector((state) => state.user.userInfo._id);
   const [content, setContent] = useState('')
-  useEffect(() => {
-    getName("Taylor Scott").then((result) => {
-      setContent(result);
-    });
-  }, [])
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const alertButtonAction = () => { 
-    Alert.alert("Hello", "test login", [
-      {
-        text: "Cancel",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel"
-      },
-      { text: "Log Me In", onPress: () => navigation.navigate('Main') }
-    ]);
-  }
+  const {colors} = useTheme();
+  // useEffect(() => {
+  //   getName("Taylor Scott").then((result) => {
+  //     setContent(result);
+  //   });
+  // }, [])
+
+  const handleSubmit = async () => {
+    const { userid } = await Login(email, password);
+    await new Promise((resolve) => resolve(dispatch(setUserId(userid))))
+      .then(() => {
+        dispatch(fetchUserData(userid));
+      })
+      .then(() => {
+        navigation.navigate('Main');
+      });
+  };
+
+  const handleSignup = () => {
+    navigation.navigate('SignUp');
+  };
+
+  const handleForgotPassword = () => {
+    // navigation.navigate('ForgotPassword');
+    // navigate to forgot password page here
+  };
 
   return (
     <View style={styles.container}>
-      <Text>StylEase by No Brainer Team!!!</Text>
-      {/* <Text>{`Content from server: ${content}`}</Text> */}
-      <Button icon="cursor-pointer" mode="contained" onPress={alertButtonAction}>
+      <Text style={{
+        color: colors.primary,
+        fontSize: 50,
+        fontWeight: 'bold',
+        marginBottom: 50,
+      }}>StylEase</Text>
+      <TextInput
+        label="Email"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+      />
+      <TextInput
+        label="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry={true}
+        style={styles.input}
+      />
+      <Button disabled={!email || !password} mode="contained" onPress={handleSubmit} style={styles.button}>
         Login
       </Button>
-      <StatusBar style="auto" />
+      <Button onPress={handleSignup} style={styles.button}>
+        Sign up
+      </Button>
+      <Button onPress={handleForgotPassword} style={styles.button}>
+        Forgot password or username
+      </Button>
     </View>
   );
-}
+};

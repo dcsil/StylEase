@@ -40,41 +40,41 @@ export function post(url, data = {}, config = {}) {
   });
 }
 
-export function put(url, data = {}, config = {}) {
-  return new Promise((resolve, reject) => {
-    instance.put(url, data, Object.assign(axiosConfig, config))
-      .then((response) => {
-        resolve(response.data);
-      },
-        (err) => {
-          reject(err);
-        }
-      );
-  });
-}
+// export function put(url, data = {}, config = {}) {
+//   return new Promise((resolve, reject) => {
+//     instance.put(url, data, Object.assign(axiosConfig, config))
+//       .then((response) => {
+//         resolve(response.data);
+//       },
+//         (err) => {
+//           reject(err);
+//         }
+//       );
+//   });
+// }
 
-export function deleteMethod(url, param = {}, config = {}) {
-  return new Promise((resolve, reject) => {
-    instance.delete(url, param, Object.assign(axiosConfig, config))
-      .then((response) => {
-        resolve(response.data);
-      },
-        (err) => {
-          reject(err);
-        }
-      );
-  });
-}
+// export function deleteMethod(url, param = {}, config = {}) {
+//   return new Promise((resolve, reject) => {
+//     instance.delete(url, param, Object.assign(axiosConfig, config))
+//       .then((response) => {
+//         resolve(response.data);
+//       },
+//         (err) => {
+//           reject(err);
+//         }
+//       );
+//   });
+// }
 
-export function patch(url, data = {}, config = {}) {
-  return new Promise((resolve, reject) => {
-    instance.patch(url, data, Object.assign(axiosConfig, config))
-      .then((response) => {
-        resolve(response.data);
-      },
-        (err) => {
-          reject(err);
-        }
-      );
-  });
-}
+// export function patch(url, data = {}, config = {}) {
+//   return new Promise((resolve, reject) => {
+//     instance.patch(url, data, Object.assign(axiosConfig, config))
+//       .then((response) => {
+//         resolve(response.data);
+//       },
+//         (err) => {
+//           reject(err);
+//         }
+//       );
+//   });
+// }
