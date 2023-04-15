@@ -75,7 +75,7 @@ export const SignupPage = ({ navigation }) => {
         secureTextEntry={true}
         style={styles.input}
       />
-      <Button disabled={!isValidInfo} mode="contained" onPress={handleSignup} style={styles.button}>
+      <Button disabled={!isValidInfo()} mode="contained" onPress={handleSignup} style={styles.button}>
         Sign up
       </Button>
       <Button onPress={handleLogin} style={styles.button}>
