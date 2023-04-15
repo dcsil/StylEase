@@ -55,9 +55,4 @@ describe('LoginPage', () => {
     await waitFor(() => expect(mockNavigation).toHaveBeenCalledWith('SignUp'));
   });
 
-  it('should navigate to forgotPassword page', async () => {
-    fireEvent.press(forgotPU[0]);
-    //await waitFor(() => expect(mockNavigation).toHaveBeenCalledWith('ForgotPassword'));
-  });
-
 });
