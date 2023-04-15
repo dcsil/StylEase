@@ -38,25 +38,8 @@ export const LoginPage = ({ navigation }) => {
   //   });
   // }, [])
 
-  const alertButtonAction = () => {
-    Alert.alert("Hello", "test login", [
-      {
-        text: "Cancel",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel"
-      },
-      {
-        text: "Confirm", onPress: () => {
-          // console.log(userId);
-          dispatch(fetchUserData(userId));
-          navigation.navigate('Main');
-        }
-      }
-    ]);
-  }
   const handleSubmit = async () => {
     const { userid } = await Login(email, password);
-    console.log(userid);
     await new Promise((resolve) => resolve(dispatch(setUserId(userid))))
       .then(() => {
         dispatch(fetchUserData(userid));
@@ -71,7 +54,7 @@ export const LoginPage = ({ navigation }) => {
   };
 
   const handleForgotPassword = () => {
-    // avigation.navigate('SignUp');
+    // navigation.navigate('ForgotPassword');
     // navigate to forgot password page here
   };
 

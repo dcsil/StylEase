@@ -51,26 +51,26 @@ jobs:
           coverageCommand: npm run test-cover
           debug: true
 
-      - name: Build Android APK
-        run: |
-          cd client && cd android && chmod +x gradlew && ./gradlew assembleRelease
+      # - name: Build Android APK
+      #   run: |
+      #     cd client && cd android && chmod +x gradlew && ./gradlew assembleRelease
 
-      - name: Sign App Bundle
-        uses: r0adkll/sign-android-release@v1
-        id: sign_app
-        with:
-          releaseDirectory: client/android/app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-          alias: ${{ secrets.ANDROID_SIGNING_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_SIGNING_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
+      # - name: Sign App Bundle
+      #   uses: r0adkll/sign-android-release@v1
+      #   id: sign_app
+      #   with:
+      #     releaseDirectory: client/android/app/build/outputs/apk/release
+      #     signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+      #     alias: ${{ secrets.ANDROID_SIGNING_ALIAS }}
+      #     keyStorePassword: ${{ secrets.ANDROID_SIGNING_STORE_PASSWORD }}
+      #     keyPassword: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: StyleEase Android Release
-          path: client/android/app/build/outputs/apk/release/app-release.apk
-          if-no-files-found: 'warn'
+      # - name: Upload Artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: StyleEase Android Release
+      #     path: client/android/app/build/outputs/apk/release/app-release.apk
+      #     if-no-files-found: 'warn'
 
 
 
