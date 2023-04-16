@@ -37,7 +37,8 @@ def addNewItem():
     userid = body['userid']
     item = body['item']
     # Add type of the item
-    if item['type'] == '':
+    # If type is not a key of item
+    if 'type' not in item:
         item['type'] = detect(item['image'])
     # item['type'] = "Suit"
     # Add new item to db.items
