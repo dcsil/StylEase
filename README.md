@@ -32,8 +32,7 @@
 
 4. In the `./client` and `./server` folders, the above script has generated `.env` files. Make sure to modify the placeholder strings.
 
-## Demo
-[TODO: Demo Video (1.5-3mins)]
+## Demo Write-Up
 
 StylEase is a mobile app that helps users manage their wardrobe and create stylish outfits. Here are the main features of the app, as described in the demo video:
 - **Home**: The Home page of the app displays the StylEase logo, and will eventually include a feature that shows users the current weather in their area. This can help users plan their outfits based on the weather conditions.
