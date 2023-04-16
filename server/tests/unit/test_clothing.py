@@ -210,6 +210,6 @@ def test_recommand_endpoint():
         # print(response.data.decode('utf-8'))
         assert response.status_code == 200
         assert response.json['status'] == 'success'
-        assert len(response.json['items']) == 4
-        for item in response.json['items']:
+        assert len(response.json['ai_outfit']['items']) == 4
+        for item in response.json['ai_outfit']['items']:
             assert item['user'] == '6435f5a3ea5f65cdf025881d'

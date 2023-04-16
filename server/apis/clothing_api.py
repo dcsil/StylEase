@@ -337,7 +337,8 @@ def createAIOutfit():
         picked_items = recommand_outfit(client, selected_items, style, from_market, userid)
         return {
             'status': 'success',
-            'items': picked_items
+            'ai_outfit': {
+            'items': picked_items}
         }, 200
     except Exception as e:
         return {
