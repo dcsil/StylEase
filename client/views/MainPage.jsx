@@ -17,7 +17,7 @@ const HomeRoute = ({ }) => {
   const user = useSelector(state => state.user);
   // const userId = useSelector(state => state.user.userInfo._id);
   return (
-    <ScrollView>
+    <ScrollView testID='HomeRoute'>
       <DefaultAppBar title="Home" />
 
       <View style={{
@@ -41,7 +41,7 @@ const HomeRoute = ({ }) => {
 }
 
 const ProfileRoute = ({ navigation }) => (
-  <View>
+  <View testID='ProfileRoute'>
     <DefaultAppBar title="Profile" />
     <Text>Profile</Text>
     <Button icon="cursor-pointer" mode="contained" onPress={() => navigation.navigate('Calendar')}>
@@ -89,6 +89,11 @@ export const MainPage = ({ navigation }) => {
       tabBar={
         ({ navigation, state, descriptors, insets }) => (
           <BottomNavigation.Bar
+            testID='lol'
+            getTestID={({ route }) => {
+              // console.log(route);
+              return `${route.name}-tab`;
+            }}
             navigationState={state}
             style={{ height: 85 }}
             safeAreaInsets={insets}

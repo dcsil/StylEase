@@ -116,6 +116,7 @@ export const OutfitRoute = ({ navigation }) => {
       <AddOutfitModal visible={visible} setVisible={setVisible} handlePress={handleModelButtonPress} />
 
       <FAB
+        testID='outfit-route-add-button'
         style={styles.fab}
         icon={(props) => <Icon name="plus" {...props} />}
         onPress={handleAddItem}
@@ -159,7 +160,7 @@ const AddOutfitModal = ({ visible, setVisible, handlePress }) => {
             width: '100%', height: '80%',
             flexDirection: 'column',
           }}>
-            <TouchableOpacity onPress={() => handlePress(0)}>
+            <TouchableOpacity onPress={() => handlePress(0)} testID='open1'>
               <View style={{
                 flex: 0, flexDirection: "column", alignItems: "center", justifyContent: "center",
                 backgroundColor: colors.secondaryContainer,
@@ -175,7 +176,7 @@ const AddOutfitModal = ({ visible, setVisible, handlePress }) => {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => handlePress(1)}>
+            <TouchableOpacity onPress={() => handlePress(1)} testID='open2'>
               <View style={{
                 flex: 0, flexDirection: "column", alignItems: "center", justifyContent: "center",
                 backgroundColor: colors.secondaryContainer,
