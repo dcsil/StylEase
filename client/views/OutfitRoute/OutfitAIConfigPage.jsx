@@ -57,7 +57,7 @@ export const OutfitAIConfigPage = ({ navigation }) => {
     // get the outfit data from the backend
     const rmdOutfit = await outfitRecommend(user.userInfo._id, outfitTBS, false);
 
-    navigation.navigate('Outfit-new-from_ai_edit', { outfit: rmdOutfit.ai_outfit });
+    navigation.navigate('Outfit-new-from_ai_edit', { outfit: { ...rmdOutfit.ai_outfit, name: outfitTBS.name } });
   }
 
   return (

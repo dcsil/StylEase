@@ -8,7 +8,7 @@ def get_score(item, color, style, type, itemid):
     if item['type'] in type:
         if 'color' in item and item['color'] in color:
             item_score += 1
-        if "Style" in item and item["Style"] in style:
+        if "Style" in item and item["Style"].upper() in style:
             item_score += 1
         item_dict['score'] = item_score
         item_dict['item'] = itemid
@@ -67,9 +67,9 @@ def item_finder(client, type, color, from_market, style, userid):
 
 
 def recommand_outfit(client, selected_items, style, from_market, userid):
-    if style == 'Business':
+    if style == 'FORMAL':
         combination = ["Shirt", "Ankle boot", "Trouser", "Coat"]
-    elif style == 'Casual':
+    elif style == 'CASUAL':
         combination = ["T - shirt / top", "Sneaker", "Trouser", "Coat", "Bag", "Pullover"]
     else:
         combination = ["T - shirt / top", "Ankle boot", "Trouser", "Coat", "Bag"]
@@ -78,7 +78,7 @@ def recommand_outfit(client, selected_items, style, from_market, userid):
     selected_item_types = [item['type'] for item in selected_item_lst]
     # Take the missing types from the combination
     missing_types = [type for type in combination if type not in selected_item_types]
-    selected_item_colors = [item['color'] for item in selected_item_lst]
+    selected_item_colors = [item['color'] for item in selected_item_lst if 'color' in item]
     if 'Black' in selected_item_colors:
         selected_item_colors.append('White')
         selected_item_colors.append('Grey')

@@ -22,7 +22,7 @@ export const AddEventPage = ({ route, navigation }) => {
 
     const [name, setName] = React.useState("");
     const [occasion, setOccasion] = React.useState("");
-    const [numColumns, setNumColumns] = React.useState(5);
+    const [numColumns, setNumColumns] = React.useState(3);
 
     const [selectedItem, setSelectedItem] = useState(undefined);
 
@@ -123,7 +123,7 @@ export const AddEventPage = ({ route, navigation }) => {
                     <View style={{ marginHorizontal: 5 }}>
                     <FlatList
                         key={`OutfitRoute-${numColumns}`}
-                        numColumns={numColumns}
+                        numColumns={4}
                         directionalLockEnabled={true}
                         data={item.items}
                         renderItem={({ item }) => (

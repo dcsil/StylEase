@@ -200,7 +200,7 @@ def test_get_outfit_endpoint():
 def test_recommand_endpoint():
     body = {
         'selected_items': ['6435f753de08bc1aa531d3b1'],
-        'style': 'Casual',
+        'style': 'CASUAL',
         'from_market': False,
         'userid': '6435f5a3ea5f65cdf025881d'
     }
@@ -210,6 +210,6 @@ def test_recommand_endpoint():
         # print(response.data.decode('utf-8'))
         assert response.status_code == 200
         assert response.json['status'] == 'success'
-        assert len(response.json['ai_outfit']) == 4
-        for item in response.json['ai_outfit']:
+        assert len(response.json['ai_outfit']['items']) == 4
+        for item in response.json['ai_outfit']['items']:
             assert item['user'] == '6435f5a3ea5f65cdf025881d'
